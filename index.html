@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="uz">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>YuMB laboratoriyalari</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&family=Patrick+Hand&display=swap" rel="stylesheet">
+<style>
+:root{--paper:#FBF6E9;--rule:#DED4B6;--ink:#1F3A93;--red:#C0392B;--pencil:#5B5B6E;--card:#FFFDF5;
+--hand:'Patrick Hand','Segoe Print','Comic Sans MS',cursive;--title:'Caveat','Segoe Print','Comic Sans MS',cursive}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background-color:var(--paper);background-image:repeating-linear-gradient(to bottom,transparent 0 31px,var(--rule) 31px 32px);color:var(--ink);font-family:var(--hand);font-size:18px;min-height:100vh}
+body::before{content:"";position:fixed;left:58px;top:0;bottom:0;width:2px;background:#E9A3A3;pointer-events:none}
+.wrap{max-width:1100px;margin:0 auto;padding:28px 24px 60px 84px}
+h1{font-family:var(--title);font-size:52px;line-height:1;margin:0;font-weight:700;text-wrap:balance}
+.sub{color:var(--pencil);font-size:20px;margin:6px 0 28px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:22px}
+.card{position:relative;display:flex;flex-direction:column;gap:6px;background:var(--card);border:2px solid var(--ink);border-radius:6px 14px 8px 16px;padding:16px 18px;box-shadow:3px 4px 0 rgba(31,58,147,.16);color:inherit;text-decoration:none;transition:transform .12s}
+.card::before{content:"";position:absolute;top:-10px;left:40%;width:70px;height:20px;background:rgba(250,220,120,.65);transform:rotate(-3deg)}
+a.card:hover{transform:translateY(-2px) rotate(-.4deg)}
+a.card:focus-visible{outline:3px solid var(--red);outline-offset:3px}
+.no{font-family:var(--title);font-size:24px;color:var(--red);line-height:1}
+.name{font-family:var(--title);font-size:32px;line-height:1.02;font-weight:700;text-wrap:balance}
+.desc{font-size:17px;color:#2b3870;line-height:1.35}
+.tag{align-self:flex-start;margin-top:auto;font-size:15px;border:2px solid currentColor;border-radius:10px;padding:2px 10px}
+.ready .tag{color:#2E7D32}
+.soon{opacity:.6;border-style:dashed}
+.soon .tag{color:var(--pencil)}
+.note{margin-top:30px;font-size:16px;color:var(--pencil);max-width:70ch;line-height:1.45}
+.sig{position:fixed;right:10px;bottom:3px;font-size:10px;opacity:.26;font-style:italic;color:var(--pencil);pointer-events:none}
+@media (max-width:700px){body::before{display:none}.wrap{padding:20px 16px 50px}h1{font-size:40px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Yuqori molekulyar birikmalar — interaktiv laboratoriyalar</h1>
+  <p class="sub">Har bir ishda ikki rejim bor: diktor ko’rsatadigan namoyish va talaba o’zi bajaradigan mustaqil ish (tekshiruv, ball va yakuniy hisobot bilan).</p>
+  <div class="grid">
+    <a class="card ready" href="labs/04-pva-gidrolizi.html">
+      <div class="no">Laboratoriya ishi № 4</div>
+      <div class="name">Polivinilatsetatning gidrolizi</div>
+      <div class="desc">Ishqoriy va kislotali usul: eritish, gidroliz, filtrlash, quritish, unum va eruvchanlik.</div>
+      <span class="tag">▶ Ochish</span>
+    </a>
+    <div class="card soon"><div class="no">Laboratoriya ishi № 5</div><div class="name">Polimerlarning gidrolitik destruksiyasi</div><div class="desc">Poliamidning sulfat kislotada massasi kamayishi va kinetika grafigi.</div><span class="tag">Tez orada</span></div>
+    <div class="card soon"><div class="no">Laboratoriya ishi № 6</div><div class="name">To’rsimon polimerlarning bo’kishi</div><div class="desc">Rezinaning toluol va benzolda bo’kish tezligi, nabuxometr.</div><span class="tag">Tez orada</span></div>
+    <div class="card soon"><div class="no">Laboratoriya ishi № 7</div><div class="name">Molekulyar massani viskozimetrik aniqlash</div><div class="desc">Ubbelode viskozimetri, xarakteristik qovushqoqlik, Mark–Kun–Xauvink tenglamasi.</div><span class="tag">Tez orada</span></div>
+    <div class="card soon"><div class="no">Laboratoriya ishi № 8</div><div class="name">Polielektrolitlarning gidrodinamik xossalari</div><div class="desc">Poliakril kislotasi eritmalarini izoion suyultirish.</div><span class="tag">Tez orada</span></div>
+    <div class="card soon"><div class="no">Laboratoriya ishi № 9</div><div class="name">Tolalarni aniqlash</div><div class="desc">Yondirish, lakmus va erituvchilar bo’yicha noma’lum tolani topish.</div><span class="tag">Tez orada</span></div>
+  </div>
+  <p class="note">Diktor ovozi o’zbek tilida eshitilishi uchun sahifani Microsoft Edge brauzerida oching.</p>
+</div>
+<div class="sig">by Hayitali</div>
+</body>
+</html>

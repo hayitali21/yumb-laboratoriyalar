@@ -1,0 +1,1233 @@
+<!doctype html>
+<html lang="uz">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>PVA gidrolizi — virtual laboratoriya</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&family=Patrick+Hand&display=swap" rel="stylesheet">
+<style>
+:root{--paper:#FBF6E9;--rule:#DED4B6;--ink:#1F3A93;--ink2:#3D56A8;--red:#C0392B;--green:#2E7D32;--pencil:#5B5B6E;--hl:#FFF0A0;
+--hand:'Patrick Hand','Segoe Print','Comic Sans MS',cursive;--title:'Caveat','Segoe Print','Comic Sans MS',cursive}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%}
+body{background-color:var(--paper);background-image:repeating-linear-gradient(to bottom,transparent 0 31px,var(--rule) 31px 32px);color:var(--ink);font-family:var(--hand);font-size:18px;overflow:hidden}
+body::before{content:"";position:fixed;left:58px;top:0;bottom:0;width:2px;background:#E9A3A3;pointer-events:none;z-index:0}
+.app{position:relative;z-index:1;display:grid;grid-template-rows:auto minmax(0,1fr) auto;height:100vh;padding:10px 18px 10px 78px;gap:10px}
+header{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+h1{font-family:var(--title);font-size:40px;margin:0;line-height:.95;font-weight:700}
+h1 small{display:block;font-size:21px;color:var(--pencil);font-weight:500}
+.sp{flex:1}
+.btn{font-family:var(--hand);font-size:17px;color:var(--ink);background:#fffdf6;border:2px solid var(--ink);border-radius:14px 9px 15px 8px;padding:5px 13px;cursor:pointer;box-shadow:2px 3px 0 rgba(31,58,147,.22);transition:transform .1s,background .2s;white-space:nowrap}
+.btn:hover{transform:translateY(-1px) rotate(-.6deg);background:#fff}
+.btn:active{transform:translateY(1px)}
+.btn.on{background:var(--ink);color:#fffdf6}
+.btn.big{font-size:22px;padding:8px 22px}
+.btn.red{border-color:var(--red);color:var(--red)}
+.seg{display:inline-flex}
+.seg .btn{border-radius:0;box-shadow:none}
+.seg .btn:first-child{border-radius:14px 0 0 9px}
+.seg .btn:last-child{border-radius:0 9px 15px 0;border-left:0}
+main{display:grid;grid-template-columns:minmax(0,1fr) 410px;gap:16px;min-height:0}
+.stage{position:relative;background:rgba(255,255,255,.4);border:2px dashed rgba(31,58,147,.35);border-radius:18px;min-height:0;overflow:hidden}
+.stage svg{width:100%;height:100%;display:block;user-select:none;-webkit-user-select:none}
+.scene{transition:opacity .7s}
+.panel{display:flex;flex-direction:column;gap:12px;min-height:0;overflow:auto;padding:2px 6px 6px 2px}
+.card{background:#fffdf5;border:2px solid var(--ink);border-radius:6px 14px 8px 16px;padding:12px 15px;box-shadow:3px 4px 0 rgba(31,58,147,.16);position:relative}
+.card::before{content:"";position:absolute;top:-10px;left:42%;width:70px;height:20px;background:rgba(250,220,120,.65);transform:rotate(-3deg)}
+.stepno{font-family:var(--title);font-size:24px;color:var(--red);line-height:1}
+.stitle{font-family:var(--title);font-size:34px;line-height:1.02;margin:2px 0 8px;font-weight:700}
+.lab{font-size:15px;color:var(--pencil);text-transform:none;margin:8px 0 2px;display:flex;align-items:center;gap:6px}
+.say{font-size:19px;line-height:1.45;color:#22305e}
+.say .w{border-radius:4px;transition:background .15s}
+.say .w.cur{background:var(--hl)}
+.det{margin:4px 0 0;padding-left:20px}
+.det li{margin:4px 0;line-height:1.3;font-size:17px}
+.det li.warn{color:var(--red);list-style:"⚠ "}
+.eq{font-size:17px;line-height:1.5}
+.eq b{color:var(--red);font-weight:400}
+footer{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.dots{display:flex;gap:6px;flex-wrap:wrap}
+.dot{width:28px;height:28px;border-radius:50%;border:2px solid var(--ink);display:grid;place-items:center;font-size:14px;cursor:pointer;background:#fffdf6;font-family:var(--hand);color:var(--ink);padding:0}
+.dot.done{background:#D4E2FF}
+.dot.cur{background:var(--red);border-color:var(--red);color:#fff}
+select{font-family:var(--hand);font-size:16px;color:var(--ink);background:#fffdf6;border:2px solid var(--ink);border-radius:9px;padding:4px 6px;max-width:220px}
+.small{font-size:15px;color:var(--pencil)}
+.sig{position:fixed;right:10px;bottom:3px;font-size:10px;opacity:.26;font-style:italic;pointer-events:none;color:var(--pencil);z-index:30;letter-spacing:.3px}
+.lbl{font-family:var(--hand);font-size:17px;fill:#4B4B66}
+.lbs{font-family:var(--hand);font-size:13px;fill:#4B4B66}
+.ttl{font-family:var(--title);font-size:26px;fill:#1F3A93;font-weight:700}
+.ink{stroke:#1F3A93;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+.glass{fill:#EAF3FA;stroke:#1F3A93;stroke-width:2.2;stroke-linejoin:round}
+.metal{fill:#BAC1CE;stroke:#1F3A93;stroke-width:1.8}
+.lead{stroke:#6B6B80;stroke-width:1.3;stroke-dasharray:4 4;fill:none}
+.ov{position:fixed;inset:0;background:rgba(30,35,60,.38);display:none;align-items:center;justify-content:center;z-index:20;padding:16px}
+.ov.show{display:flex}
+.sheet{width:min(1150px,96vw);max-height:92vh;background-color:var(--paper);background-image:repeating-linear-gradient(to bottom,transparent 0 31px,var(--rule) 31px 32px);border:2px solid var(--ink);border-radius:10px;display:flex;flex-direction:column;overflow:hidden;box-shadow:6px 8px 0 rgba(31,58,147,.25)}
+.sheet .hd{display:flex;gap:8px;align-items:center;padding:12px 16px;border-bottom:2px solid var(--ink);flex-wrap:wrap;background:#fffdf5}
+.sheet .bd{padding:16px 26px 24px;overflow:auto;font-size:19px;line-height:1.5}
+.sheet h2{font-family:var(--title);font-size:36px;margin:6px 0 6px;font-weight:700}
+.sheet h3{font-family:var(--title);font-size:28px;margin:14px 0 4px;font-weight:700;color:var(--red)}
+.formula{background:#fffdf5;border:2px dashed var(--ink2);border-radius:10px;padding:10px 14px;margin:8px 0;font-size:19px;overflow-x:auto}
+.mech{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px;margin:8px 0}
+.mech .card{font-size:17px}
+.mech .card::before{display:none}
+.mech .n{font-family:var(--title);font-size:26px;color:var(--red)}
+.calc{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px;margin:8px 0}
+.calc label{display:flex;flex-direction:column;font-size:16px;color:var(--pencil)}
+.calc input{font-family:var(--hand);font-size:20px;color:var(--ink);border:2px solid var(--ink);border-radius:8px;padding:4px 8px;background:#fff}
+.res{font-size:24px;margin-top:8px}
+.res b{color:var(--red);font-weight:400}
+details{background:#fffdf5;border:2px solid var(--ink);border-radius:8px 12px 8px 14px;padding:8px 12px;margin:8px 0}
+summary{cursor:pointer}
+.intro{max-width:880px}
+.intro .bd ol li{margin:4px 0}
+.f{display:flex;flex-direction:column;gap:4px;margin:9px 0;font-size:16px;color:var(--pencil)}
+.f input[type=text]{font-family:var(--hand);font-size:19px;color:var(--ink);border:2px solid var(--ink);border-radius:8px;padding:3px 8px;width:120px;background:#fff}
+.f>span{display:flex;align-items:center;gap:6px;color:var(--ink)}
+.f.ck{flex-direction:row;align-items:center;gap:8px;color:var(--ink);font-size:17px;cursor:pointer}
+.f.ck input{width:20px;height:20px;accent-color:var(--ink)}
+.rg input{flex:1;accent-color:var(--ink)}
+.rg b{min-width:46px;text-align:right;font-weight:400;font-size:21px;color:var(--red)}
+.pick{display:flex;flex-wrap:wrap;gap:6px}
+.pick .btn{font-size:15px;padding:4px 10px;box-shadow:none}
+.pick .btn.on{background:var(--ink);color:#fff}
+.fb{margin-top:8px;font-size:17px;line-height:1.35;border-radius:8px}
+.fb.ok{background:#E3F3E1;border:2px solid var(--green);color:#1F5E22;padding:8px 10px}
+.fb.bad{background:#FBE5E2;border:2px solid var(--red);color:#8E2A1F;padding:8px 10px}
+.fb.hint{background:#FFF6CC;border:2px dashed #C9A227;color:#6B5500;padding:8px 10px}
+.acts{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.badge{font-size:16px;border:2px solid var(--red);color:var(--red);border-radius:10px;padding:3px 10px;background:#fffdf6}
+.dot:disabled,.btn:disabled{opacity:.4;cursor:not-allowed;transform:none}
+.who{display:flex;gap:14px;flex-wrap:wrap;margin:8px 0}
+.who label{display:flex;flex-direction:column;font-size:16px;color:var(--pencil)}
+.who input{font-family:var(--hand);font-size:20px;color:var(--ink);border:2px solid var(--ink);border-radius:8px;padding:4px 8px;background:#fff;width:260px;max-width:80vw}
+.rep table{border-collapse:collapse;width:100%;font-size:16px;background:#fffdf5;margin:6px 0}
+.rep th,.rep td{border:1.5px solid var(--ink2);padding:5px 8px;text-align:left;vertical-align:top}
+.rep th{background:#E6ECFA;font-weight:400}
+.grade{font-family:var(--title);font-size:44px;color:var(--red);line-height:1}
+.mini{font-size:10px;opacity:.3;font-style:italic;text-align:right;margin-top:16px}
+@media print{body{overflow:visible;background:#fff}body::before,.app,.sig,#ovIntro,#ovTheory{display:none!important}#ovReport{position:static;display:block!important;background:none;padding:0}#ovReport .sheet{width:100%;max-height:none;border:0;box-shadow:none;background:#fff}#ovReport .hd{display:none}#ovReport .bd{overflow:visible}}
+@media (max-width:1050px){body{overflow:auto}.app{height:auto;padding-left:18px}body::before{display:none}main{grid-template-columns:1fr}.stage{height:62vh}}
+</style>
+</head>
+<body>
+<div class="app">
+<header>
+  <a class="btn" href="../index.html" title="Barcha laboratoriyalar" style="text-decoration:none">⌂ Ro’yxat</a>
+  <h1>Polivinilatsetatning gidrolizi<small>Laboratoriya ishi № 4 · virtual tajriba</small></h1>
+  <div class="sp"></div>
+  <span class="badge" id="scoreBadge" hidden>Ball: 0</span>
+  <div class="seg" id="modeSeg">
+    <button class="btn on" data-mode="demo">🎬 Namoyish</button>
+    <button class="btn" data-mode="prac">✍ Mustaqil</button>
+  </div>
+  <div class="seg" id="methodSeg">
+    <button class="btn on" data-m="alk">Ishqoriy usul</button>
+    <button class="btn" data-m="acid">Kislotali usul</button>
+  </div>
+  <button class="btn" id="bTheory" title="T">📖 Nazariya</button>
+  <button class="btn" id="bReport">📋 Natija</button>
+  <button class="btn on" id="bLabels" title="N">🏷 Nomlar</button>
+  <button class="btn on" id="bVoice" title="M">🎙 Diktor</button>
+  <button class="btn on" id="bSfx">🔊 Tovush</button>
+  <button class="btn" id="bFull" title="F">⛶ To’liq ekran</button>
+</header>
+
+<main>
+<div class="stage">
+<svg id="svg" viewBox="0 0 900 600" preserveAspectRatio="xMidYMid meet" aria-label="Laboratoriya qurilmasi">
+<defs>
+  <filter id="rough" x="-5%" y="-5%" width="110%" height="110%"><feTurbulence type="fractalNoise" baseFrequency="0.04" numOctaves="2" seed="4"/><feDisplacementMap in="SourceGraphic" scale="2.4"/></filter>
+  <clipPath id="cFlask"><circle cx="400" cy="400" r="75.5"/></clipPath>
+  <clipPath id="cFun"><path d="M316 210 L300 182 Q289 152 300 130 L344 130 Q355 152 344 182 L328 210 Z"/></clipPath>
+  <clipPath id="cBun"><path d="M427 300 L427 346 L347 504 Q341 518 356 518 L544 518 Q559 518 553 504 L473 346 L473 300 Z"/></clipPath>
+  <clipPath id="cBux"><rect x="362" y="132" width="176" height="70"/></clipPath>
+  <pattern id="powder" width="8" height="8" patternUnits="userSpaceOnUse"><rect width="8" height="8" fill="#FFFFFF"/><circle cx="2" cy="2" r="1" fill="#D8D2C0"/><circle cx="6" cy="5" r=".9" fill="#CFC8B3"/></pattern>
+</defs>
+<line x1="20" y1="556" x2="880" y2="556" class="ink" stroke-width="2.5" filter="url(#rough)"/>
+
+<!-- ============ SETUP ============ -->
+<g id="sc-setup" class="scene" opacity="0">
+  <g id="stand" filter="url(#rough)">
+    <rect x="630" y="540" width="220" height="14" rx="4" class="metal"/>
+    <rect x="696" y="30" width="9" height="512" class="metal"/>
+    <rect x="428" y="54" width="270" height="7" class="metal"/>
+    <rect x="540" y="193" width="158" height="7" class="metal"/>
+    <rect x="414" y="286" width="284" height="7" class="metal"/>
+    <circle cx="700" cy="57" r="8" class="metal"/><circle cx="700" cy="196" r="8" class="metal"/><circle cx="700" cy="289" r="8" class="metal"/>
+  </g>
+  <g filter="url(#rough)">
+    <rect x="236" y="520" width="328" height="34" rx="6" fill="#DAD4C6" class="ink"/>
+    <circle cx="262" cy="537" r="8" fill="#fff" class="ink"/>
+    <text x="400" y="543" text-anchor="middle" class="lbs">ELEKTR PLITA</text>
+  </g>
+  <line id="coil" x1="250" y1="523" x2="550" y2="523" stroke="#888" stroke-width="4" stroke-linecap="round"/>
+  <circle id="lamp" cx="536" cy="537" r="6" fill="#bbb" stroke="#1F3A93" stroke-width="1.5"/>
+  <rect x="260" y="392" width="280" height="126" fill="#A9CFEA" opacity=".75"/>
+  <path d="M260 392 q17 -5 35 0 t35 0 t35 0 t35 0 t35 0 t35 0 t35 0 t35 0" fill="none" stroke="#5E9ACB" stroke-width="1.6"/>
+  <g id="bBub"></g>
+  <g id="vap" opacity="0" fill="none" stroke="#8AA3C2" stroke-width="2" stroke-linecap="round">
+    <path d="M300 380 q-8 -14 0 -28 t0 -28"><animateTransform attributeName="transform" type="translate" values="0 6;0 -10;0 6" dur="3s" repeatCount="indefinite"/></path>
+    <path d="M510 380 q8 -14 0 -28 t0 -28"><animateTransform attributeName="transform" type="translate" values="0 -6;0 8;0 -6" dur="3.6s" repeatCount="indefinite"/></path>
+  </g>
+  <path d="M258 356 L258 514 Q258 520 264 520 L536 520 Q542 520 542 514 L542 356" fill="none" class="ink" filter="url(#rough)"/>
+
+  <g id="gTherm" opacity="0">
+    <rect x="274" y="236" width="12" height="262" rx="6" class="glass"/>
+    <circle cx="280" cy="500" r="9" fill="#E2574C" stroke="#1F3A93" stroke-width="2"/>
+    <rect id="merc" x="277.5" y="470" width="5" height="30" fill="#E2574C"/>
+    <g id="ticks"></g>
+  </g>
+
+  <g id="gFlask" opacity="0">
+    <rect x="386" y="268" width="28" height="62" class="glass"/>
+    <rect x="341" y="276" width="22" height="66" class="glass" transform="rotate(-30 352 338)"/>
+    <rect x="437" y="276" width="22" height="66" class="glass" transform="rotate(30 448 338)"/>
+    <circle cx="400" cy="400" r="78" fill="#EAF3FA" opacity=".95"/>
+    <g clip-path="url(#cFlask)">
+      <rect id="liq" x="320" y="476" width="160" height="200" fill="#E4E9EC" opacity="0"/>
+      <line id="liqTop" x1="320" x2="480" y1="476" y2="476" stroke="#7E95B8" stroke-width="1.4" opacity="0"/>
+      <g id="gran" opacity="0"></g>
+      <path id="gel" opacity="0" d="M336 446 Q352 404 392 414 Q420 398 446 418 Q468 436 458 458 Q438 476 400 474 Q352 474 336 446 Z" fill="#F7F4EA" stroke="#B9B19A" stroke-width="1.6"/>
+      <g id="pow" opacity="0"></g>
+      <g id="fBub"></g>
+    </g>
+    <circle cx="400" cy="400" r="78" fill="none" class="ink" filter="url(#rough)"/>
+    <rect x="388" y="316" width="24" height="12" fill="#EAF3FA"/>
+    <rect x="344" y="318" width="16" height="16" fill="#EAF3FA" transform="rotate(-30 352 338)"/>
+    <rect x="440" y="318" width="16" height="16" fill="#EAF3FA" transform="rotate(30 448 338)"/>
+    <rect x="380" y="281" width="40" height="17" rx="4" fill="none" stroke="#1F3A93" stroke-width="2"/>
+  </g>
+
+  <g id="gStir" opacity="0">
+    <rect x="372" y="34" width="56" height="48" rx="7" fill="#D7DCE6" class="ink"/>
+    <text x="400" y="66" text-anchor="middle" class="ttl" style="font-size:24px">M</text>
+    <rect x="394" y="82" width="12" height="10" class="metal"/>
+    <rect x="397" y="92" width="6" height="362" class="metal"/>
+    <rect x="382" y="257" width="36" height="14" rx="3" fill="#C7AE86" stroke="#1F3A93" stroke-width="1.8"/>
+    <rect id="paddle" x="378" y="450" width="44" height="9" rx="3" class="metal"/>
+  </g>
+
+  <g id="gFun" opacity="0">
+    <rect x="319" y="206" width="6" height="96" class="glass"/>
+    <rect x="315" y="214" width="14" height="16" rx="3" fill="#fff" stroke="#1F3A93" stroke-width="1.8"/>
+    <line id="cock" x1="306" y1="222" x2="338" y2="222" stroke="#1F3A93" stroke-width="4" stroke-linecap="round"/>
+    <path d="M316 210 L300 182 Q289 152 300 130 L344 130 Q355 152 344 182 L328 210 Z" fill="#EAF3FA"/>
+    <rect id="funLiq" x="286" y="210" width="72" height="90" fill="#F7F3E0" clip-path="url(#cFun)"/>
+    <path d="M316 210 L300 182 Q289 152 300 130 L344 130 Q355 152 344 182 L328 210 Z" fill="none" class="ink" filter="url(#rough)"/>
+    <rect x="314" y="110" width="16" height="22" class="glass"/>
+    <rect x="311" y="102" width="22" height="10" rx="3" fill="#C7AE86" stroke="#1F3A93" stroke-width="1.6"/>
+    <g stroke="#1F3A93" stroke-width="1"><line x1="302" y1="150" x2="310" y2="150"/><line x1="300" y1="165" x2="308" y2="165"/><line x1="304" y1="180" x2="312" y2="180"/></g>
+  </g>
+
+  <g id="hoses" opacity="0">
+    <path d="M524 271 C560 285 600 300 650 300 L690 300" fill="none" stroke="#5B6B7E" stroke-width="7" stroke-linecap="round"/>
+    <path d="M535 123 C520 90 560 38 640 34 L690 34" fill="none" stroke="#5B6B7E" stroke-width="7" stroke-linecap="round"/>
+    <path id="hIn" d="M690 300 L650 300 C600 300 560 285 524 271" fill="none" stroke="#7FC4F0" stroke-width="3" stroke-dasharray="7 9" opacity="0"/>
+    <path id="hOut" d="M535 123 C520 90 560 38 640 34 L690 34" fill="none" stroke="#7FC4F0" stroke-width="3" stroke-dasharray="7 9" opacity="0"/>
+  </g>
+  <g id="gCond" opacity="0" transform="rotate(30 448 338)">
+    <rect x="441" y="58" width="14" height="232" class="glass"/>
+    <rect x="430" y="90" width="36" height="170" rx="9" fill="#EAF3FA" class="ink"/>
+    <rect id="jacket" x="433" y="93" width="30" height="164" rx="7" fill="#7FC4F0" opacity=".15"/>
+    <rect x="441" y="88" width="14" height="174" fill="#F4F9FD" stroke="#1F3A93" stroke-width="1.6"/>
+    <rect x="466" y="238" width="14" height="8" class="glass"/>
+    <rect x="416" y="104" width="14" height="8" class="glass"/>
+    <circle id="rdrop" cx="448" cy="120" r="2.6" fill="#7FA8D6" opacity="0"/>
+  </g>
+  <g id="gDrops"></g>
+
+  <g id="labels" class="labels">
+    <text x="232" y="64" text-anchor="end" class="lbl">Aralashtirgich</text><path class="lead" d="M238 59 L368 59"/>
+    <text x="232" y="168" text-anchor="end" class="lbl">Tomchilatgich voronka</text><path class="lead" d="M238 163 L294 163"/>
+    <text x="232" y="262" text-anchor="end" class="lbl">Termometr</text><path class="lead" d="M238 257 L272 257"/>
+    <text x="232" y="350" text-anchor="end" class="lbl">Uch og’izli kolba</text>
+    <text x="232" y="369" text-anchor="end" class="lbs">250 ml</text><path class="lead" d="M238 352 L332 372"/>
+    <text x="232" y="470" text-anchor="end" class="lbl">Suv hammomi</text><path class="lead" d="M238 465 L262 465"/>
+    <text x="232" y="541" text-anchor="end" class="lbl">Elektr plita</text><path class="lead" d="M238 536 L252 536"/>
+    <text x="600" y="152" class="lbl">Teskari</text><text x="600" y="171" class="lbl">sovutgich</text>
+    <text x="590" y="326" class="lbs">sovuq suv kiradi ↓</text>
+    <text x="590" y="24" class="lbs">suv chiqadi ↑</text>
+    <text x="716" y="430" class="lbl">Shtativ</text>
+  </g>
+
+  <g transform="rotate(-1.2 800 128)">
+    <rect x="714" y="70" width="176" height="122" rx="6" fill="#FFFDF5" class="ink"/>
+    <text id="rBath" x="726" y="98" class="lbs" style="font-size:15px">Suv hammomi: 22 °C</text>
+    <text id="rMix" x="726" y="124" class="lbs" style="font-size:15px">Aralashma: 22 °C</text>
+    <text id="rTime" x="726" y="150" class="lbs" style="font-size:15px">Vaqt: 0 soat 00 min</text>
+    <text id="rStir" x="726" y="176" class="lbs" style="font-size:15px">Aralashtirgich: o’chiq</text>
+  </g>
+</g>
+
+<!-- ============ BALANCE ============ -->
+<g id="sc-balance" class="scene" opacity="0">
+  <g filter="url(#rough)">
+    <rect x="60" y="300" width="84" height="112" rx="12" class="glass"/>
+    <rect x="66" y="288" width="72" height="14" rx="4" fill="#C7AE86" class="ink"/>
+    <rect x="72" y="335" width="60" height="38" fill="#fff" stroke="#1F3A93" stroke-width="1.5"/>
+  </g>
+  <text x="102" y="352" text-anchor="middle" class="lbs" style="font-size:14px">PVA</text>
+  <text x="102" y="367" text-anchor="middle" class="lbs" style="font-size:11px">polivinilatsetat</text>
+  <g id="jarGran"></g>
+
+  <g filter="url(#rough)">
+    <rect x="110" y="440" width="300" height="112" rx="14" fill="#DAD4C6" class="ink"/>
+    <rect x="255" y="418" width="10" height="24" class="metal"/>
+    <rect x="170" y="410" width="180" height="10" rx="5" class="metal"/>
+    <circle cx="335" cy="493" r="10" fill="#fff" class="ink"/><circle cx="375" cy="493" r="10" fill="#fff" class="ink"/>
+  </g>
+  <rect x="140" y="470" width="160" height="46" rx="5" fill="#22402A" stroke="#1F3A93" stroke-width="2"/>
+  <text id="balTxt" x="290" y="503" text-anchor="end" fill="#A6FFA0" style="font-family:Consolas,monospace;font-size:26px">0.00 g</text>
+  <text x="335" y="498" text-anchor="middle" class="lbs" style="font-size:12px">T</text><text x="375" y="498" text-anchor="middle" class="lbs" style="font-size:11px">ON</text>
+  <g id="wglass" opacity="0">
+    <path d="M196 410 Q260 394 324 410" fill="#EAF3FA" stroke="#1F3A93" stroke-width="2"/>
+    <g id="wgGran"></g>
+  </g>
+  <text x="260" y="580" text-anchor="middle" class="lbl">Analitik tarozi</text>
+
+  <g filter="url(#rough)">
+    <rect x="500" y="535" width="90" height="14" rx="4" class="glass"/>
+    <rect x="520" y="250" width="50" height="287" class="glass"/>
+  </g>
+  <rect id="cylLiq" x="522" y="535" width="46" height="0" fill="#CFE4F5" opacity=".9"/>
+  <g id="cylTicks"></g>
+  <line x1="514" x2="576" y1="363.5" y2="363.5" stroke="#C0392B" stroke-width="1.8" stroke-dasharray="5 4"/>
+  <text x="500" y="368" text-anchor="end" class="lbs" style="fill:#C0392B">127 ml</text>
+  <line id="cylStream" x1="549" y1="236" x2="549" y2="530" stroke="#B9D9F2" stroke-width="5" stroke-linecap="round" opacity="0"/>
+  <g id="bottle">
+    <rect x="-28" y="-80" width="56" height="80" rx="9" class="glass"/>
+    <rect x="-9" y="-104" width="18" height="26" class="glass"/>
+    <rect x="-22" y="-60" width="44" height="30" fill="#fff" stroke="#1F3A93" stroke-width="1.4"/>
+    <text x="0" y="-41" text-anchor="middle" class="lbs" style="font-size:12px">C₂H₅OH</text>
+  </g>
+  <text x="545" y="580" text-anchor="middle" class="lbl">O’lchov silindri</text>
+  <text x="600" y="228" class="lbs" style="font-size:14px">100 g ≈ 127 ml</text>
+  <text x="600" y="246" class="lbs" style="font-size:13px">(ρ = 0,789 g/ml)</text>
+
+  <ellipse id="b3ring" cx="790" cy="470" rx="62" ry="96" fill="none" stroke="#C0392B" stroke-width="2.5" stroke-dasharray="8 6" opacity="0"/>
+  <g filter="url(#rough)">
+    <rect x="752" y="420" width="76" height="132" rx="10" fill="#F2EEDC" class="ink"/>
+    <rect x="776" y="392" width="28" height="30" class="glass"/>
+    <rect x="772" y="382" width="36" height="12" rx="3" fill="#7A5C3E" class="ink"/>
+    <rect x="758" y="455" width="64" height="52" fill="#fff" stroke="#1F3A93" stroke-width="1.4"/>
+  </g>
+  <text id="b3a" x="790" y="476" text-anchor="middle" class="lbs" style="font-size:14px">NaOH 20%</text>
+  <text id="b3b" x="790" y="495" text-anchor="middle" class="lbs" style="font-size:12px">(spirtda)</text>
+</g>
+
+<!-- ============ FILTER ============ -->
+<g id="sc-filter" class="scene" opacity="0">
+  <g transform="rotate(-1 130 115)">
+    <rect x="30" y="40" width="200" height="150" rx="6" fill="#FFFDF5" class="ink"/>
+    <text x="130" y="66" text-anchor="middle" class="lbs" style="font-size:15px">Indikator qog’ozi</text>
+    <rect id="strip" x="52" y="80" width="30" height="80" rx="3" fill="#5B2C83" stroke="#1F3A93" stroke-width="1.5"/>
+    <text id="phTxt" x="150" y="120" text-anchor="middle" class="ttl" style="font-size:34px">pH 12</text>
+    <text id="phNote" x="150" y="146" text-anchor="middle" class="lbs" style="font-size:15px">ishqoriy</text>
+    <g id="phScale"></g>
+  </g>
+
+  <g id="beaker">
+    <rect x="-36" y="-92" width="72" height="92" rx="4" class="glass"/>
+    <rect id="bkLiq" x="-34" y="-60" width="68" height="58" fill="#ECE6D3"/>
+    <g id="bkPow"></g>
+  </g>
+  <path id="pStream" d="M382 122 Q392 150 396 192" fill="none" stroke="#E6E0CC" stroke-width="7" stroke-linecap="round" opacity="0"/>
+
+  <g filter="url(#rough)">
+    <rect x="600" y="70" width="62" height="92" rx="14" fill="#F4F8EE" class="ink"/>
+    <path d="M630 70 L630 50 Q630 38 618 40 L562 104" fill="none" class="ink"/>
+  </g>
+  <text id="washTxt" x="631" y="120" text-anchor="middle" class="lbs" style="font-size:13px">Aseton</text>
+  <path id="squirt" d="M560 108 Q520 112 498 160" fill="none" stroke="#7FB3DE" stroke-width="4" stroke-linecap="round" stroke-dasharray="4 4" opacity="0"/>
+
+  <path d="M545 336 C600 336 620 455 680 470" fill="none" stroke="#5B6B7E" stroke-width="8" stroke-linecap="round"/>
+  <g filter="url(#rough)">
+    <rect x="680" y="430" width="175" height="110" rx="12" fill="#DAD4C6" class="ink"/>
+    <rect x="475" y="330" width="72" height="11" class="glass"/>
+  </g>
+  <circle cx="790" cy="485" r="30" fill="#fff" class="ink"/>
+  <g id="fan"><path d="M790 485 L790 460 M790 485 L812 497 M790 485 L768 497" stroke="#1F3A93" stroke-width="4" stroke-linecap="round"/></g>
+  <text x="725" y="460" class="lbs" style="font-size:13px">Vakuum</text><text x="725" y="476" class="lbs" style="font-size:13px">nasos</text>
+  <circle id="vacLamp" cx="712" cy="515" r="6" fill="#bbb" stroke="#1F3A93" stroke-width="1.5"/>
+
+  <path d="M427 300 L427 346 L347 504 Q341 518 356 518 L544 518 Q559 518 553 504 L473 346 L473 300" class="glass"/>
+  <rect id="filt" x="340" y="518" width="220" height="0" fill="#EEF2D8" opacity=".9" clip-path="url(#cBun)"/>
+  <path d="M427 300 L427 346 L347 504 Q341 518 356 518 L544 518 Q559 518 553 504 L473 346 L473 300" fill="none" class="ink" filter="url(#rough)"/>
+  <path d="M418 290 L482 290 L476 312 L424 312 Z" fill="#6B5A4A" stroke="#1F3A93" stroke-width="2"/>
+  <rect x="443" y="238" width="14" height="114" class="glass"/>
+  <path d="M360 212 L443 242 L457 242 L540 212 Z" fill="#F7F4EE" class="ink"/>
+  <rect x="360" y="130" width="180" height="84" fill="#F7F4EE" opacity=".65" class="ink"/>
+  <g clip-path="url(#cBux)">
+    <rect id="cake" x="362" y="202" width="176" height="0" fill="url(#powder)" stroke="#BDB6A0" stroke-width="1"/>
+    <rect id="susp" x="362" y="202" width="176" height="0" fill="#E8E2CF" opacity=".85"/>
+  </g>
+  <line x1="362" y1="204" x2="538" y2="204" stroke="#999" stroke-width="3"/>
+  <g fill="#1F3A93"><circle cx="380" cy="209" r="1.6"/><circle cx="400" cy="209" r="1.6"/><circle cx="420" cy="209" r="1.6"/><circle cx="440" cy="209" r="1.6"/><circle cx="460" cy="209" r="1.6"/><circle cx="480" cy="209" r="1.6"/><circle cx="500" cy="209" r="1.6"/><circle cx="520" cy="209" r="1.6"/></g>
+  <g id="fDrops"></g>
+  <text x="470" y="112" text-anchor="middle" class="lbl">Byuxner voronkasi</text>
+  <text x="450" y="576" text-anchor="middle" class="lbl">Bunzen kolbasi</text>
+</g>
+
+<!-- ============ OVEN ============ -->
+<g id="sc-oven" class="scene" opacity="0">
+  <g filter="url(#rough)">
+    <rect x="170" y="110" width="380" height="360" rx="12" fill="#E6E1D3" class="ink"/>
+    <rect x="190" y="470" width="30" height="16" class="metal"/><rect x="500" y="470" width="30" height="16" class="metal"/>
+    <rect x="465" y="150" width="72" height="250" rx="6" fill="#D2CCBC" class="ink"/>
+    <circle cx="501" cy="250" r="14" fill="#fff" class="ink"/><circle cx="501" cy="300" r="14" fill="#fff" class="ink"/>
+  </g>
+  <rect x="195" y="150" width="255" height="280" rx="8" fill="#33404F" stroke="#1F3A93" stroke-width="2.2"/>
+  <g id="heat" opacity="0" fill="none" stroke="#F0A35E" stroke-width="2.4" stroke-linecap="round">
+    <path d="M240 410 q8 -12 0 -24 t0 -24"><animateTransform attributeName="transform" type="translate" values="0 6;0 -6;0 6" dur="2.4s" repeatCount="indefinite"/></path>
+    <path d="M320 410 q8 -12 0 -24 t0 -24"><animateTransform attributeName="transform" type="translate" values="0 -5;0 6;0 -5" dur="2.8s" repeatCount="indefinite"/></path>
+    <path d="M400 410 q8 -12 0 -24 t0 -24"><animateTransform attributeName="transform" type="translate" values="0 4;0 -7;0 4" dur="2.2s" repeatCount="indefinite"/></path>
+  </g>
+  <line x1="205" y1="330" x2="440" y2="330" stroke="#9AA5B4" stroke-width="3"/>
+  <g id="dish" opacity="0">
+    <ellipse cx="322" cy="324" rx="72" ry="10" fill="#EAF3FA" stroke="#D7E3EE" stroke-width="2"/>
+    <path d="M268 322 Q290 300 322 302 Q356 300 376 322 Z" fill="url(#powder)" stroke="#D6D0BE"/>
+  </g>
+  <rect x="471" y="168" width="60" height="34" rx="4" fill="#22402A" stroke="#1F3A93" stroke-width="2"/>
+  <text id="ovTxt" x="501" y="192" text-anchor="middle" fill="#A6FFA0" style="font-family:Consolas,monospace;font-size:18px">22°</text>
+  <text x="360" y="510" text-anchor="middle" class="lbl">Quritish shkafi</text>
+  <g transform="rotate(-1 740 260)">
+    <rect x="590" y="110" width="290" height="330" rx="6" fill="#FFFDF5" class="ink"/>
+    <text x="606" y="142" class="ttl" style="font-size:24px">Tortish natijalari</text>
+    <text id="m0" x="610" y="178" class="lbl"></text><text id="m1" x="610" y="208" class="lbl"></text><text id="m2" x="610" y="238" class="lbl"></text><text id="m3" x="610" y="268" class="lbl"></text><text id="m4" x="610" y="298" class="lbl"></text>
+    <text id="mRes" x="606" y="336" class="lbl" style="fill:#2E7D32"></text>
+    <text id="theo" x="606" y="372" class="lbs" style="font-size:15px"></text>
+    <text id="eta" x="606" y="400" class="lbl" style="fill:#C0392B"></text>
+  </g>
+</g>
+
+<!-- ============ TUBES ============ -->
+<g id="sc-tubes" class="scene" opacity="0">
+  <text x="285" y="140" text-anchor="middle" class="ttl" style="font-size:24px">Polivinil spirti (PVS)</text>
+  <text x="615" y="140" text-anchor="middle" class="ttl" style="font-size:24px">Polivinilatsetat (PVA)</text>
+  <path d="M170 152 L400 152" class="ink" stroke-width="1.5"/><path d="M500 152 L730 152" class="ink" stroke-width="1.5"/>
+  <g filter="url(#rough)">
+    <rect x="120" y="360" width="660" height="18" fill="#C9A26B" class="ink"/>
+    <rect x="128" y="360" width="12" height="178" fill="#C9A26B" class="ink"/><rect x="760" y="360" width="12" height="178" fill="#C9A26B" class="ink"/>
+    <rect x="110" y="535" width="680" height="12" fill="#C9A26B" class="ink"/>
+  </g>
+  <g id="tubes"></g>
+  <g filter="url(#rough)"><rect x="120" y="494" width="660" height="12" fill="#C9A26B" class="ink"/></g>
+  <g id="tubeTxt"></g>
+</g>
+</svg>
+</div>
+
+<div class="panel">
+  <div class="card">
+    <div class="stepno" id="stepNo">1-bosqich</div>
+    <div class="stitle" id="stepTitle">…</div>
+    <div class="lab" id="lab1">🎙 Diktor nima qilinishini aytadi:</div>
+    <div class="say" id="say"></div>
+    <div class="lab" id="lab2">📌 Aniq ma’lumotlar:</div>
+    <ul class="det" id="det"></ul>
+  </div>
+  <div class="card" id="taskCard" hidden>
+    <div class="lab" style="margin-top:0">✍ Sizning harakatingiz:</div>
+    <div id="taskBody"></div>
+    <div class="acts">
+      <button class="btn on" id="bCheck">✔ Tekshirish</button>
+      <button class="btn" id="bHint">💡 Yordam (−1 ball)</button>
+      <button class="btn on" id="bGo" style="display:none">Keyingi bosqich ▶</button>
+    </div>
+    <div class="fb" id="fb"></div>
+  </div>
+  <div class="card" id="eqCard">
+    <div class="lab" style="margin-top:0">⚗ Asosiy reaksiya</div>
+    <div class="eq" id="eqBox"></div>
+  </div>
+</div>
+</main>
+
+<footer>
+  <button class="btn" id="bPrev" title="←">◀ Oldingi</button>
+  <button class="btn big on" id="bPlay" title="Probel">▶ Ijro etish</button>
+  <button class="btn" id="bNext" title="→">Keyingi ▶</button>
+  <div class="dots" id="dots"></div>
+  <div class="sp"></div>
+  <label class="small"><input type="checkbox" id="cAuto" checked> avto davom</label>
+  <label class="small">Tezlik <select id="sSpeed"><option value="0.75">0,75×</option><option value="1" selected>1×</option><option value="1.5">1,5×</option><option value="2">2×</option></select></label>
+  <label class="small">Ovoz <select id="sVoice"></select></label>
+</footer>
+</div>
+
+<div class="sig">by Hayitali</div>
+
+<!-- INTRO -->
+<div class="ov show" id="ovIntro">
+  <div class="sheet intro">
+    <div class="bd">
+      <h2>Laboratoriya ishi № 4 — Polivinilatsetatning gidrolizi</h2>
+      <p><b style="color:var(--red);font-weight:400">Dars maqsadi:</b> polivinilatsetatning ishqoriy yoki kislotali muhitda gidrolizini o’tkazish, polivinil spirti olish, malaka va ko’nikma hosil qilish.</p>
+      <h3>Identiv maqsadlar</h3>
+      <ol>
+        <li>Polimeranalogik reaksiyalar haqida tushuncha beradi.</li>
+        <li>Gidroliz jarayonini amalga oshiradi.</li>
+        <li>Gidroksil guruhlar sonini aniqlaydi.</li>
+        <li>Reaksiya mexanizmini yoritadi.</li>
+      </ol>
+      <p class="small" id="voiceInfo">Ovozlar tekshirilmoqda…</p>
+      <p class="small">Klaviatura: <b>Probel</b> — ijro, <b>← →</b> — bosqichlar, <b>F</b> — to’liq ekran, <b>N</b> — nomlar, <b>M</b> — diktor, <b>T</b> — nazariya.</p>
+      <div class="who">
+        <label>Talabaning F.I.Sh<input id="iName" type="text" placeholder="Aliyev Vali" autocomplete="off"></label>
+        <label>Guruh<input id="iGroup" type="text" placeholder="KT-21" autocomplete="off"></label>
+      </div>
+      <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">Usul:
+        <div class="seg" id="introMethod"><button class="btn on" data-m="alk">Ishqoriy</button><button class="btn" data-m="acid">Kislotali</button></div>
+      </div>
+      <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:12px">
+        <button class="btn big on" data-start="prac">✍ Mustaqil bajarish — talaba o’zi bajaradi</button>
+        <button class="btn big" data-start="demo">🎬 Namoyish — diktor ko’rsatadi</button>
+      </div>
+      <p class="small" id="introErr" style="color:var(--red);min-height:1.4em"></p>
+    </div>
+  </div>
+</div>
+
+<!-- REPORT -->
+<div class="ov" id="ovReport">
+  <div class="sheet">
+    <div class="hd">
+      <b style="font-family:var(--title);font-size:30px;font-weight:700">📋 Yakuniy natija</b>
+      <div class="sp"></div>
+      <button class="btn" id="rSpeak">🎙 O’qib berish</button>
+      <button class="btn" id="rPrint">🖨 Chop etish / PDF</button>
+      <button class="btn" id="rAgain">⟲ Qaytadan</button>
+      <button class="btn red" id="rClose">✕ Yopish</button>
+    </div>
+    <div class="bd rep" id="repBody"></div>
+  </div>
+</div>
+
+<!-- THEORY -->
+<div class="ov" id="ovTheory">
+  <div class="sheet">
+    <div class="hd">
+      <div class="seg" id="thTabs">
+        <button class="btn on" data-t="t1">Polimeranalogik reaksiyalar</button>
+        <button class="btn" data-t="t2">Mexanizm</button>
+        <button class="btn" data-t="t3">OH guruhlarni aniqlash</button>
+        <button class="btn" data-t="t4">Reaktiv va jihozlar</button>
+        <button class="btn" data-t="t5">Savollar</button>
+      </div>
+      <div class="sp"></div>
+      <button class="btn" id="thSpeak">🎙 O’qib berish</button>
+      <button class="btn red" id="thClose">✕ Yopish</button>
+    </div>
+    <div class="bd">
+      <section id="t1">
+        <h2>Polimeranalogik reaksiyalar</h2>
+        <p>Polimeranalogik reaksiyalar deb makromolekulaning asosiy zanjiri va polimerlanish darajasi o’zgarmagan holda, uning yon funksional guruhlari kimyoviy o’zgarishga uchraydigan reaksiyalarga aytiladi.</p>
+        <p>Polivinil spirtini vinil spirtini polimerlab olib bo’lmaydi, chunki vinil spirti beqaror bo’lib, darhol asetaldegidga izomerlanadi. Shuning uchun polivinil spirti faqat polimeranalogik yo’l bilan, ya’ni polivinilatsetatning gidrolizi orqali olinadi.</p>
+        <div class="formula">CH<sub>2</sub>=CH–OH &nbsp;⟶&nbsp; CH<sub>3</sub>–CHO &nbsp;&nbsp;<span class="small">(vinil spirti → asetaldegid, keto-enol tautomeriya)</span></div>
+        <h3>Ishqoriy usul (spirtli muhitda, NaOH)</h3>
+        <div class="formula">[–CH<sub>2</sub>–CH(OCOCH<sub>3</sub>)–]<sub>n</sub> + n NaOH ⟶ [–CH<sub>2</sub>–CH(OH)–]<sub>n</sub> + n CH<sub>3</sub>COONa</div>
+        <p>Spirtli muhitda ishqor katalizatorligida asosan alkogoliz (qayta eterifikatsiya) ham boradi:</p>
+        <div class="formula">[–CH<sub>2</sub>–CH(OCOCH<sub>3</sub>)–]<sub>n</sub> + n C<sub>2</sub>H<sub>5</sub>OH ⟶<sup>NaOH</sup> [–CH<sub>2</sub>–CH(OH)–]<sub>n</sub> + n CH<sub>3</sub>COOC<sub>2</sub>H<sub>5</sub></div>
+        <h3>Kislotali usul (H₂SO₄)</h3>
+        <div class="formula">[–CH<sub>2</sub>–CH(OCOCH<sub>3</sub>)–]<sub>n</sub> + n C<sub>2</sub>H<sub>5</sub>OH ⇄<sup>H⁺</sup> [–CH<sub>2</sub>–CH(OH)–]<sub>n</sub> + n CH<sub>3</sub>COOC<sub>2</sub>H<sub>5</sub></div>
+        <p>Ishqoriy gidroliz tez va qaytmas boradi, hosil bo’lgan polivinil spirti spirtda erimagani uchun jel holida ajraladi. Kislotali gidroliz qaytar va sekin boradi, shuning uchun aralashma uch – to’rt soat qaynatiladi.</p>
+        <p>Polimeranalogik reaksiyalar ko’pincha oxirigacha bormaydi: qo’shni guruhlar ta’siri, makromolekula konformatsiyasi va eruvchanlikning o’zgarishi sababli zanjirda ma’lum miqdorda asetat guruhlar qoladi. Shuning uchun gidroliz darajasi aniqlanadi.</p>
+      </section>
+      <section id="t2" hidden>
+        <h2>Gidroliz mexanizmi</h2>
+        <h3>Ishqoriy muhitda (nukleofil birikish – ajralish)</h3>
+        <div class="mech">
+          <div class="card"><div class="n">1</div>Alkoksid yoki gidroksid anioni (C₂H₅O⁻ / OH⁻) asetat guruhining karbonil uglerodiga hujum qiladi.<div class="formula">P–O–C(=O)CH₃ + ⁻OR</div></div>
+          <div class="card"><div class="n">2</div>Tetraedrik oraliq anion hosil bo’ladi.<div class="formula">P–O–C(O⁻)(OR)CH₃</div></div>
+          <div class="card"><div class="n">3</div>Polimer bilan bog’langan O–C bog’i uziladi, polimer alkoksidi ajraladi.<div class="formula">P–O⁻ + CH₃COOR</div></div>
+          <div class="card"><div class="n">4</div>Polimer alkoksidi spirtdan proton oladi, katalizator (⁻OR) qayta tiklanadi.<div class="formula">P–O⁻ + ROH ⟶ P–OH + ⁻OR</div></div>
+        </div>
+        <p>Hosil bo’lgan OH guruhlar qo’shni asetat guruhlarning gidrolizini tezlashtiradi (avtokataliz), shuning uchun zanjirda gidrolizlangan bo’laklar blok holida joylashadi.</p>
+        <h3>Kislotali muhitda</h3>
+        <div class="mech">
+          <div class="card"><div class="n">1</div>H⁺ karbonil kislorodini protonlaydi, uglerodning elektrofilligi oshadi.</div>
+          <div class="card"><div class="n">2</div>Spirt yoki suv molekulasi karbonil uglerodiga birikadi.</div>
+          <div class="card"><div class="n">3</div>Proton ko’chadi, P–OH yaxshi ajraluvchi guruhga aylanadi.</div>
+          <div class="card"><div class="n">4</div>Polivinil spirti zvenosi ajraladi, H⁺ qayta tiklanadi. Barcha bosqichlar qaytar.</div>
+        </div>
+      </section>
+      <section id="t3" hidden>
+        <h2>Gidroksil guruhlar sonini aniqlash</h2>
+        <p><b style="color:var(--red);font-weight:400">Atsetillash usuli.</b> Tortim (m, g) atsetillovchi aralashma (sirka angidridining piridindagi eritmasi) bilan bir soat davomida qizdiriladi. Sirka angidridining ortiqchasi suv bilan sirka kislotasiga aylantiriladi va fenolftalein ishtirokida NaOH eritmasi bilan titrlanadi. Xuddi shu sharoitda nazorat (polimersiz) tajriba o’tkaziladi.</p>
+        <div class="formula">(CH₃CO)₂O + P–OH ⟶ P–OCOCH₃ + CH₃COOH</div>
+        <div class="formula">% OH = (V₀ − V) · N · 17 · 100 / (m · 1000) = (V₀ − V) · N · 1,7 / m</div>
+        <p class="small">V₀ — nazorat tajribaga ketgan NaOH hajmi, ml; V — namunaga ketgan NaOH, ml; N — NaOH normalligi; 17 — OH guruhning ekvivalent massasi. Toza PVS uchun nazariy qiymat: 17/44 · 100 = 38,6 % OH.</p>
+        <div class="calc">
+          <label>Tortim m, g<input id="cm" type="number" step="0.01" value="0.20"></label>
+          <label>V₀ (nazorat), ml<input id="cv0" type="number" step="0.1" value="25.0"></label>
+          <label>V (namuna), ml<input id="cv" type="number" step="0.1" value="16.3"></label>
+          <label>N (NaOH)<input id="cn" type="number" step="0.01" value="0.50"></label>
+        </div>
+        <div class="res" id="calcRes"></div>
+        <p class="small">Gidroliz darajasi x zvenolardagi OH ulushi bo’yicha hisoblanadi: %OH = 17x / (44x + 86(1 − x)) · 100 → x = 86w / (17 + 42w), bunda w = %OH / 100.</p>
+      </section>
+      <section id="t4" hidden>
+        <h2>Reaktivlar va jihozlar</h2>
+        <h3>Reaktivlar</h3>
+        <p>Polivinilatsetat, etil spirti, natriy gidroksidning spirtdagi 20 % li eritmasi (ishqoriy usul) yoki d = 1,84 g/sm³ li sulfat kislotasi (kislotali usul), aseton, uglerod (IV) xlorid.</p>
+        <h3>Jihozlar</h3>
+        <p>250 ml li uch og’izli kolba, teskari sovutgich, tomchilatgich voronka, 100 °C li termometr, suv hammomi, Byuxner voronkasi, Bunzen kolbasi, 2 ta 500 ml li stakan, 250 ml yumaloq kolba, shpatel, soat oynasi, 6 ta probirka.</p>
+        <h3>Ishning bajarilish tartibi</h3>
+        <ol><li>Kerakli moddalarni belgilangan miqdorda o’lchab olish.</li><li>Asbobni yig’ish va germetikligini tekshirish.</li><li>Termostatlash (suv hammomida qizdirish).</li><li>Eritmadan dekantatsiya qilish.</li><li>Cho’kmani filtrlash, yuvish va quritish.</li><li>Olingan polimerning va polivinilatsetatning eruvchanligini aniqlash.</li></ol>
+        <h3>Xavfsizlik</h3>
+        <ul><li>Himoya ko’zoynagi, xalat va qo’lqopda ishlang.</li><li>Sulfat kislotasini spirtga oz-ozdan, sovutib turib qo’shing — aksincha emas.</li><li>Etil spirti va aseton oson alangalanadi: ochiq olovdan foydalanmang, faqat suv hammomi.</li><li>Qaynatish vaqtida teskari sovutgichdagi suv oqimini to’xtatmang.</li></ul>
+      </section>
+      <section id="t5" hidden>
+        <h2>Nazorat savollari</h2>
+        <details><summary>1. Nima uchun polivinil spirtini monomerdan olib bo’lmaydi?</summary>Vinil spirti beqaror bo’lib, darhol asetaldegidga izomerlanadi. Shuning uchun PVS polivinilatsetatning gidrolizi (polimeranalogik reaksiya) bilan olinadi.</details>
+        <details><summary>2. Polimeranalogik reaksiya nima?</summary>Polimerlanish darajasi o’zgarmagan holda yon funksional guruhlarning o’zgarishi. Bu ishda –OCOCH₃ guruhlar –OH guruhlarga almashadi.</details>
+        <details><summary>3. Ishqoriy gidrolizda nima uchun jel hosil bo’ladi?</summary>Hosil bo’lgan polivinil spirti etil spirtida erimaydi va iviqsimon massa holida ajraladi. Sovuq spirt qo’shib shiddat bilan aralashtirilsa, u talqonsimon holga keladi.</details>
+        <details><summary>4. Ishqoriy va kislotali usullarning farqi nimada?</summary>Ishqoriy usul tez (2–3 soat, 30–35 °C) va qaytmas. Kislotali usul qaytar va sekin, 3–4 soat qaynatishni talab qiladi.</details>
+        <details><summary>5. Nima uchun cho’kma neytral muhitgacha yuviladi?</summary>Qoldiq ishqor yoki kislota quritish va saqlash vaqtida polimerning rangi o’zgarishiga va destruksiyasiga olib keladi. Natriy asetat aralashmasi ham yuvib ketkaziladi.</details>
+        <details><summary>6. Gidroliz bo’lganini qanday isbotlaysiz?</summary>Eruvchanlik bo’yicha: PVS suvda eriydi, asetonda erimaydi; PVA esa asetonda eriydi, suvda erimaydi. Miqdoriy jihatdan — OH guruhlar soni bilan.</details>
+      </section>
+    </div>
+  </div>
+</div>
+
+<script>
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const NS='http://www.w3.org/2000/svg';
+function el(tag,a,p){const e=document.createElementNS(NS,tag);for(const k in a)e.setAttribute(k,a[k]);if(p)p.appendChild(e);return e}
+const E={};document.querySelectorAll('[id]').forEach(n=>E[n.id]=n);
+
+/* ---------- static generated graphics ---------- */
+for(let t=0;t<=100;t+=10){const y=488-2.3*t;el('line',{x1:274,x2:t%50?279:282,y1:y,y2:y,stroke:'#1F3A93','stroke-width':1},E.ticks);if(t%50===0)el('text',{x:268,y:y+4,'text-anchor':'end',class:'lbs',style:'font-size:11px'},E.ticks).textContent=t}
+for(let i=0;i<16;i++)el('circle',{cx:362+Math.random()*76,cy:462+Math.random()*12,r:3+Math.random()*2.5,fill:'#F4E7B5',stroke:'#B79F5C','stroke-width':1},E.gran);
+for(let i=0;i<14;i++)el('circle',{cx:225+Math.random()*70,cy:401+Math.random()*6,r:2.5+Math.random()*2,fill:'#F4E7B5',stroke:'#B79F5C','stroke-width':.8},E.wgGran);
+for(let i=0;i<22;i++)el('circle',{cx:72+Math.random()*60,cy:378+Math.random()*28,r:3+Math.random()*2,fill:'#F4E7B5',stroke:'#B79F5C','stroke-width':.8},E.jarGran);
+for(let ml=20;ml<=200;ml+=20){const y=535-ml/200*270;el('line',{x1:520,x2:ml%40?530:536,y1:y,y2:y,stroke:'#1F3A93','stroke-width':1.2},E.cylTicks);if(ml%40===0)el('text',{x:576,y:y+4,class:'lbs',style:'font-size:11px'},E.cylTicks).textContent=ml}
+const PDOTS=[];for(let i=0;i<70;i++){const d=el('circle',{r:1.4+Math.random()*1.6,fill:'#FFFFFF',stroke:'#C9C2AE','stroke-width':.6},E.pow);PDOTS.push({e:d,fx:Math.random()*2-1,fy:Math.random(),ph:Math.random()*6})}
+const PHS=[[1,'#D7263D'],[3,'#F07C24'],[5,'#F2C230'],[7,'#8BC34A'],[9,'#2BA59A'],[11,'#2E6DB4'],[13,'#5B2C83']];
+PHS.forEach(([p,c],i)=>{el('rect',{x:98+i*17,y:160,width:15,height:12,fill:c,stroke:'#1F3A93','stroke-width':.6},E.phScale);el('text',{x:105.5+i*17,y:184,'text-anchor':'middle',class:'lbs',style:'font-size:10px'},E.phScale).textContent=p});
+for(let i=0;i<5;i++)el('circle',{cx:-24+Math.random()*48,cy:-12+Math.random()*8,r:2+Math.random()*2,fill:'#fff',stroke:'#C9C2AE','stroke-width':.6},E.bkPow);
+const TUBES=[];
+const SOLV=['suv','etil spirti','aseton','suv','etil spirti','aseton'];
+const SOLU=[1,0,0,0,1,1];
+for(let i=0;i<6;i++){const cx=175+i*110+(i>2?0:0);const g=el('g',{},E.tubes);
+  const cp=el('clipPath',{id:'ct'+i},g);el('path',{d:`M${cx-14} 172 L${cx-14} 470 A14 14 0 0 0 ${cx+14} 470 L${cx+14} 172 Z`},cp);
+  const inner=el('g',{'clip-path':`url(#ct${i})`},g);
+  const sol=el('rect',{x:cx-16,y:486,width:32,height:0,fill:'#B9D9F1',opacity:.9},inner);
+  const cloud=el('rect',{x:cx-16,y:486,width:32,height:0,fill:'#E6E0CF',opacity:0},inner);
+  const pg=el('g',{},inner);const parts=[];for(let k=0;k<9;k++)parts.push(el('circle',{cx:cx-9+Math.random()*18,cy:474+Math.random()*10,r:2+Math.random()*2,fill:i<3?'#FFFFFF':'#F4E7B5',stroke:i<3?'#C9C2AE':'#B79F5C','stroke-width':.7},pg));
+  el('path',{d:`M${cx-16} 170 L${cx-16} 470 A16 16 0 0 0 ${cx+16} 470 L${cx+16} 170`,fill:'none',class:'ink'},g);
+  el('ellipse',{cx:cx,cy:170,rx:18,ry:4,fill:'none',stroke:'#1F3A93','stroke-width':2},g);
+  const t1=el('text',{x:cx,y:526,'text-anchor':'middle',class:'lbs',style:'font-size:14px'},E.tubeTxt);
+  const t2=el('text',{x:cx,y:576,'text-anchor':'middle',class:'lbl'},E.tubeTxt);t2.textContent='+ '+SOLV[i];
+  TUBES.push({g,cx,sol,cloud,pg,parts,res:t1});}
+
+/* ---------- state ---------- */
+const BASE={scene:'balance',temp:22,bath:22,level:0,liq:'#DCE3E8',liqOp:0,granOp:0,gelOp:0,powOp:0,powSettle:0,
+ funnel:0,funLiq:'#F7F3E0',cock:0,heater:0,stir:0,cond:0,hours:0,aFlask:0,aStir:0,aFun:0,aCond:0,aTherm:0,
+ bal:0,glassOp:0,cyl:0,pour:0,b3a:'NaOH 20%',b3b:'(spirtda)',b3hl:0,
+ vac:0,cake:0,susp:0,suspCol:'#E8E2CF',filt:0,ph:12,pourF:0,bkr:1,squirt:0,drip:0,washLbl:'Aseton',
+ oven:22,dishOp:0,masses:[],theo:'',eta:'',tubePoly:0,tubeSolv:0,tubeRes:0,tshake:0};
+let S={...BASE,masses:[]};
+function resetState(){S={...BASE,masses:[]};drops.length=0;bubbles.length=0;bathB.length=0}
+
+/* ---------- audio ---------- */
+let AC=null,sfxOn=true,voiceOn=true,speed=1;
+const ac=()=>AC||(AC=new (window.AudioContext||window.webkitAudioContext)());
+let NB=null;function nbuf(){if(NB)return NB;const a=ac();NB=a.createBuffer(1,a.sampleRate*2,a.sampleRate);const d=NB.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=Math.random()*2-1;return NB}
+function tone(f1,f2,d,v=.15,type='sine',delay=0){if(!sfxOn)return;const a=ac(),t0=a.currentTime+delay,o=a.createOscillator(),g=a.createGain();o.type=type;o.frequency.setValueAtTime(f1,t0);o.frequency.exponentialRampToValueAtTime(f2,t0+d);g.gain.setValueAtTime(.0001,t0);g.gain.exponentialRampToValueAtTime(v,t0+.01);g.gain.exponentialRampToValueAtTime(.0001,t0+d);o.connect(g).connect(a.destination);o.start(t0);o.stop(t0+d+.05)}
+function noise(d,v,f,q=1,type='bandpass'){if(!sfxOn)return;const a=ac(),s=a.createBufferSource();s.buffer=nbuf();s.loop=true;const fl=a.createBiquadFilter();fl.type=type;fl.frequency.value=f;fl.Q.value=q;const g=a.createGain(),t0=a.currentTime;g.gain.setValueAtTime(.0001,t0);g.gain.linearRampToValueAtTime(v,t0+.08);g.gain.setValueAtTime(v,t0+Math.max(.1,d-.2));g.gain.linearRampToValueAtTime(.0001,t0+d);s.connect(fl).connect(g).connect(a.destination);s.start(t0);s.stop(t0+d+.05)}
+const SFX={
+ drip:()=>tone(1500,420,.09,.16),
+ bubble:()=>tone(260+Math.random()*400,700+Math.random()*700,.05+Math.random()*.04,.05),
+ pour:(d=1.5)=>noise(d/speed,.11,950,.7),
+ click:()=>tone(1100,800,.035,.07,'square'),
+ tick:()=>tone(2400,2300,.025,.04,'square'),
+ clink:()=>{tone(2700,2600,.18,.07,'triangle');tone(4000,3900,.14,.04,'triangle',.02)},
+ ding:()=>{tone(880,880,.7,.1,'triangle');tone(1318,1318,.7,.07,'triangle',.09)},
+ squirt:()=>noise(.6,.09,2600,1.3),
+ water:()=>noise(1.4,.07,520,.6),
+ buzz:()=>{tone(230,150,.28,.11,'square');tone(180,120,.3,.08,'square',.12)}};
+const LOOPS={};
+function startLoop(k){const a=ac(),g=a.createGain();g.gain.value=0;g.connect(a.destination);const nodes=[];let vol=.05;
+ const nz=(f,q,type)=>{const s=a.createBufferSource();s.buffer=nbuf();s.loop=true;const fl=a.createBiquadFilter();fl.type=type||'bandpass';fl.frequency.value=f;fl.Q.value=q;s.connect(fl).connect(g);s.start();nodes.push(s)};
+ if(k==='stir'){nz(170,2.5);const l=a.createOscillator(),lg=a.createGain();l.frequency.value=3;lg.gain.value=.02;l.connect(lg).connect(g.gain);l.start();nodes.push(l);vol=.05}
+ if(k==='vac'){const o=a.createOscillator();o.type='sawtooth';o.frequency.value=58;const f=a.createBiquadFilter();f.type='lowpass';f.frequency.value=260;o.connect(f).connect(g);o.start();nodes.push(o);nz(500,.5,'lowpass');vol=.045}
+ if(k==='boil'){nz(300,.7,'lowpass');vol=.06}
+ if(k==='cond'){nz(900,.8);vol=.012}
+ g.gain.linearRampToValueAtTime(vol,a.currentTime+.4);
+ return{stop(){const t=a.currentTime;g.gain.cancelScheduledValues(t);g.gain.setValueAtTime(g.gain.value,t);g.gain.linearRampToValueAtTime(0,t+.35);nodes.forEach(n=>n.stop(t+.4))}}}
+function loops(){const on=sfxOn&&AC;const want={stir:on&&S.scene==='setup'&&S.stir>0,vac:on&&S.scene==='filter'&&S.vac>0,boil:on&&S.scene==='setup'&&S.temp>=76.5,cond:on&&S.scene==='setup'&&S.cond>0};
+ for(const k in want){if(want[k]&&!LOOPS[k])LOOPS[k]=startLoop(k);else if(!want[k]&&LOOPS[k]){LOOPS[k].stop();LOOPS[k]=null}}}
+
+/* ---------- speech ---------- */
+let voices=[],voice=null,userVoice=null;
+function rankVoice(v){if(/^uz/i.test(v.lang)||/uzbek|o.zbek/i.test(v.name))return 0;if(/^tr/i.test(v.lang))return 1;if(/^kk|^ky|^az/i.test(v.lang))return 2;if(/^en/i.test(v.lang))return 3;return 9}
+function loadVoices(){if(!('speechSynthesis' in window)){E.voiceInfo.textContent='Bu brauzer ovozli o’qishni qo’llamaydi — matn ekranda ko’rsatiladi.';return}
+ voices=speechSynthesis.getVoices().slice().sort((a,b)=>rankVoice(a)-rankVoice(b));
+ E.sVoice.innerHTML='';voices.forEach((v,i)=>{const o=document.createElement('option');o.value=i;o.textContent=`${v.name.replace(/Microsoft |Online \(Natural\) - /g,'')} (${v.lang})`;E.sVoice.appendChild(o)});
+ voice=userVoice&&voices.includes(userVoice)?userVoice:(voices[0]||null);if(voice)E.sVoice.value=voices.indexOf(voice);
+ const uz=voices.find(v=>rankVoice(v)===0);
+ E.voiceInfo.innerHTML=uz?`🎙 Diktor ovozi: <b>${uz.name}</b> — o’zbek tilida.`:`⚠ Bu kompyuterda o’zbekcha ovoz topilmadi. Eng yaxshi natija uchun faylni <b>Microsoft Edge</b> brauzerida oching (Madina / Sardor ovozlari). Hozircha ${voice?voice.name:'standart'} ovozi ishlatiladi, matn ekranda ko’rinadi.`}
+if('speechSynthesis' in window){loadVoices();speechSynthesis.onvoiceschanged=loadVoices}
+E.sVoice.onchange=()=>{userVoice=voice=voices[+E.sVoice.value]};
+let wordSpans=[];
+function setSay(text){E.say.innerHTML='';wordSpans=[];let idx=0;text.split(/(\s+)/).forEach(tok=>{if(/^\s+$/.test(tok)||!tok){E.say.appendChild(document.createTextNode(tok))}else{const s=document.createElement('span');s.className='w';s.textContent=tok;s.dataset.s=idx;E.say.appendChild(s);wordSpans.push(s)}idx+=tok.length})}
+function hlAt(ci){let c=null;for(const s of wordSpans){if(+s.dataset.s<=ci)c=s;else break}wordSpans.forEach(s=>s.classList.toggle('cur',s===c))}
+function speak(text,t,hl=true){return new Promise(res=>{
+ const me={dead:false};if(speak.cur)speak.cur.dead=true;speak.cur=me;const dead=()=>t.dead||me.dead;const H=hl?hlAt:()=>{};
+ const words=text.split(/\s+/).length;
+ if(!voiceOn||!('speechSynthesis' in window)||!voices.length){const ms=Math.max(2500,words*330)/speed;let k=0;const iv=setInterval(()=>{if(dead()){clearInterval(iv);return res()}k+=200;H(text.length*k/ms);if(k>=ms){clearInterval(iv);H(-1);res()}},200);return}
+ speechSynthesis.cancel();const parts=[];const re=/[^.!?]+[.!?]*/g;let m;while((m=re.exec(text))){if(m[0].trim())parts.push({s:m.index+(m[0].length-m[0].trimStart().length),txt:m[0].trim()})}
+ let i=0;const next=()=>{if(dead()||i>=parts.length){H(-1);return res()}const p=parts[i];const u=new SpeechSynthesisUtterance(p.txt);if(voice){u.voice=voice;u.lang=voice.lang}else u.lang='uz-UZ';u.rate=.95;
+  let done=false;const fin=()=>{if(done)return;done=true;clearTimeout(guard);i++;next()};const guard=setTimeout(fin,p.txt.length*140+4000);
+  u.onboundary=e=>H(p.s+(e.charIndex||0));u.onstart=()=>H(p.s);u.onend=fin;u.onerror=fin;speechSynthesis.speak(u)};next()})}
+
+/* ---------- animation helpers ---------- */
+class Cancel extends Error{}
+function hex(h){h=h.replace('#','');return[0,2,4].map(i=>parseInt(h.substr(i,2),16))}
+function mix(a,b,t){const pa=hex(a),pb=hex(b);return'#'+pa.map((v,i)=>Math.round(v+(pb[i]-v)*t).toString(16).padStart(2,'0')).join('')}
+function ctx(t){const chk=()=>{if(t.dead)throw new Cancel()};return{
+ W:ms=>{chk();if(t.fast)return Promise.resolve();return new Promise((r,j)=>setTimeout(()=>t.dead?j(new Cancel()):r(),ms/speed))},
+ T:(o,ms=1000)=>{chk();if(t.fast){Object.assign(S,o);return Promise.resolve()}const from={};for(const k in o)from[k]=S[k];const t0=performance.now(),dur=ms/speed;
+  return new Promise((r,j)=>{(function f(now){if(t.dead)return j(new Cancel());const p=Math.min(1,(now-t0)/dur),e=p<.5?2*p*p:1-Math.pow(-2*p+2,2)/2;
+   for(const k in o){const a=from[k],b=o[k];S[k]=(typeof b==='string'&&b[0]==='#')?mix(a,b,e):(typeof b==='number'?a+(b-a)*e:b)}p<1?requestAnimationFrame(f):r()})(t0)})},
+ set:o=>{chk();Object.assign(S,o)},
+ sfx:(n,...a)=>{if(!t.fast&&!t.dead&&SFX[n])SFX[n](...a)},
+ drop:col=>{if(!t.fast)drops.push({x0:324,y0:302,x1:362,y1:476-S.level*150,t:0,col,el:null})}}}
+async function drip(c,n,gap,dF,dL,col){for(let k=0;k<n;k++){c.drop(col);c.sfx('drip');S.funnel=Math.max(0,S.funnel-dF);S.level+=dL;await c.W(gap)}}
+
+/* ---------- step library ---------- */
+const stWeigh=(pva,b3a,b3b,txt)=>async c=>{c.set({scene:'balance',b3a,b3b});await c.W(500);c.sfx('clink');await c.T({glassOp:1},600);
+ for(let k=1;k<=10;k++){await c.T({bal:pva*k/10},230);c.sfx('tick')}await c.W(500);
+ await c.T({pour:1},900);c.sfx('pour',2.6);await c.T({cyl:127},2200);await c.T({pour:0},800);await c.W(300);c.sfx('ding');await c.T({b3hl:1},500)};
+const stAssemble=async c=>{c.set({scene:'setup'});await c.W(400);
+ for(const k of ['aFlask','aStir','aFun','aCond','aTherm']){c.sfx('clink');await c.T({[k]:1},800);await c.W(250)}
+ c.sfx('water');c.set({cond:1});await c.W(1600)};
+const stDissolveT=bt=>async c=>{c.set({scene:'setup'});c.sfx('pour',1);await c.T({granOp:1,level:.05},700);c.sfx('pour',2);await c.T({level:.5,liqOp:.8,liq:'#DCE3E8'},1800);
+ c.sfx('click');c.set({stir:1});await c.W(700);c.sfx('click');c.set({heater:1});await c.T({bath:bt,temp:bt-3,granOp:0,liq:'#F3EBC4',liqOp:.7},6500);await c.W(600)};
+const stGel=h=>async c=>{await Promise.all([c.T({hours:h},8500),(async()=>{await c.T({liq:'#ECEAE0',liqOp:.9},2500);await c.T({gelOp:1},5000)})()]);c.sfx('ding')};
+const stBoil=min=>async c=>{c.set({stir:1});c.sfx('click');c.set({heater:1});await c.T({bath:90,temp:78},5000);await c.T({hours:S.hours+min/60},6500);await c.W(300)};
+const stBoilA=h=>async c=>{c.sfx('click');c.set({heater:1});await c.T({bath:90,temp:78},5000);await Promise.all([c.T({hours:h},9000),c.T({powOp:.9,liq:'#EEECE3',liqOp:.85},9000)]);c.sfx('ding')};
+const stCool=to=>async c=>{c.sfx('click');c.set({heater:0});await c.T({bath:to,temp:to},5000);await c.W(500)};
+const stFilter=(ph0,phs)=>async c=>{c.set({scene:'filter',heater:0,stir:0,ph:ph0,washLbl:'Aseton',suspCol:'#E8E2CF'});await c.W(600);
+ c.sfx('click');c.set({vac:1});await c.W(900);await c.T({pourF:1},1200);c.sfx('pour',3);c.set({drip:1});
+ await c.T({susp:1,bkr:0},1600);await c.T({susp:.35,cake:.8,filt:.3},2600);await c.T({pourF:0},900);await c.T({susp:0,filt:.42},1500);
+ for(const ph of phs){c.set({squirt:1});c.sfx('squirt');await c.T({susp:.4},600);c.set({squirt:0});await c.T({susp:0,filt:S.filt+.08},1700);c.sfx('click');await c.T({ph},900);await c.W(300)}
+ c.set({drip:0});c.sfx('ding')};
+const stPurify=async c=>{c.set({scene:'filter',drip:0,washLbl:'Issiq suv 60–70 °C'});await c.W(600);
+ c.set({squirt:1});c.sfx('squirt');await c.T({cake:.15,susp:.9,suspCol:'#DCEAF3'},2600);c.set({squirt:0});await c.W(500);
+ c.set({washLbl:'Aseton ×5–7'});c.set({squirt:1});c.sfx('squirt');await c.T({susp:1,suspCol:'#EFEBDD'},1400);c.set({squirt:0});
+ await c.T({cake:.7,susp:.3},2600);c.set({drip:1});await c.T({susp:0,filt:.85},2200);c.set({drip:0});c.sfx('ding')};
+const stDry=(ms,theo,eta)=>async c=>{c.set({scene:'oven',masses:[],theo:'',eta:''});c.sfx('clink');await c.T({dishOp:1},700);c.sfx('click');await c.T({oven:55},3000);
+ for(const m of ms){await c.W(1300);c.sfx('tick');S.masses=[...S.masses,m]}await c.W(500);c.set({theo});await c.W(700);c.set({eta});c.sfx('ding')};
+const stTubes=async c=>{c.set({scene:'tubes'});c.sfx('clink');await c.T({tubePoly:1},800);c.sfx('pour',2);await c.T({tubeSolv:1},2000);c.set({tshake:1});await c.W(1600);await c.T({tubeRes:1},3000);c.set({tshake:0});c.sfx('ding')};
+
+const M={
+alk:{eq:`[–CH₂–CH(OCOCH₃)–]ₙ + n NaOH <b>⟶</b> [–CH₂–CH(OH)–]ₙ + n CH₃COONa<br><span class="small">spirtli muhitda, 30–35 °C, 2–3 soat · NaOH : PVA = 1 : 5</span>`,
+steps:[
+{t:'Reaktivlarni o’lchab olish',act:stWeigh(15,'NaOH 20%','(spirtda)'),
+ say:'Birinchi bosqich. Analitik tarozida o’n besh gramm polivinilatsetat tortib olamiz. So’ngra o’lchov silindrida yuz gramm etil spirtini o’lchaymiz, bu taxminan bir yuz yigirma yetti millilitr. Natriy gidroksidning spirtdagi yigirma foizli eritmasini tayyorlab qo’yamiz.',
+ det:['Polivinilatsetat (PVA): <b>15,00 g</b> — soat oynasida tortiladi','Etil spirti: <b>100 g ≈ 127 ml</b> (ρ = 0,789 g/ml)','NaOH miqdori: PVA : NaOH = 5 : 1 → 15 / 5 = <b>3 g NaOH</b>','3 g NaOH → 20 % li spirtli eritma: <b>15 g</b>','Jihoz: tarozi, soat oynasi, shpatel, o’lchov silindri']},
+{t:'Asbobni yig’ish',act:stAssemble,
+ say:'Ikkinchi bosqich. Asbobni yig’amiz. Ikki yuz ellik millilitrli uch og’izli kolbani shtativga mahkamlaymiz. O’rta og’ziga aralashtirgich, chap og’ziga tomchilatgich voronka, o’ng og’ziga teskari sovutgich o’rnatamiz. Kolbani suv hammomiga tushirib, termometr qo’yamiz. Sovutgichga pastdan sovuq suv beramiz.',
+ det:['250 ml uch og’izli kolba — shtativda qisqich bilan','O’rta og’iz — mexanik aralashtirgich (zatvor orqali)','Chap og’iz — tomchilatgich voronka','O’ng og’iz — teskari sovutgich','Suv sovutgichga <b>pastdan kiradi, yuqoridan chiqadi</b>','Suv hammomida 100 °C li termometr']},
+{t:'PVA ni spirtda eritish',act:stDissolveT(68),
+ say:'Uchinchi bosqich. Kolbaga o’n besh gramm polivinilatsetat va yuz gramm etil spirtini solamiz. Aralashtirgichni yoqamiz. Suv hammomini oltmish – yetmish darajagacha qizdiramiz va polimer to’liq erib, tiniq eritma hosil bo’lguncha kutamiz.',
+ det:['Kolbaga: <b>15 g PVA + 100 g C₂H₅OH</b>','Suv hammomi: <b>60–70 °C</b>','Aralashtirish — to’xtovsiz, bir tekis','Spirt qaynab ketmasin (t<sub>qayn</sub> = 78 °C)','Natija: tiniq, biroz qovushqoq eritma']},
+{t:'Eritmani sovutish',act:stCool(33),
+ say:'To’rtinchi bosqich. Plitani o’chiramiz. Eritmani aralashtirib turgan holda o’ttiz – o’ttiz besh darajagacha sovutamiz. Ishqor faqat sovugan eritmaga qo’shiladi.',
+ det:['Plita o’chiriladi','Harorat: <b>30–35 °C</b> gacha','Aralashtirish davom etadi','Issiq eritmada reaksiya juda tez ketib, bo’lak-bo’lak jel hosil bo’ladi']},
+{t:'Ishqor eritmasini qo’shish',act:async c=>{c.set({funLiq:'#F7F3E0'});c.sfx('pour',1.4);await c.T({funnel:.8},1400);await c.W(400);c.sfx('click');await c.T({cock:1},400);await drip(c,14,420,.8/14,.06/14,'#F7F3E0');await c.T({cock:0},300);c.sfx('click');await c.W(400)},
+ say:'Beshinchi bosqich. Tomchilatgich voronkaga natriy gidroksidning spirtdagi yigirma foizli eritmasidan o’n besh gramm quyamiz. Kranni ochib, eritmani kuchli aralashtirib turgan holda tomchilab qo’shamiz.',
+ det:['Voronkaga: <b>20 % li NaOH spirtli eritmasi — 15 g</b> (3 g NaOH)','Qo’shish tezligi: sekin, 1–2 tomchi/s','Aralashtirish kuchli bo’lishi shart','Ishqor teri va ko’zga zararli — ko’zoynak, qo’lqop']},
+{t:'Gidroliz: jel hosil bo’lishi',act:stGel(2.5),
+ say:'Oltinchi bosqich. Gidroliz boshlanadi. Asetat guruhlari gidroksil guruhlariga almashadi. Hosil bo’layotgan polivinil spirti spirtda erimaydi, shuning uchun iviqsimon jel holida cho’kmaga tushadi. Reaksiya ikki – uch soat davom etadi.',
+ det:['Davomiyligi: <b>2–3 soat</b>','Harorat ~30–35 °C, aralashtirish davom etadi','Eritma xiralashadi → iviqsimon (jel) massa','Sabab: PVS etil spirtida erimaydi','Qo’shimcha mahsulot: CH₃COONa, CH₃COOC₂H₅']},
+{t:'Sovuq spirt qo’shish',act:async c=>{c.set({funLiq:'#E4ECF2'});c.sfx('pour',1.2);await c.T({funnel:.6},1200);c.sfx('click');c.set({stir:2});await c.T({cock:1},300);await Promise.all([drip(c,10,280,.06,.01,'#E4ECF2'),c.T({gelOp:0,powOp:1,temp:28,bath:30},2800)]);await c.T({cock:0},300);await c.W(900)},
+ say:'Yettinchi bosqich. Aralashtirgich tezligini oshiramiz va iviqsimon mahsulotni shiddat bilan aralashtiramiz. Unga o’ttiz millilitr sovutilgan etil spirtini qo’shamiz. Jel maydalanib, talqonsimon oq mahsulot hosil bo’ladi.',
+ det:['Sovutilgan C₂H₅OH: <b>30 ml</b>','Aralashtirish — shiddatli','Jel parchalanadi → oq talqonsimon cho’kma']},
+{t:'Qaynatish',act:stBoil(25),
+ say:'Sakkizinchi bosqich. Plitani yoqib, aralashmani qaynaguncha qizdiramiz va gidroliz reaksiyasini yigirma – o’ttiz daqiqa qaynatib davom ettiramiz. Spirt bug’lari teskari sovutgichda kondensatlanib, kolbaga qaytib tushadi.',
+ det:['Aralashma qaynaguncha qizdiriladi (~78 °C)','Qaynatish: <b>20–30 min</b>','Teskari sovutgich spirt yo’qolishining oldini oladi','Sovutgichdagi suv oqimini to’xtatmang!']},
+{t:'Filtrlash va yuvish',act:stFilter(12,[10,8.5,7]),
+ say:'To’qqizinchi bosqich. Vakuum nasosni yoqamiz. Olingan polimerni Byuxner voronkasida filtrlaymiz. Cho’kmani oz-ozdan qo’shilgan aseton yoki etil spirti bilan muhit neytral bo’lguncha yuvamiz. Neytrallikni indikator qog’ozi bilan tekshiramiz.',
+ det:['Byuxner voronkasi + Bunzen kolbasi + vakuum nasos','Filtr qog’ozi voronka tubiga zich yotqizilib namlanadi','Yuvish: aseton yoki C₂H₅OH bilan, oz-ozdan, bir necha marta','Nazorat: indikator qog’ozi — <b>pH ≈ 7</b> bo’lguncha']},
+{t:'Tozalash (qayta cho’ktirish)',act:stPurify,
+ say:'O’ninchi bosqich. Polimerni tozalash uchun uni oltmish – yetmish darajali issiq distillangan suv bilan ishlaymiz, polivinil spirti suvda eriydi. So’ngra hajmiga nisbatan besh – yetti hissa aseton yoki etil spirti qo’shib, polimerni qayta cho’ktiramiz va filtrlaymiz.',
+ det:['Issiq distillangan suv: <b>60–70 °C</b> — PVS eriydi','Cho’ktiruvchi: aseton yoki C₂H₅OH, <b>5–7 hajm</b>','Toza PVS oq kukun holida cho’kadi','Qayta filtrlanadi']},
+{t:'Quritish',act:stDry([8.95,7.62,7.18,7.16,7.16],'Nazariy unum: 15 · 44 / 86 = 7,67 g','Amaliy unum: η = 7,16 / 7,67 = 93 %'),
+ say:'O’n birinchi bosqich. Cho’kmani quritgich shkafda ellik – oltmish darajada, doimiy og’irlikka kelguncha quritamiz. Har gal tortib boramiz, ikki ketma-ket tortish bir xil chiqsa, quritish tugaydi. So’ngra unumni hisoblaymiz.',
+ det:['Quritish shkafi: <b>50–60 °C</b>','Doimiy massagacha (farq ≤ 0,01 g)','Nazariy unum: 15 g × 44 / 86 = <b>7,67 g PVS</b>','44 va 86 — PVS va PVA zvenolarining molyar massalari','η = m<sub>amaliy</sub> / 7,67 × 100 %']},
+{t:'Eruvchanlikni aniqlash',act:stTubes,
+ say:'O’n ikkinchi bosqich. Olti probirka olamiz. Uchtasiga olingan polivinil spirtini, uchtasiga dastlabki polivinilatsetatni solamiz. Ularga suv, etil spirti va aseton qo’shib, chayqatamiz. Polivinil spirti suvda eriydi, polivinilatsetat esa spirt va asetonda eriydi. Eruvchanlikning o’zgarishi gidroliz muvaffaqiyatli o’tganini ko’rsatadi.',
+ det:['6 ta probirka: ~0,1 g polimer + 5 ml erituvchi','PVS: suvda <b>eriydi</b> (iliqda), spirt va asetonda erimaydi','PVA: suvda erimaydi, spirt va asetonda <b>eriydi</b>','Xulosa: –OCOCH₃ guruhlar –OH ga almashdi']}
+]},
+acid:{eq:`[–CH₂–CH(OCOCH₃)–]ₙ + n C₂H₅OH <b>⇄</b><sup>H₂SO₄</sup> [–CH₂–CH(OH)–]ₙ + n CH₃COOC₂H₅<br><span class="small">qaynatish ~78 °C, 3–4 soat · reaksiya qaytar</span>`,
+steps:[
+{t:'Reaktivlarni o’lchab olish',act:stWeigh(10,'H₂SO₄','d = 1,84'),
+ say:'Birinchi bosqich. Analitik tarozida o’n gramm polivinilatsetat tortib olamiz. Yuz gramm etil spirtini o’lchaymiz. Uch yarim millilitr konsentrlangan sulfat kislotasini o’n besh millilitr etil spirtiga oz-ozdan, sovutib turib qo’shamiz.',
+ det:['Polivinilatsetat: <b>10,00 g</b>','Etil spirti: <b>100 g ≈ 127 ml</b>','H₂SO₄ (d = 1,84 g/sm³): <b>3,5 ml</b> = 6,44 g','Kislota <b>15 ml</b> etil spirtida eritiladi','Kislota spirtga qo’shiladi — aksincha emas!']},
+{t:'Asbobni yig’ish',act:stAssemble,
+ say:'Ikkinchi bosqich. Ikki yuz ellik millilitrli uch og’izli kolbaga tomchilatgich voronka, teskari sovutgich, aralashtirgich va termometrni birga yig’amiz. Kolbani suv hammomiga o’rnatib, sovutgichga suv beramiz.',
+ det:['250 ml uch og’izli kolba','Tomchilatgich voronka, teskari sovutgich, aralashtirgich','100 °C li termometr','Sovutgichga suv pastdan beriladi']},
+{t:'PVA ni spirtda eritish',act:stDissolveT(68),
+ say:'Uchinchi bosqich. Kolbaga o’n gramm polivinilatsetat va yuz gramm etil spirtini solamiz. Aralashtirib turib, oltmish – yetmish darajada polimer to’liq eriguncha qizdiramiz.',
+ det:['Kolbaga: <b>10 g PVA + 100 g C₂H₅OH</b>','Harorat: <b>60–70 °C</b>','Natija: tiniq eritma']},
+{t:'Eritmani sovutish',act:stCool(30),
+ say:'To’rtinchi bosqich. Polimer erib bo’lgach, plitani o’chiramiz va eritmani o’ttiz darajagacha sovutamiz.',
+ det:['Harorat: <b>30 °C</b> gacha','Aralashtirish davom etadi']},
+{t:'Kislota eritmasini qo’shish',act:async c=>{c.set({funLiq:'#F4F1E2'});c.sfx('pour',1.4);await c.T({funnel:.8},1400);await c.W(400);c.sfx('click');await c.T({cock:1},400);await drip(c,12,450,.8/12,.08/12,'#F4F1E2');await c.T({cock:0},300);c.sfx('click');await c.W(400)},
+ say:'Beshinchi bosqich. Tomchilatgich voronkaga o’n besh millilitr etil spirtida eritilgan uch yarim millilitr sulfat kislotasini quyamiz va uni aralashtirib turgan holda eritmaga tomchilab qo’shamiz.',
+ det:['Voronkada: <b>3,5 ml H₂SO₄ + 15 ml C₂H₅OH</b>','Tomchilab, aralashtirib turib qo’shiladi','Kislota bilan ehtiyot bo’ling — ko’zoynak, qo’lqop']},
+{t:'Qaynatish (3–4 soat)',act:stBoilA(3.5),
+ say:'Oltinchi bosqich. Plitani yoqamiz. Eritmani uch – to’rt soat davomida aralashtirgan holda qaynatamiz. Kislotali gidroliz sekin va qaytar boradi. Hosil bo’layotgan polivinil spirti mayda cho’kma holida ajrala boshlaydi.',
+ det:['Qaynatish: <b>3–4 soat</b>, ~78 °C','Aralashtirish to’xtovsiz','Teskari sovutgich — spirt yo’qolmaydi','Polimer mayda kukun holida cho’kadi']},
+{t:'Aralashmani sovutish',act:async c=>{c.sfx('click');c.set({heater:0});await c.T({bath:25,temp:25},4500);c.sfx('click');c.set({stir:0});await c.T({powSettle:1},2500)},
+ say:'Yettinchi bosqich. Reaksiya tugagach, plitani o’chiramiz va kolbadagi aralashmani sovutamiz. Aralashtirgichni to’xtatamiz, cho’kkan polimer kolba tubiga yig’iladi.',
+ det:['Xona haroratigacha sovutiladi','Aralashtirgich o’chiriladi','Cho’kma tubga yig’iladi — dekantatsiya qilish mumkin']},
+{t:'Filtrlash va yuvish',act:stFilter(1.5,[3,5,7]),
+ say:'Sakkizinchi bosqich. Cho’kkan polimerni Byuxner voronkasida filtrlaymiz va ishqoriy usuldagidek, aseton yoki etil spirti bilan muhit neytral bo’lguncha yuvamiz.',
+ det:['Byuxner voronkasi + Bunzen kolbasi + vakuum','Yuvish: aseton yoki C₂H₅OH bilan','Indikator qog’ozi: kislotali → <b>pH ≈ 7</b>']},
+{t:'Tozalash (qayta cho’ktirish)',act:stPurify,
+ say:'To’qqizinchi bosqich. Polimerni oltmish – yetmish darajali issiq distillangan suvda eritamiz va besh – yetti hissa aseton yoki etil spirti bilan qayta cho’ktiramiz. Keyin yana filtrlaymiz.',
+ det:['Issiq suv: <b>60–70 °C</b>','Cho’ktiruvchi: <b>5–7 hajm</b> aseton yoki C₂H₅OH']},
+{t:'Quritish',act:stDry([6.10,5.02,4.78,4.75,4.75],'Nazariy unum: 10 · 44 / 86 = 5,12 g','Amaliy unum: η = 4,75 / 5,12 = 93 %'),
+ say:'O’ninchi bosqich. Polimerni quritgich shkafda ellik – oltmish darajada doimiy og’irlikka kelguncha quritamiz va unumni hisoblaymiz.',
+ det:['Quritish: <b>50–60 °C</b>, doimiy massagacha','Nazariy unum: 10 g × 44 / 86 = <b>5,12 g PVS</b>','η = m<sub>amaliy</sub> / 5,12 × 100 %']},
+{t:'Eruvchanlikni aniqlash',act:stTubes,
+ say:'O’n birinchi bosqich. Olti probirkada olingan polivinil spirti va dastlabki polivinilatsetatning suv, etil spirti va asetonda eruvchanligini solishtiramiz. Polivinil spirti suvda eriydi, polivinilatsetat esa organik erituvchilarda eriydi.',
+ det:['PVS: suvda <b>eriydi</b>, spirt va asetonda erimaydi','PVA: suvda erimaydi, spirt va asetonda <b>eriydi</b>','Xulosa: gidroliz amalga oshdi']}
+]}};
+
+/* ---------- render ---------- */
+const drops=[],bubbles=[],bathB=[],fdrops=[];
+let last=performance.now(),phase=0,dashOff=0,lastBub=0,fanA=0,lastFD=0;
+const SC=['setup','balance','filter','oven','tubes'];
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+function phColor(p){for(let i=0;i<PHS.length-1;i++){const[a,ca]=PHS[i],[b,cb]=PHS[i+1];if(p<=b)return mix(ca,cb,clamp((p-a)/(b-a),0,1))}return PHS[PHS.length-1][1]}
+function A(e,k,v){e.setAttribute(k,v)}
+function frame(now){const dt=Math.min(.05,(now-last)/1000);last=now;
+ for(const k of SC){const g=E['sc-'+k],on=S.scene===k;if(g._on!==on){g._on=on;g.style.opacity=on?1:0;g.style.pointerEvents=on?'auto':'none'}}
+ if(S.scene==='setup'){
+  A(E.gFlask,'opacity',S.aFlask);A(E.gStir,'opacity',S.aStir);A(E.gFun,'opacity',S.aFun);A(E.gCond,'opacity',S.aCond);A(E.hoses,'opacity',S.aCond);A(E.gTherm,'opacity',S.aTherm);
+  const my=488-2.3*S.bath;A(E.merc,'y',my);A(E.merc,'height',500-my);
+  E.rBath.textContent=`Suv hammomi: ${Math.round(S.bath)} °C`;E.rMix.textContent=`Aralashma: ${Math.round(S.temp)} °C`;
+  let h=Math.floor(S.hours),mi=Math.round((S.hours-h)*60);if(mi===60){h++;mi=0}E.rTime.textContent=`Vaqt: ${h} soat ${String(mi).padStart(2,'0')} min`;
+  E.rStir.textContent='Aralashtirgich: '+(S.stir>1?'tez':S.stir?'yoqilgan':'o’chiq');
+  A(E.lamp,'fill',S.heater?'#E74C3C':'#bbb');A(E.coil,'stroke',S.heater?'#E8623A':'#888');
+  const ly=476-S.level*150;A(E.liq,'y',ly);A(E.liq,'fill',S.liq);A(E.liq,'opacity',S.liqOp);A(E.liqTop,'y1',ly);A(E.liqTop,'y2',ly);A(E.liqTop,'opacity',S.liqOp>0?.8:0);
+  A(E.gran,'opacity',S.granOp);A(E.gel,'opacity',S.gelOp);A(E.pow,'opacity',S.powOp);
+  phase+=dt*(S.stir>1?20:S.stir?9:0);const w=5+42*Math.abs(Math.cos(phase));A(E.paddle,'x',400-w/2);A(E.paddle,'width',w);
+  if(S.powOp>0){const top=Math.max(ly+6,330);PDOTS.forEach((d,i)=>{const yS=top+d.fy*(472-top),yB=462+d.fy*12,y=yS+(yB-yS)*S.powSettle;const hw=Math.sqrt(Math.max(0,74*74-(y-400)*(y-400)))*.85;const x=400+d.fx*hw+(S.stir?Math.sin(phase*.5+d.ph)*4:0);A(d.e,'cx',x.toFixed(1));A(d.e,'cy',(y+(S.stir?Math.cos(phase*.4+d.ph)*2:0)).toFixed(1))})}
+  A(E.cock,'transform',`rotate(${S.cock*90} 322 222)`);A(E.funLiq,'y',210-S.funnel*85);A(E.funLiq,'fill',S.funLiq);
+  if(S.cond){dashOff-=dt*45}A(E.hIn,'stroke-dashoffset',dashOff);A(E.hOut,'stroke-dashoffset',dashOff);A(E.hIn,'opacity',S.cond);A(E.hOut,'opacity',S.cond);A(E.jacket,'opacity',.15+.5*S.cond);
+  const boil=S.temp>=76.5&&S.liqOp>0;
+  A(E.rdrop,'opacity',boil?1:0);if(boil)A(E.rdrop,'cy',100+((now/900)%1)*175);
+  if(boil&&Math.random()<dt*45)bubbles.push({x:350+Math.random()*100,y:472,r:1.5+Math.random()*3,v:60+Math.random()*70});
+  if(boil&&sfxOn&&AC&&now-lastBub>120&&Math.random()<.35){SFX.bubble();lastBub=now}
+  if(S.bath>=85&&Math.random()<dt*14)bathB.push({x:268+Math.random()*264,y:514,r:1.5+Math.random()*2.5,v:40+Math.random()*40});
+  let s='';for(let i=bubbles.length-1;i>=0;i--){const b=bubbles[i];b.y-=b.v*dt;b.x+=Math.sin(b.y/9)*.3;if(b.y<ly+2)bubbles.splice(i,1);else s+=`<circle cx="${b.x.toFixed(1)}" cy="${b.y.toFixed(1)}" r="${b.r.toFixed(1)}" fill="none" stroke="#6F8FB8" stroke-width="1.2"/>`}E.fBub.innerHTML=s;
+  s='';for(let i=bathB.length-1;i>=0;i--){const b=bathB[i];b.y-=b.v*dt;if(b.y<395)bathB.splice(i,1);else s+=`<circle cx="${b.x.toFixed(1)}" cy="${b.y.toFixed(1)}" r="${b.r.toFixed(1)}" fill="none" stroke="#4F86B8" stroke-width="1"/>`}E.bBub.innerHTML=s;
+  A(E.vap,'opacity',clamp((S.bath-50)/35,0,1)*.75);
+  s='';for(let i=drops.length-1;i>=0;i--){const d=drops[i];d.t+=dt/.42;if(d.t>=1){drops.splice(i,1);continue}const e=d.t*d.t;s+=`<ellipse cx="${(d.x0+(d.x1-d.x0)*d.t).toFixed(1)}" cy="${(d.y0+(d.y1-d.y0)*e).toFixed(1)}" rx="2.6" ry="3.4" fill="${d.col}" stroke="#1F3A93" stroke-width=".8"/>`}E.gDrops.innerHTML=s;
+ }
+ else if(S.scene==='balance'){
+  E.balTxt.textContent=S.bal.toFixed(2)+' g';A(E.wglass,'opacity',S.glassOp);
+  const hh=S.cyl/200*270;A(E.cylLiq,'y',535-hh);A(E.cylLiq,'height',hh);
+  const p=S.pour,x=680+(640-680)*p,y=530+(190-530)*p,a=-115*p;A(E.bottle,'transform',`translate(${x} ${y}) rotate(${a})`);
+  A(E.cylStream,'opacity',p>.92?1:0);A(E.cylStream,'y2',535-hh);
+  E.b3a.textContent=S.b3a;E.b3b.textContent=S.b3b;A(E.b3ring,'opacity',S.b3hl);
+ }
+ else if(S.scene==='filter'){
+  const ch=S.cake*45,ct=202-ch;A(E.cake,'y',ct);A(E.cake,'height',ch);const sh=S.susp*48;A(E.susp,'y',ct-sh);A(E.susp,'height',sh);A(E.susp,'fill',S.suspCol);
+  const fh=S.filt*110;A(E.filt,'y',518-fh);A(E.filt,'height',fh);
+  const p=S.pourF,x=170+(297-170)*p,y=520+(70-520)*p,a=100*p;A(E.beaker,'transform',`translate(${x} ${y}) rotate(${a})`);
+  A(E.bkLiq,'height',58*S.bkr);A(E.bkLiq,'y',-2-58*S.bkr);A(E.bkPow,'opacity',S.bkr>.05?1:0);
+  A(E.pStream,'opacity',p>.95&&S.bkr>0?1:0);A(E.pStream,'d',`M382 122 Q392 150 396 ${(ct-sh).toFixed(0)}`);
+  A(E.squirt,'opacity',S.squirt);E.washTxt.textContent=S.washLbl;A(E.squirt,'d',`M560 108 Q520 112 498 ${(ct-sh-4).toFixed(0)}`);
+  A(E.strip,'fill',phColor(S.ph));E.phTxt.textContent='pH '+(Math.round(S.ph*2)/2).toString().replace('.',',');E.phNote.textContent=S.ph>7.4?'ishqoriy':S.ph<6.6?'kislotali':'neytral ✓';
+  if(S.vac)fanA+=dt*600;A(E.fan,'transform',`rotate(${fanA%360} 790 485)`);A(E.vacLamp,'fill',S.vac?'#4CAF50':'#bbb');
+  if(S.vac&&S.drip&&now-lastFD>260/speed){lastFD=now;fdrops.push({y:352,v:0})}
+  let s='';for(let i=fdrops.length-1;i>=0;i--){const d=fdrops[i];d.v+=900*dt;d.y+=d.v*dt;if(d.y>518-fh){fdrops.splice(i,1);continue}s+=`<ellipse cx="450" cy="${d.y.toFixed(1)}" rx="2.4" ry="3.2" fill="#DDE7C9" stroke="#1F3A93" stroke-width=".7"/>`}E.fDrops.innerHTML=s;
+ }
+ else if(S.scene==='oven'){
+  E.ovTxt.textContent=Math.round(S.oven)+'°';A(E.heat,'opacity',clamp((S.oven-35)/20,0,1));A(E.dish,'opacity',S.dishOp);
+  for(let i=0;i<5;i++)E['m'+i].textContent=S.masses[i]!=null?`${i+1}-tortish: ${S.masses[i].toFixed(2).replace('.',',')} g`:'';
+  const n=S.masses.length;E.mRes.textContent=n>=5&&S.masses[n-1]===S.masses[n-2]?'✓ Massa doimiy — quritish tugadi':'';
+  E.theo.textContent=S.theo;E.eta.textContent=S.eta;
+ }
+ else if(S.scene==='tubes'){
+  TUBES.forEach((tb,i)=>{const hh=S.tubeSolv*150;A(tb.sol,'y',486-hh);A(tb.sol,'height',hh);A(tb.cloud,'y',486-hh);A(tb.cloud,'height',hh);
+   const sol=SOLU[i];A(tb.pg,'opacity',S.tubePoly*(sol?1-S.tubeRes:1));A(tb.cloud,'opacity',sol?0:S.tubeRes*.8);
+   if(sol)A(tb.sol,'fill',mix('#B9D9F1','#D3ECF5',S.tubeRes));
+   A(tb.g,'transform',S.tshake?`rotate(${Math.sin(now/70+i)*3} ${tb.cx} 470)`:'');
+   tb.res.textContent=S.tubeRes>.6?(sol?'eriydi ✓':'erimaydi ✗'):'';A(tb.res,'style',`font-size:15px;fill:${sol?'#2E7D32':'#C0392B'}`)});
+ }
+ loops();requestAnimationFrame(frame)}
+requestAnimationFrame(frame);
+
+/* ---------- practice tasks ---------- */
+const fx=n=>String(n).replace('.',',');
+const near=(v,t,tol)=>!isNaN(v)&&Math.abs(v-t)<=tol+1e-9;
+const num=(id,label,unit)=>`<label class="f">${label}<span><input id="${id}" type="text" inputmode="decimal" autocomplete="off"> ${unit}</span></label>`;
+const pick=(id,label,opts)=>`<div class="f">${label}<div class="pick" data-id="${id}">${opts.map((o,i)=>`<button type="button" class="btn opt" data-v="${i}">${o}</button>`).join('')}</div></div>`;
+const rng=(id,label,min,max,step,val,unit)=>`<label class="f">${label}<span class="rg"><input id="${id}" type="range" min="${min}" max="${max}" step="${step}" value="${val}"><b id="${id}o">${fx(val)}</b> ${unit}</span></label>`;
+const chk=(id,label)=>`<label class="f ck"><input id="${id}" type="checkbox"> ${label}</label>`;
+const V=id=>parseFloat(String(document.getElementById(id).value).replace(',','.'));
+const P=id=>{const b=document.querySelector(`.pick[data-id="${id}"] .opt.on`);return b?+b.dataset.v:-1};
+const C=id=>document.getElementById(id).checked;
+const actBtns=list=>`<div class="f"><div class="pick">${list.map(([a,t])=>`<button type="button" class="btn" data-act="${a}">${t}</button>`).join('')}</div></div>`;
+
+const tWeigh=(pva,acid)=>({
+ say:`Topshiriq. Tarozi tugmalari yordamida ${pva===15?'o’n besh':'o’n'} gramm polivinilatsetat torting. Keyin yuz gramm etil spirti necha millilitr bo’lishini zichlik orqali hisoblang va silindrga shuncha spirt o’lchang. ${acid?'So’ngra uch yarim millilitr sulfat kislotasining massasini hisoblang va kislota bilan spirtni qanday aralashtirishni tanlang.':'So’ngra kerakli natriy gidroksid va uning yigirma foizli eritmasi massasini hisoblang.'} Tayyor bo’lgach, Tekshirish tugmasini bosing.`,
+ guide:[`Tarozida <b>${pva},00 g</b> PVA torting (±0,05 g)`,'Spirt hajmi: <b>V = m / ρ</b>, ρ = 0,789 g/ml',acid?'H₂SO₄ massasi: <b>m = V · d</b>, d = 1,84 g/sm³':'NaOH : PVA = <b>1 : 5</b> (massa bo’yicha)',acid?'Kislota va spirtni aralashtirish tartibini tanlang':'20 % li eritma: m(eritma) = m(NaOH) / 0,20'],
+ hint:acid?'V = 100 / 0,789 ≈ 127 ml; m(H₂SO₄) = 3,5 × 1,84; kislota spirtga qo’shiladi.':`V = 100 / 0,789 ≈ 127 ml; m(NaOH) = ${pva} / 5; m(eritma) = m(NaOH) / 0,2.`,
+ ok:'Miqdorlar to’g’ri o’lchandi va hisoblandi.',
+ init(c){c.set({scene:'balance',glassOp:1,b3a:acid?'H₂SO₄':'NaOH 20%',b3b:acid?'d = 1,84':'(spirtda)'})},
+ html:()=>`<div class="f">Tarozi ko’rsatkichi: <b id="balShow" style="font-size:22px;color:var(--red);font-weight:400">0,00 g</b><div class="pick">${[['−1',-1],['−0,1',-.1],['+0,1',.1],['+1',1],['Tara 0',0]].map(([t,v])=>`<button type="button" class="btn" data-bal="${v}">${t}</button>`).join('')}</div></div>`
+  +rng('tCyl','Silindrga o’lchangan spirt',0,200,1,0,'ml')
+  +(acid?num('tAc','H₂SO₄ massasi (3,5 ml)','g')+pick('tOrd','Aralashtirish tartibi',['Kislotani spirtga oz-ozdan qo’shish','Spirtni kislotaga quyish']):num('tNa','Kerakli NaOH massasi','g')+num('tSol','20 % li eritma massasi','g')),
+ live:{tCyl:v=>{S.cyl=v}},
+ bal(d){S.bal=d===0?0:Math.max(0,Math.round((S.bal+d)*100)/100);$('#balShow').textContent=fx(S.bal.toFixed(2))+' g';SFX.tick()},
+ check(){const b=S.bal,v=V('tCyl');
+  if(!near(b,pva,.05))return{err:b<pva?`PVA kam tortildi: ${fx(b.toFixed(2))} g. Kerakli massa — ${pva},00 g.`:`PVA ko’p tortildi: ${fx(b.toFixed(2))} g. Ortiqchasini oling — ${pva},00 g kerak.`};
+  if(!near(v,127,2))return{err:near(v,100,3)?'Xato: 100 g spirt 100 ml emas! Spirtning zichligi 0,789 g/ml, shuning uchun V = 100 / 0,789.':`Spirt hajmi noto’g’ri: ${v} ml. V = m / ρ formulasidan foydalaning.`};
+  if(acid){const a=V('tAc');if(isNaN(a))return{err:'H₂SO₄ massasini kiriting.'};
+   if(!near(a,6.44,.05))return{err:near(a,1.9,.1)?'Siz hajmni zichlikka bo’ldingiz. Massa = hajm × zichlik.':`H₂SO₄ massasi noto’g’ri: ${fx(a)} g. m = V · d = 3,5 · 1,84.`};
+   const o=P('tOrd');if(o<0)return{err:'Aralashtirish tartibini tanlang.'};
+   if(o===1)return{err:'Xavfli xato! Spirt konsentrlangan kislotaga quyilsa, kuchli issiqlik ajralib, aralashma sachraydi. Doim kislota spirtga oz-ozdan qo’shiladi.'};
+   return{ok:1,vals:{'PVA':fx(b.toFixed(2))+' g','Etil spirti':v+' ml','H₂SO₄':fx(a)+' g'}}}
+  const n=V('tNa'),so=V('tSol');if(isNaN(n))return{err:'NaOH massasini kiriting.'};
+  if(!near(n,pva/5,.05))return{err:near(n,pva*5,1)?`Siz ${pva} × 5 ni hisobladingiz. Nisbat 1 : 5 — NaOH PVA dan 5 marta kam olinadi.`:`NaOH massasi noto’g’ri: ${fx(n)} g. m(NaOH) = m(PVA) / 5.`};
+  if(isNaN(so))return{err:'Eritma massasini kiriting.'};
+  if(!near(so,pva,.2))return{err:near(so,.6,.05)?'Siz 3 × 0,2 ni hisobladingiz. Eritma massasi: m(eritma) = m(NaOH) / 0,20.':`Eritma massasi noto’g’ri: ${fx(so)} g. m(eritma) = m(NaOH) / ω.`};
+  return{ok:1,vals:{'PVA':fx(b.toFixed(2))+' g','Etil spirti':v+' ml','NaOH':fx(n)+' g','20 % eritma':fx(so)+' g'}}},
+ after:async c=>{await c.T({cyl:127,bal:pva},400);c.sfx('ding');await c.T({b3hl:1},500)}});
+
+const DEV=['Aralashtirgich','Tomchilatgich voronka','Teskari sovutgich'];
+const tAssemble={sc:'setup',
+ say:'Topshiriq. Uch og’izli kolbaning har bir og’ziga qaysi asbob o’rnatilishini tanlang. So’ngra sovutgichga suv qaysi tomondan berilishini belgilang.',
+ guide:['Kolbaning <b>o’rta</b>, <b>chap</b> va <b>o’ng</b> og’izlari bor','Har bir asbob faqat bitta og’izga o’rnatiladi','Aralashtirgich kolba markazida aylanishi kerak','Sovutgich ko’ylagi suvga to’liq to’lishi kerak'],
+ hint:'O’rtaga — aralashtirgich; yon og’izlarga — voronka va sovutgich; suv pastdan beriladi.',
+ ok:'Suv pastdan kirib, sovutgich ko’ylagini to’liq to’ldiradi.',
+ html:()=>pick('nC','O’rta og’iz',DEV)+pick('nL','Chap og’iz',DEV)+pick('nR','O’ng og’iz',DEV)+pick('wIn','Sovutgichga suv beriladi',['pastki shtutserdan','yuqori shtutserdan']),
+ check(){const a=P('nC'),b=P('nL'),r=P('nR'),w=P('wIn');if(a<0||b<0||r<0)return{err:'Uchala og’iz uchun asbob tanlang.'};
+  if(a===b||a===r||b===r)return{err:'Bitta asbob ikki og’izga o’rnatilmaydi. Har bir og’izga boshqa asbob tanlang.'};
+  if(a!==0)return{err:`${DEV[a]} o’rta og’izga o’rnatilmaydi. O’rtaga aralashtirgich qo’yiladi — u kolba markazida aylanib, aralashmani bir tekis aralashtiradi.`};
+  if(w<0)return{err:'Suv qaysi tomondan berilishini tanlang.'};
+  if(w===1)return{err:'Suv yuqoridan berilsa, sovutgich ko’ylagi to’lmaydi va bug’lar yaxshi sovumaydi. Suv pastdan kirib, yuqoridan chiqadi.'};
+  return{ok:1,vals:{'O’rta':DEV[a],'Chap':DEV[b],'O’ng':DEV[r],'Suv':'pastdan'}}},
+ after:stAssemble};
+
+const tDissolve=pva=>({sc:'setup',
+ say:`Topshiriq. Kolbaga ${pva===15?'o’n besh':'o’n'} gramm polivinilatsetat va yuz gramm spirt solinadi. Aralashtirgichni yoqing va suv hammomi haroratini sozlang. Polimer tez erishi kerak, lekin spirt qaynab ketmasligi lozim.`,
+ guide:['Aralashtirgichni yoqing','Suv hammomi haroratini tanlang (termometrni kuzating)','Etil spirtining qaynash harorati — <b>78 °C</b>'],
+ hint:'60 dan 70 °C gacha bo’lgan istalgan harorat to’g’ri, masalan 65 °C.',
+ ok:'Bu haroratda polimer tez eriydi, spirt esa qaynamaydi.',
+ html:()=>chk('cSt','Aralashtirgichni yoqish')+rng('rT','Suv hammomi harorati',20,100,1,22,'°C'),
+ live:{rT:v=>{S.bath=v}},
+ check(){const t=V('rT');if(!C('cSt'))return{err:'Avval aralashtirgichni yoqing — aks holda polimer donachalari kolba tubiga yopishib, bo’lak-bo’lak bo’lib qoladi.'};
+  if(t>=78)return{err:`${t} °C — juda yuqori! 78 °C da etil spirti qaynaydi va bug’lanib ketadi.`};
+  if(t>70)return{err:`${t} °C — spirtning qaynashiga juda yaqin, bug’lanish kuchli. Haroratni pasaytiring.`};
+  if(t<60)return{err:`${t} °C — harorat past, polivinilatsetat juda sekin eriydi. Haroratni oshiring.`};
+  return{ok:1,p:t,vals:{'Aralashtirish':'yoqilgan','Harorat':t+' °C'}}},
+ replay:t=>stDissolveT(t)});
+
+const tCool=(lo,hi,acid)=>({sc:'setup',
+ say:`Topshiriq. Eritmani ${acid?'kislota':'ishqor'} qo’shishga tayyorlang. Plitani o’chiring va eritma qaysi haroratgacha sovutilishini tanlang.`,
+ guide:['Plitani o’chiring','Aralashtirish to’xtatilmaydi','Sovutish haroratini tanlang'],
+ hint:`${lo}–${hi} °C oralig’ini tanlang.`,
+ ok:`Endi ${acid?'kislotani':'ishqorni'} xavfsiz qo’shish mumkin.`,
+ html:()=>chk('cOff','Plitani o’chirish')+rng('rC','Sovutish harorati',10,65,1,65,'°C'),
+ live:{rC:v=>{S.bath=v;S.temp=v}},
+ check(){const t=V('rC');if(!C('cOff'))return{err:'Plita yoqilgan holda eritma sovumaydi. Avval plitani o’chiring.'};
+  if(t>hi)return{err:`${t} °C — eritma hali issiq. Issiq eritmaga reagent qo’shilsa, reaksiya juda tez ketib, bo’lak-bo’lak jel hosil bo’ladi.`};
+  if(t<lo)return{err:`${t} °C — juda sovuq. Eritmaning qovushqoqligi oshib, aralashtirish qiyinlashadi.`};
+  return{ok:1,p:t,vals:{'Plita':'o’chirildi','Harorat':t+' °C'}}},
+ replay:t=>stCool(t)});
+
+const tAdd=acid=>({sc:'setup',
+ say:acid?'Topshiriq. Tomchilatgich voronkaga kislota eritmasini quying. Voronkaga nima quyilishini va uni eritmaga qanday qo’shish kerakligini tanlang.':'Topshiriq. Tomchilatgich voronkaga natriy gidroksidning yigirma foizli spirtli eritmasini quying. Birinchi bosqichda hisoblagan massani kiriting va eritmani qanday qo’shishni tanlang.',
+ guide:acid?['Voronkaga quyiladigan aralashmani tanlang','Qo’shish usulini tanlang']:['1-bosqichda hisoblangan eritma massasini kiriting','Qo’shish usulini tanlang'],
+ hint:acid?'3,5 ml H₂SO₄ + 15 ml spirt; tomchilab, kuchli aralashtirib.':'15 g eritma; tomchilab, kuchli aralashtirib.',
+ ok:'Tomchilab qo’shish reaksiyani bir tekis boshqaradi.',
+ html:()=>(acid?pick('aV','Voronkaga quyiladi',['3,5 ml toza H₂SO₄','3,5 ml H₂SO₄ + 15 ml spirt','15 ml H₂SO₄']):num('aM','Voronkaga quyiladigan eritma','g'))+pick('aW','Qo’shish usuli',['Hammasini birdaniga','Tomchilab, kuchli aralashtirib','Aralashtirmasdan, tomchilab']),
+ check(){if(acid){const v=P('aV');if(v<0)return{err:'Voronkaga nima quyilishini tanlang.'};
+   if(v===0)return{err:'Konsentrlangan kislota to’g’ridan-to’g’ri qo’shilmaydi — u avval 15 ml spirtda eritiladi.'};
+   if(v===2)return{err:'15 ml kislota juda ko’p! Ko’rsatma bo’yicha 3,5 ml H₂SO₄ olinadi.'}}
+  else{const m=V('aM');if(isNaN(m))return{err:'Eritma massasini kiriting.'};if(!near(m,15,.2))return{err:`${fx(m)} g noto’g’ri. 3 g NaOH uchun 20 % li eritma: 3 / 0,20.`}}
+  const w=P('aW');if(w<0)return{err:'Qo’shish usulini tanlang.'};
+  if(w===0)return{err:'Birdaniga quyilsa, bir joyda ortiqcha reagent to’planadi va mahalliy jel bo’laklari hosil bo’ladi.'};
+  if(w===2)return{err:'Aralashtirilmasa, reagent bir joyda to’planib, gidroliz notekis boradi.'};
+  return{ok:1,vals:acid?{'Voronkada':'3,5 ml H₂SO₄ + 15 ml spirt','Usul':'tomchilab, aralashtirib'}:{'Eritma':'15 g','Usul':'tomchilab, aralashtirib'}}}});
+
+const tGel={sc:'setup',
+ say:'Topshiriq. Gidroliz reaksiyasi qancha davom etishini tanlang. Shuningdek, kolbada nima uchun iviqsimon jel hosil bo’lishini tushuntiring.',
+ guide:['Reaksiya vaqtini tanlang','Jel hosil bo’lish sababini tanlang'],
+ hint:'Ko’rsatma: 2–3 soat. Hosil bo’lgan polimerning eruvchanligini o’ylang.',
+ ok:'Polivinil spirti spirtda erimagani uchun jel holida ajraladi.',
+ html:()=>rng('rH','Reaksiya vaqti',0.5,5,0.5,0.5,'soat')+pick('gW','Nima uchun jel hosil bo’ladi?',['Ishqor polimerni parchalaydi','Hosil bo’lgan PVS spirtda erimaydi','Harorat pasaygani uchun']),
+ check(){const h=V('rH'),g=P('gW');
+  if(h<2)return{err:`${fx(h)} soat kam — gidroliz to’liq bormaydi, zanjirda ko’p asetat guruhlar qoladi.`};
+  if(h>3)return{err:`${fx(h)} soat ortiqcha — reaksiya 2–3 soatda tugaydi, vaqt behuda sarflanadi.`};
+  if(g<0)return{err:'Jel hosil bo’lish sababini tanlang.'};
+  if(g===0)return{err:'Yo’q, ishqor polimer zanjirini parchalamaydi — u faqat yon asetat guruhlarini OH ga almashtiradi.'};
+  if(g===2)return{err:'Yo’q, harorat sababi emas. Hosil bo’lgan polivinil spirti etil spirtida erimaydi va ajralib chiqadi.'};
+  return{ok:1,p:h,vals:{'Vaqt':fx(h)+' soat','Sabab':'PVS spirtda erimaydi'}}},
+ replay:h=>stGel(h)};
+
+const tColdEt={sc:'setup',
+ say:'Topshiriq. Iviqsimon massani maydalash uchun spirt qo’shiladi. Spirt miqdorini, uning haroratini va aralashtirish tezligini tanlang.',
+ guide:['Qo’shiladigan spirt hajmini kiriting','Spirt haroratini tanlang','Aralashtirish tezligini tanlang'],
+ hint:'30 ml sovutilgan spirt, shiddatli aralashtirish.',
+ ok:'Sovuq spirt jelni qattiqlashtiradi, shiddatli aralashtirish uni talqonsimon holga keltiradi.',
+ html:()=>num('eV','Etil spirti hajmi','ml')+pick('eT','Spirt',['Issiq','Sovutilgan'])+pick('eS','Aralashtirish',['Sekin','Shiddatli']),
+ check(){const v=V('eV'),t=P('eT'),s=P('eS');if(isNaN(v))return{err:'Spirt hajmini kiriting.'};
+  if(!near(v,30,2))return{err:`${v} ml noto’g’ri. Ko’rsatmada berilgan miqdorni tekshiring.`};
+  if(t!==1)return{err:t<0?'Spirt haroratini tanlang.':'Issiq spirtda jel yumshab, bir-biriga yopishadi. Sovutilgan spirt jelni qattiqlashtiradi.'};
+  if(s!==1)return{err:s<0?'Aralashtirish tezligini tanlang.':'Sekin aralashtirilsa, jel maydalanmaydi. Talqonsimon mahsulot uchun shiddatli aralashtirish kerak.'};
+  return{ok:1,vals:{'Spirt':v+' ml, sovutilgan','Aralashtirish':'shiddatli'}}}};
+
+const BOILW='Xavfli! Sovutgichda suv bo’lmasa, spirt bug’lari kolbadan chiqib ketadi — yong’in xavfi bor. Avval suvni tekshiring.';
+const tBoil={sc:'setup',
+ say:'Topshiriq. Aralashmani qaynatishdan oldin sovutgichni tekshiring, plitani yoqing va qaynatish vaqtini tanlang.',
+ guide:['Sovutgichdagi suv oqimini tekshiring','Plitani yoqing','Qaynatish vaqtini tanlang'],
+ hint:'Suv bo’lsin, vaqt 20–30 min.',
+ ok:'Teskari sovutgich spirt bug’larini kolbaga qaytaradi.',
+ html:()=>chk('bW','Sovutgichga suv berilyapti')+chk('bH','Plitani yoqish')+rng('bM','Qaynatish vaqti',0,60,5,0,'min'),
+ check(){if(!C('bW'))return{err:BOILW};if(!C('bH'))return{err:'Qaynatish uchun plitani yoqing.'};
+  const m=V('bM');if(m<20)return{err:`${m} min kam — gidroliz oxirigacha yetmaydi.`};if(m>30)return{err:`${m} min ortiqcha. Qaynatishni qisqartiring.`};
+  return{ok:1,p:m,vals:{'Sovutgich':'suv bor','Qaynatish':m+' min'}}},
+ replay:m=>stBoil(m)};
+const tBoilA={sc:'setup',
+ say:'Topshiriq. Kislotali gidroliz uchun aralashmani qaynatish kerak. Sovutgichni tekshiring, plitani yoqing va qaynatish vaqtini tanlang.',
+ guide:['Sovutgichdagi suv oqimini tekshiring','Plitani yoqing','Kislotali gidroliz sekin va qaytar boradi'],
+ hint:'Suv bo’lsin, vaqt 3–4 soat.',
+ ok:'Kislota katalizatorligida asetat guruhlar asta-sekin OH ga almashadi.',
+ html:()=>chk('bW','Sovutgichga suv berilyapti')+chk('bH','Plitani yoqish')+rng('bT','Qaynatish vaqti',0.5,6,0.5,0.5,'soat'),
+ check(){if(!C('bW'))return{err:BOILW};if(!C('bH'))return{err:'Qaynatish uchun plitani yoqing.'};
+  const h=V('bT');if(h<3)return{err:`${fx(h)} soat kam — kislotali gidroliz sekin boradi.`};if(h>4)return{err:`${fx(h)} soat ortiqcha — vaqtni qisqartiring.`};
+  return{ok:1,p:h,vals:{'Sovutgich':'suv bor','Qaynatish':fx(h)+' soat'}}},
+ replay:h=>stBoilA(h)};
+const tSettle={sc:'setup',
+ say:'Topshiriq. Reaksiya tugadi. Cho’kmani ajratib olishga tayyorlash uchun qaysi amallarni bajarish kerak? Keraklilarini belgilang va tekshiring.',
+ guide:['Kerakli amallarni belgilang','Ortiqcha amal ham xato hisoblanadi'],
+ hint:'Plitani o’chiring va aralashtirgichni to’xtating.',
+ ok:'Cho’kma kolba tubiga yig’iladi, endi uni filtrlash mumkin.',
+ html:()=>chk('sH','Plitani o’chirib, aralashmani sovutish')+chk('sS','Aralashtirgichni to’xtatish')+chk('sW','Kolbaga suv qo’shish'),
+ check(){if(!C('sH'))return{err:'Issiq aralashmani filtrlash xavfli — spirt bug’lanadi. Avval plitani o’chirib sovuting.'};
+  if(C('sW'))return{err:'Suv qo’shish kerak emas: suv PVS ni qisman eritadi va cho’kma yo’qotiladi.'};
+  if(!C('sS'))return{err:'Aralashtirgich ishlab tursa, cho’kma tubga cho’kmaydi.'};
+  return{ok:1,vals:{'Amallar':'plita o’chirildi, aralashtirish to’xtatildi'}}}};
+
+const tFilter=acid=>{const st={pour:0,w:0,busy:0},seq=acid?[3,5,7]:[10,8.5,7];return{
+ say:'Topshiriq. Filtrlash uchun to’g’ri asbobni tanlang. Vakuum nasosni yoqing, suspenziyani Byuxner voronkasiga quying va cho’kmani aseton bilan muhit neytral bo’lguncha yuving. Indikator qog’ozini kuzatib boring.',
+ guide:['Filtrlash asbobini tanlang','Tartib: vakuum → quyish → yuvish','Har yuvishdan keyin indikator qog’ozini kuzating','pH ≈ 7 bo’lganda “Tekshirish” ni bosing'],
+ hint:'Avval vakuum, keyin quyish; pH 7 bo’lguncha bir necha marta yuving.',
+ ok:'Muhit neytral — qoldiq reagentlar yuvib tashlandi.',
+ init(c){st.pour=0;st.w=0;st.busy=0;c.set({scene:'filter',heater:0,stir:0,ph:acid?1.5:12,washLbl:'Aseton',suspCol:'#E8E2CF'})},
+ html:()=>pick('fA','Filtrlash asbobi',['Oddiy voronka + filtr qog’ozi','Byuxner voronkasi + Bunzen kolbasi + vakuum'])+actBtns([['vac','⚡ Vakuumni yoqish'],['pour','⤵ Suspenziyani quyish'],['wash','💧 Aseton bilan yuvish']])+'<div class="small" id="fInfo">Yuvishlar soni: 0</div>',
+ acts:{
+  vac:async c=>{if(S.vac)return;c.sfx('click');c.set({vac:1})},
+  pour:async(c,ER)=>{if(P('fA')!==1)return ER(P('fA')<0?'Avval filtrlash asbobini tanlang.':'Oddiy voronkada jelsimon polimer juda sekin filtrlanadi. Byuxner voronkasi va vakuum kerak.');
+   if(!S.vac)return ER('Avval vakuum nasosni yoqing — vakuumsiz filtrlash juda sekin boradi va cho’kma qurimaydi.');
+   if(st.pour)return;st.pour=1;await c.T({pourF:1},1000);c.sfx('pour',3);c.set({drip:1});await c.T({susp:1,bkr:0},1400);await c.T({susp:.35,cake:.8,filt:.3},2200);await c.T({pourF:0},800);await c.T({susp:0,filt:.42},1200);c.set({drip:0})},
+  wash:async(c,ER)=>{if(!st.pour)return ER('Avval suspenziyani voronkaga quying.');
+   st.w++;c.set({squirt:1,drip:1});c.sfx('squirt');await c.T({susp:.4},500);c.set({squirt:0});await c.T({susp:0,filt:Math.min(.8,S.filt+.07)},1300);await c.T({ph:seq[Math.min(st.w-1,seq.length-1)]},700);c.set({drip:0});
+   $('#fInfo').textContent=`Yuvishlar soni: ${st.w} · pH ${fx(S.ph)}`}},
+ check(){if(P('fA')<0)return{err:'Filtrlash asbobini tanlang.'};if(P('fA')===0)return{err:'Oddiy voronkada jelsimon polimer juda sekin filtrlanadi. Byuxner voronkasi va vakuum ishlatiladi.'};
+  if(!S.vac)return{err:'Vakuum nasos yoqilmagan.'};if(!st.pour)return{err:'Suspenziya hali voronkaga quyilmadi.'};
+  if(Math.abs(S.ph-7)>.4)return{err:`Muhit hali ${S.ph>7?'ishqoriy':'kislotali'}: pH ${fx(S.ph)}. Qoldiq ${S.ph>7?'ishqor':'kislota'} polimerni sarg’aytiradi va destruksiyaga olib keladi. Yana yuving.`};
+  return{ok:1,vals:{'Asbob':'Byuxner + vakuum','Yuvishlar':st.w+' marta','Oxirgi pH':'7'}}},
+ after:async c=>{c.sfx('ding')}}};
+
+const tPurify={sc:'filter',
+ say:'Topshiriq. Polimerni tozalash uchun uni qaysi erituvchida eritish va nima bilan qayta cho’ktirish kerakligini tanlang.',
+ guide:['PVS qutbli –OH guruhlarga ega','Cho’ktiruvchi PVS ni eritmasligi kerak','Cho’ktiruvchi hajmini tanlang'],
+ hint:'Issiq suvda eritiladi, 5–7 hajm aseton bilan cho’ktiriladi.',
+ ok:'PVS issiq suvda eriydi va asetonda cho’kadi — aralashmalar eritmada qoladi.',
+ html:()=>pick('pS','Eritish uchun',['Sovuq suv','Issiq distillangan suv (60–70 °C)','Aseton'])+pick('pP','Cho’ktiruvchi',['Aseton yoki etil spirti','Distillangan suv'])+pick('pV','Cho’ktiruvchi hajmi',['1 hajm','5–7 hajm','20 hajm']),
+ check(){const s=P('pS'),p=P('pP'),v=P('pV');if(s<0||p<0||v<0)return{err:'Uchala savolga javob tanlang.'};
+  if(s===0)return{err:'PVS sovuq suvda faqat bo’kadi, deyarli erimaydi. Issiq suv kerak.'};
+  if(s===2)return{err:'PVS asetonda erimaydi — aseton cho’ktiruvchi sifatida ishlatiladi.'};
+  if(p===1)return{err:'Suv PVS ni eritadi, u cho’ktiruvchi bo’la olmaydi.'};
+  if(v===0)return{err:'1 hajm kam — polimer to’liq cho’kmaydi.'};if(v===2)return{err:'20 hajm ortiqcha — erituvchi behuda sarflanadi.'};
+  return{ok:1,vals:{'Eritish':'issiq suv 60–70 °C','Cho’ktirish':'aseton, 5–7 hajm'}}}};
+
+const tDry=(ms,pva)=>{const st={on:0,k:0,done:0},theo=pva*44/86;return{
+ say:'Topshiriq. Quritish shkafi haroratini sozlang va shkafni yoqing. Keyin namunani vaqti-vaqti bilan torting va massa doimiy bo’lganda quritishni tugating. Oxirida nazariy va amaliy unumni hisoblang.',
+ guide:['Shkaf haroratini tanlang va yoqing','“Tortish” ni bir necha marta bosing','Ikki ketma-ket tortish teng bo’lsa — “Quritish tugadi”','Nazariy unum: m = m(PVA) · 44 / 86','η = m(amaliy) / m(nazariy) · 100 %'],
+ hint:`50–60 °C; massa ikki marta bir xil chiqquncha torting; m(nazariy) = ${pva} · 44 / 86.`,
+ ok:'Unum to’g’ri hisoblandi.',
+ init(c){st.on=0;st.k=0;st.done=0;c.set({scene:'oven',masses:[],theo:'',eta:'',dishOp:1})},
+ html:()=>rng('oT','Shkaf harorati',30,120,5,30,'°C')+actBtns([['on','🔥 Shkafni yoqish'],['weigh','⚖ Tortish'],['stop','✓ Quritish tugadi']])+num('yT','Nazariy unum','g')+num('yE','Amaliy unum η','%'),
+ acts:{
+  on:async(c,ER)=>{const t=V('oT');if(t>60)return ER(`${t} °C juda yuqori: PVS sarg’ayadi, qisman destruksiyaga uchraydi va suvda yomon eriydigan bo’lib qoladi.`);
+   if(t<50)return ER(`${t} °C past — polimer juda uzoq quriydi.`);st.on=1;c.sfx('click');await c.T({oven:t},2000)},
+  weigh:async(c,ER)=>{if(!st.on)return ER('Avval shkafni to’g’ri haroratda yoqing.');if(st.done)return;S.masses=[...S.masses,ms[Math.min(st.k++,ms.length-1)]];c.sfx('tick')},
+  stop:async(c,ER)=>{const n=S.masses.length;if(n<2||Math.abs(S.masses[n-1]-S.masses[n-2])>.01)return ER(n<2?'Kamida ikki marta torting.':`Massa hali o’zgaryapti (${fx(S.masses[n-2])} → ${fx(S.masses[n-1])} g). Namuna to’liq qurimagan — yana torting.`);st.done=1;c.sfx('ding')}},
+ check(){if(!st.done)return{err:'Avval massa doimiy bo’lguncha quriting va “Quritish tugadi” tugmasini bosing.'};
+  const T=V('yT'),Y=V('yE'),mf=S.masses[S.masses.length-1];if(isNaN(T))return{err:'Nazariy unumni kiriting.'};
+  if(!near(T,theo,.03))return{err:near(T,pva,.05)?`Xato: massa o’zgarmaydi deb bo’lmaydi. Har bir zvenoda –OCOCH₃ guruh –OH ga almashadi, zveno massasi 86 dan 44 ga kamayadi.`:`Nazariy unum noto’g’ri: ${fx(T)} g. m = ${pva} · 44 / 86.`};
+  if(isNaN(Y))return{err:'Amaliy unumni (η, %) kiriting.'};const ey=mf/theo*100;
+  if(!near(Y,ey,1))return{err:`η noto’g’ri: ${fx(Y)} %. η = ${fx(mf)} / ${fx(theo.toFixed(2))} · 100 %.`};
+  return{ok:1,p:{theo,eta:ey,mf},vals:{'Harorat':V('oT')+' °C','Tortishlar':S.masses.map(fx).join('; ')+' g','m(nazariy)':fx(theo.toFixed(2))+' g','η':fx(ey.toFixed(1))+' %'}}},
+ after:async(c,r)=>{c.set({theo:`Nazariy unum: ${pva} · 44 / 86 = ${fx(r.p.theo.toFixed(2))} g`});await c.W(500);c.set({eta:`Amaliy unum: η = ${fx(r.p.eta.toFixed(1))} %`});c.sfx('ding')}}};
+
+const SOLN=['PVS + suv','PVS + etil spirti','PVS + aseton','PVA + suv','PVA + etil spirti','PVA + aseton'];
+const WHY=['PVS ko’p –OH guruhlarga ega va suv bilan vodorod bog’lari hosil qiladi — eriydi.','PVS etil spirtida erimaydi — shuning uchun gidroliz vaqtida jel holida cho’kkan edi.','PVS asetonda erimaydi — aseton uni cho’ktirish uchun ishlatilgan.','PVA gidrofob asetat guruhlarga ega — suvda erimaydi.','PVA etil spirtida eriydi — tajriba boshida u spirtda eritilgan edi.','PVA asetonda yaxshi eriydi.'];
+const tTubes={sc:'tubes',
+ say:'Topshiriq. Olti probirkadagi polimer va erituvchi juftliklari uchun polimer eriydimi yoki yo’qmi, oldindan taxmin qiling. Tekshirish tugmasini bossangiz, tajriba natijasi ko’rsatiladi.',
+ guide:['Har bir probirka uchun “eriydi” yoki “erimaydi” ni tanlang','Polimer tuzilishini eslang: –OH yoki –OCOCH₃','“O’xshash o’xshashda eriydi”'],
+ hint:'PVS faqat suvda eriydi; PVA spirt va asetonda eriydi.',
+ ok:'Eruvchanlik butunlay o’zgardi — gidroliz muvaffaqiyatli o’tgan.',
+ html:()=>SOLN.map((s,i)=>pick('u'+i,s,['eriydi','erimaydi'])).join(''),
+ check(){const bad=[];for(let i=0;i<6;i++){const v=P('u'+i);if(v<0)return{err:'Barcha 6 ta probirka uchun javob tanlang.'};if((v===0)!==!!SOLU[i])bad.push(SOLN[i]+': '+WHY[i])}
+  if(bad.length)return{err:`${bad.length} ta javob noto’g’ri:<br>• `+bad.join('<br>• ')};
+  return{ok:1,vals:{'Eruvchanlik':'6 ta javobning barchasi to’g’ri'}}}};
+
+const TK={
+ alk:[tWeigh(15,false),tAssemble,tDissolve(15),tCool(30,35,false),tAdd(false),tGel,tColdEt,tBoil,tFilter(false),tPurify,tDry([8.95,7.62,7.18,7.16,7.16],15),tTubes],
+ acid:[tWeigh(10,true),tAssemble,tDissolve(10),tCool(28,32,true),tAdd(true),tBoilA,tSettle,tFilter(true),tPurify,tDry([6.10,5.02,4.78,4.75,4.75],10),tTubes]};
+
+/* ---------- controller ---------- */
+let method='alk',mode='demo',cur=0,tok={dead:true},auto=true,doneSet=new Set();
+let REC=[],maxReach=0,curC=null,busy=false,pStart=Date.now(),STU={name:'',group:''},REPTXT='';
+const steps=()=>M[method].steps,tasks=()=>TK[method];
+const strip=h=>h.replace(/<br>/g,'. ').replace(/<[^>]+>/g,'').replace(/•/g,'');
+const esc=s=>s.replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const score=r=>r.passed?Math.max(0,10-2*r.err.length-r.hint):0;
+function newRec(){REC=steps().map(()=>({att:0,err:[],hint:0,passed:false,vals:{}}));maxReach=0;pStart=Date.now()}
+function say(txt){if(voiceOn)speak(strip(txt),{dead:false},false)}
+function updScore(){const b=E.scoreBadge;b.hidden=mode!=='prac';if(mode!=='prac')return;
+ const tot=REC.reduce((a,r)=>a+score(r),0),errs=REC.reduce((a,r)=>a+r.err.length,0);b.textContent=`Ball: ${tot} / ${steps().length*10} · xato: ${errs}`}
+function renderDots(){const pr=mode==='prac';E.dots.innerHTML='';steps().forEach((s,i)=>{const b=document.createElement('button');const ok=pr?REC[i].passed:doneSet.has(i);
+ b.className='dot'+(i===cur?' cur':ok?' done':'');b.textContent=i+1;b.title=s.t;if(pr&&i>maxReach)b.disabled=true;b.onclick=()=>goTo(i,true);E.dots.appendChild(b)})}
+function renderPanel(){const st=steps()[cur],pr=mode==='prac',tk=pr&&tasks()[cur];
+ E.stepNo.textContent=`${cur+1}-bosqich / ${steps().length}`;E.stepTitle.textContent=st.t;
+ E.lab1.textContent=pr?'🎯 Topshiriq (diktor tushuntiradi):':'🎙 Diktor nima qilinishini aytadi:';
+ E.lab2.textContent=pr?'🧭 Qanday bajariladi:':'📌 Aniq ma’lumotlar:';
+ setSay(pr?tk.say:st.say);
+ E.det.innerHTML=(pr?tk.guide:st.det).map(d=>`<li${/zararli|ehtiyot|aksincha emas|to’xtatmang/.test(d)?' class="warn"':''}>${d}</li>`).join('');
+ E.eqBox.innerHTML=M[method].eq;E.taskCard.hidden=!pr;E.eqCard.hidden=pr;E.cAuto.parentNode.style.display=pr?'none':'';
+ if(pr)E.bPlay.textContent='🎙 Topshiriqni qayta eshitish';renderDots();updScore()}
+function fbSet(cls,html){E.fb.className='fb'+(cls?' '+cls:'');E.fb.innerHTML=html}
+function addErr(msg){REC[cur].err.push(strip(msg));fbSet('bad','✗ '+msg);SFX.buzz();say(msg);updScore()}
+function renderTask(){const tk=tasks()[cur],r=REC[cur];E.taskBody.innerHTML=tk.html();fbSet('','');
+ E.bCheck.style.display=r.passed?'none':'';E.bHint.style.display=r.passed?'none':'';E.bGo.style.display=r.passed?'':'none';
+ E.bGo.textContent=cur===steps().length-1?'📋 Yakuniy natija':'Keyingi bosqich ▶';
+ if(r.passed){E.taskBody.querySelectorAll('input,button').forEach(x=>x.disabled=true);fbSet('ok','✓ Bu bosqich bajarilgan. '+Object.entries(r.vals).map(([k,v])=>`${k}: ${v}`).join('; '))}}
+
+async function goTo(i,play){tok.dead=true;if('speechSynthesis' in window)speechSynthesis.cancel();busy=false;
+ const t={dead:false,fast:true};tok=t;resetState();const list=steps(),pr=mode==='prac';i=clamp(i,0,list.length-1);
+ const actOf=j=>{const tk=pr&&tasks()[j];return(pr&&REC[j].passed&&tk.replay)?tk.replay(REC[j].p):list[j].act};
+ for(let j=0;j<i;j++){try{await actOf(j)(ctx(t))}catch(e){if(!(e instanceof Cancel))console.error(e)}if(t.dead)return}
+ if(pr){const tk=tasks()[i];if(REC[i].passed){try{await actOf(i)(ctx(t))}catch(e){}if(t.dead)return}
+  t.fast=false;cur=i;maxReach=Math.max(maxReach,i);curC=ctx(t);
+  if(!REC[i].passed){if(tk.init)tk.init(curC);else curC.set({scene:tk.sc||'setup'})}
+  renderPanel();renderTask();if(play&&!REC[i].passed)speak(tk.say,t);return}
+ t.fast=false;cur=i;renderPanel();E.bPlay.textContent=play?'⟲ Qaytadan':'▶ Ijro etish';if(!play)return;
+ try{await Promise.all([list[i].act(ctx(t)),speak(list[i].say,t)])}catch(e){if(!(e instanceof Cancel))console.error(e);return}
+ if(t.dead)return;doneSet.add(i);renderDots();E.bPlay.textContent='⟲ Qaytadan';
+ if(auto&&i<list.length-1){await new Promise(r=>setTimeout(r,1400));if(!t.dead)goTo(i+1,true)}
+ else if(i===list.length-1){E.stepNo.textContent='✓ Tajriba yakunlandi';SFX.ding();setTimeout(()=>{if(!t.dead)openReport()},1500)}}
+
+const PRAISE=['To’g’ri!','Barakalla, to’g’ri!','Ajoyib, hammasi to’g’ri!','To’g’ri bajarildi!'];
+async function doCheck(){const tk=tasks()[cur],r=REC[cur];if(r.passed||busy)return;let res;try{res=tk.check()}catch(e){console.error(e);return}
+ r.att++;if(!res.ok){addErr(res.err);return}
+ r.passed=true;r.vals=res.vals||{};r.p=res.p;const pz=PRAISE[Math.floor(Math.random()*PRAISE.length)];
+ fbSet('ok','✓ '+pz+' '+(tk.ok||''));SFX.ding();say(pz+' '+(tk.ok||''));
+ E.bCheck.style.display='none';E.bHint.style.display='none';E.taskBody.querySelectorAll('input,button').forEach(x=>x.disabled=true);
+ busy=true;const t=tok;
+ try{await(tk.after?tk.after(curC,res):tk.replay?tk.replay(res.p)(curC):steps()[cur].act(curC))}catch(e){if(!(e instanceof Cancel))console.error(e);busy=false;return}
+ busy=false;if(t.dead)return;E.bGo.style.display='';renderDots();updScore();
+ if(cur===steps().length-1)setTimeout(()=>{if(!t.dead)openReport()},1500)}
+async function runAct(n){if(busy)return;busy=true;const t=tok;try{await tasks()[cur].acts[n](curC,addErr)}catch(e){if(!(e instanceof Cancel))console.error(e)}if(tok===t)busy=false}
+
+E.taskBody.addEventListener('click',e=>{const b=e.target.closest('button');if(!b||b.disabled)return;const tk=tasks()[cur];
+ if(b.classList.contains('opt')){b.parentNode.querySelectorAll('.opt').forEach(x=>x.classList.toggle('on',x===b));SFX.click();if(E.fb.classList.contains('bad'))fbSet('','');return}
+ if(b.dataset.bal!=null){tk.bal(+b.dataset.bal);return}
+ if(b.dataset.act)runAct(b.dataset.act)});
+E.taskBody.addEventListener('input',e=>{const x=e.target,tk=tasks()[cur];
+ if(x.type==='range'){const o=document.getElementById(x.id+'o');if(o)o.textContent=fx(x.value);if(tk.live&&tk.live[x.id])tk.live[x.id](+x.value)}
+ if(E.fb.classList.contains('bad'))fbSet('','')});
+E.bCheck.onclick=doCheck;
+E.bHint.onclick=()=>{const tk=tasks()[cur],r=REC[cur];if(r.passed)return;r.hint=1;fbSet('hint','💡 '+tk.hint);say(tk.hint);updScore()};
+E.bGo.onclick=()=>cur===steps().length-1?openReport():goTo(cur+1,true);
+
+function openReport(){const pr=mode==='prac',list=steps(),acid=method==='acid',pva=acid?10:15,theo=pva*44/86;
+ const dry=pr?REC[acid?9:10]:null,mf=dry&&dry.passed&&dry.p?dry.p.mf:(acid?4.75:7.16),eta=mf/theo*100;
+ let h=`<h2>Laboratoriya ishi № 4 — Polivinilatsetatning gidrolizi</h2><p>`;
+ if(pr)h+=`<b style="font-weight:400;color:var(--red)">Talaba:</b> ${esc(STU.name)}${STU.group?` · <b style="font-weight:400;color:var(--red)">Guruh:</b> ${esc(STU.group)}`:''}<br>`;
+ h+=`Usul: ${acid?'kislotali (H₂SO₄)':'ishqoriy (NaOH)'} · Sana: ${new Date().toLocaleDateString('ru-RU')} · Rejim: ${pr?'mustaqil bajarish':'namoyish'}${pr?` · Sarflangan vaqt: ${Math.max(1,Math.round((Date.now()-pStart)/60000))} min`:''}</p>`;
+ let speech='Tajriba yakunlandi. ';
+ if(pr){const tot=REC.reduce((a,r)=>a+score(r),0),max=list.length*10,pct=Math.round(tot/max*100),errs=REC.reduce((a,r)=>a+r.err.length,0),hints=REC.reduce((a,r)=>a+r.hint,0),notDone=REC.filter(r=>!r.passed).length;
+  const g=pct>=86?5:pct>=71?4:pct>=55?3:2,gt={5:'a’lo',4:'yaxshi',3:'qoniqarli',2:'qoniqarsiz'}[g];
+  h+=`<div style="display:flex;gap:30px;align-items:flex-end;flex-wrap:wrap;margin:6px 0 4px"><div><div class="small">Baho</div><div class="grade">${g} — ${gt}</div></div><div><div class="small">Ball</div><div class="grade" style="font-size:34px">${tot} / ${max} (${pct} %)</div></div><div><div class="small">Xatolar</div><div class="grade" style="font-size:34px">${errs}</div></div><div><div class="small">Yordamdan foydalanildi</div><div class="grade" style="font-size:34px">${hints}</div></div></div>`;
+  if(notDone)h+=`<p style="color:var(--red)">⚠ ${notDone} ta bosqich hali bajarilmagan — ular uchun ball berilmadi.</p>`;
+  h+=`<p class="small">Baholash: har bosqich 10 ball; har bir xato −2, yordam −1 ball.</p>`;
+  h+=`<h3>Bosqichlar bo’yicha natijalar</h3><table><tr><th>№</th><th>Bosqich</th><th>Kiritilgan qiymatlar</th><th>Xato</th><th>Yordam</th><th>Ball</th></tr>`+list.map((s,i)=>{const r=REC[i];return`<tr><td>${i+1}</td><td>${s.t}</td><td>${r.passed?Object.entries(r.vals).map(([k,v])=>`${k}: ${v}`).join('<br>'):'<span style="color:var(--red)">bajarilmagan</span>'}</td><td>${r.err.length}</td><td>${r.hint?'ha':'—'}</td><td>${score(r)}/10</td></tr>`}).join('')+`</table>`;
+  const el=REC.map((r,i)=>r.err.length?`<li>${i+1}. ${list[i].t}<ul>${r.err.map(e=>`<li>${esc(e)}</li>`).join('')}</ul></li>`:'').join('');
+  h+=`<h3>Xatolar va izohlar</h3>`+(el?`<ul class="det">${el}</ul>`:'<p>Birorta ham xato qilinmadi. Barakalla!</p>');
+  speech+=`${STU.name}, siz ${max} balldan ${tot} ball to’pladingiz. Bahoingiz: ${g}, ${gt}. Xatolar soni: ${errs}. `}
+ h+=`<h3>Tajriba natijalari</h3><table><tr><th>Ko’rsatkich</th><th>Qiymat</th></tr>
+ <tr><td>Polivinilatsetat (PVA)</td><td>${pva},00 g</td></tr>
+ <tr><td>Etil spirti</td><td>100 g (≈ 127 ml)</td></tr>
+ <tr><td>${acid?'Katalizator':'Ishqor'}</td><td>${acid?'3,5 ml H₂SO₄ (6,44 g) + 15 ml spirt':'3 g NaOH (15 g 20 % li spirtli eritma)'}</td></tr>
+ <tr><td>Gidroliz sharoiti</td><td>${acid?'qaynatish ~78 °C, 3–4 soat':'30–35 °C da 2–3 soat, so’ng 20–30 min qaynatish'}</td></tr>
+ <tr><td>Yuvish va tozalash</td><td>aseton bilan pH 7 gacha; issiq suvda eritib, 5–7 hajm aseton bilan cho’ktirish</td></tr>
+ <tr><td>Quritish</td><td>50–60 °C, doimiy massagacha</td></tr>
+ <tr><td>Olingan polivinil spirti (PVS)</td><td>${fx(mf.toFixed(2))} g</td></tr>
+ <tr><td>Nazariy unum</td><td>${pva} · 44 / 86 = ${fx(theo.toFixed(2))} g</td></tr>
+ <tr><td>Amaliy unum η</td><td><b style="font-weight:400;color:var(--red)">${fx(eta.toFixed(1))} %</b></td></tr></table>
+ <h3>Eruvchanlik</h3><table><tr><th>Polimer</th><th>Suv</th><th>Etil spirti</th><th>Aseton</th></tr>
+ <tr><td>Polivinil spirti (PVS)</td><td>eriydi ✓</td><td>erimaydi ✗</td><td>erimaydi ✗</td></tr>
+ <tr><td>Polivinilatsetat (PVA)</td><td>erimaydi ✗</td><td>eriydi ✓</td><td>eriydi ✓</td></tr></table>
+ <h3>Reaksiya</h3><div class="formula">${M[method].eq}</div>`;
+ const xul=`Polivinilatsetatning ${acid?'kislotali':'ishqoriy'} muhitda gidrolizi natijasida ${fx(mf.toFixed(2))} g polivinil spirti olindi, amaliy unum ${fx(eta.toFixed(1))} % ni tashkil etdi. Eruvchanlik sinovi olingan polimer suvda eriydi, spirt va asetonda erimasligini, dastlabki polivinilatsetat esa aksincha ekanini ko’rsatdi. Demak, polimeranalogik reaksiya natijasida makromolekuladagi asetat guruhlari gidroksil guruhlariga almashdi, asosiy zanjir esa saqlanib qoldi.`;
+ h+=`<h3>Xulosa</h3><p>${xul}</p><div class="mini">by Hayitali</div>`;
+ E.repBody.innerHTML=h;E.ovReport.classList.add('show');E.repBody.scrollTop=0;REPTXT=speech+'Amaliy unum '+fx(eta.toFixed(1))+' foiz. '+xul}
+
+E.rSpeak.onclick=()=>speak(REPTXT.replace(/%/g,' foiz'),{dead:false},false);
+E.rPrint.onclick=()=>window.print();
+E.rClose.onclick=()=>{E.ovReport.classList.remove('show');if('speechSynthesis' in window)speechSynthesis.cancel()};
+E.rAgain.onclick=()=>{E.rClose.click();if(mode==='prac')newRec();doneSet=new Set();goTo(0,true)};
+E.bReport.onclick=openReport;
+
+function setMethod(m,play){method=m;doneSet=new Set();$$('#methodSeg .btn').forEach(b=>b.classList.toggle('on',b.dataset.m===m));if(mode==='prac')newRec();goTo(0,play)}
+function setMode(m){if(m==='prac'&&!STU.name){E.ovIntro.classList.add('show');E.introErr.textContent='Mustaqil bajarish uchun ismingizni kiriting.';return}
+ mode=m;$$('#modeSeg .btn').forEach(b=>b.classList.toggle('on',b.dataset.mode===m));if(m==='prac')newRec();doneSet=new Set();goTo(0,m==='prac')}
+$$('#modeSeg .btn').forEach(b=>b.onclick=()=>setMode(b.dataset.mode));
+$$('#methodSeg .btn').forEach(b=>b.onclick=()=>setMethod(b.dataset.m,mode==='prac'));
+let introM='alk';$$('#introMethod .btn').forEach(b=>b.onclick=()=>{introM=b.dataset.m;$$('#introMethod .btn').forEach(x=>x.classList.toggle('on',x===b))});
+$$('[data-start]').forEach(b=>b.onclick=()=>{const md=b.dataset.start;STU.name=E.iName.value.trim();STU.group=E.iGroup.value.trim();
+ if(md==='prac'&&!STU.name){E.introErr.textContent='Ismingizni kiriting — u yakuniy hisobotda ko’rsatiladi.';E.iName.focus();return}
+ E.introErr.textContent='';ac().resume();E.ovIntro.classList.remove('show');mode=md;$$('#modeSeg .btn').forEach(x=>x.classList.toggle('on',x.dataset.mode===md));setMethod(introM,true)});
+E.iName.oninput=()=>E.introErr.textContent='';
+E.bPlay.onclick=()=>{ac().resume();if(mode==='prac'){if(!REC[cur].passed)speak(tasks()[cur].say,tok)}else goTo(cur,true)};
+E.bNext.onclick=()=>{if(mode==='prac'&&!REC[cur].passed){fbSet('bad','Avval ushbu bosqich topshirig’ini bajaring va “Tekshirish” ni bosing.');return}if(cur<steps().length-1)goTo(cur+1,true);else openReport()};
+E.bPrev.onclick=()=>goTo(cur-1,true);
+E.cAuto.onchange=()=>auto=E.cAuto.checked;E.sSpeed.onchange=()=>speed=+E.sSpeed.value;
+E.bLabels.onclick=()=>{E.bLabels.classList.toggle('on');E.labels.style.display=E.bLabels.classList.contains('on')?'':'none'};
+E.bVoice.onclick=()=>{voiceOn=!voiceOn;E.bVoice.classList.toggle('on',voiceOn);if(!voiceOn&&'speechSynthesis' in window)speechSynthesis.cancel()};
+E.bSfx.onclick=()=>{sfxOn=!sfxOn;E.bSfx.classList.toggle('on',sfxOn)};
+E.bFull.onclick=()=>{document.fullscreenElement?document.exitFullscreen():document.documentElement.requestFullscreen().catch(()=>{})};
+E.bTheory.onclick=()=>E.ovTheory.classList.add('show');
+E.thClose.onclick=()=>{E.ovTheory.classList.remove('show');if('speechSynthesis' in window)speechSynthesis.cancel()};
+let thTab='t1';$$('#thTabs .btn').forEach(b=>b.onclick=()=>{thTab=b.dataset.t;$$('#thTabs .btn').forEach(x=>x.classList.toggle('on',x===b));['t1','t2','t3','t4','t5'].forEach(id=>E[id].hidden=id!==thTab);if('speechSynthesis' in window)speechSynthesis.cancel()});
+E.thSpeak.onclick=()=>{const txt=E[thTab].innerText.replace(/[\[\]ₙ⟶⇄⁻⁺]/g,' ');speak(txt,{dead:false},false)};
+function calc(){const m=+E.cm.value,v0=+E.cv0.value,v=+E.cv.value,n=+E.cn.value;if(!(m>0)||!(n>0)||v0<v){E.calcRes.innerHTML='<span class="small" style="color:var(--red)">Qiymatlarni tekshiring: m &gt; 0, N &gt; 0, V₀ ≥ V.</span>';return}
+ const oh=(v0-v)*n*1.7/m,w=oh/100,x=86*w/(17+42*w);E.calcRes.innerHTML=`% OH = <b>${oh.toFixed(2).replace('.',',')} %</b> &nbsp;·&nbsp; gidroliz darajasi ≈ <b>${Math.min(100,x*100).toFixed(1).replace('.',',')} %</b>`}
+['cm','cv0','cv','cn'].forEach(id=>E[id].oninput=calc);calc();
+document.addEventListener('keydown',e=>{const tg=e.target.tagName;if(tg==='INPUT'||tg==='SELECT'||tg==='BUTTON'&&e.key===' ')return;const k=e.key.toLowerCase();
+ if(E.ovIntro.classList.contains('show'))return;
+ if(k==='escape'){E.thClose.click();E.rClose.click();return}
+ if(E.ovReport.classList.contains('show'))return;
+ if(k===' '){e.preventDefault();E.bPlay.click()}else if(k==='arrowright')E.bNext.click();else if(k==='arrowleft')E.bPrev.click();
+ else if(k==='f')E.bFull.click();else if(k==='n')E.bLabels.click();else if(k==='m')E.bVoice.click();else if(k==='t')E.ovTheory.classList.toggle('show')});
+newRec();goTo(0,false);
+</script>
+</body>
+</html>
