@@ -1,0 +1,1055 @@
+<!doctype html>
+<html lang="uz">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Polielektrolitlar — virtual laboratoriya</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#FFF3D1;--ink:#2B2B2B;--coral:#FF6B6B;--red:#E84855;--green:#22A45D;--blue:#3D7DFF;--yel:#FFD54F;--sun:#FFE29A;--mut:#6B5B45;--hl:#FFE14D;--card:#FFFFFF;
+--f:'Fredoka','Baloo 2','Segoe UI Rounded','Comic Sans MS','Segoe UI',sans-serif}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%}
+body{background:radial-gradient(#F2D78C 1.6px,transparent 1.9px) 0 0/18px 18px,var(--bg);color:var(--ink);font-family:var(--f);font-size:17px;overflow:hidden}
+.app{display:grid;grid-template-rows:auto minmax(0,1fr) auto;height:100vh;padding:10px 16px;gap:10px}
+header{display:flex;align-items:center;gap:10px;flex-wrap:wrap;background:var(--coral);border:3px solid var(--ink);border-radius:20px;padding:8px 12px;box-shadow:0 4px 0 var(--ink)}
+h1{font-size:27px;margin:0;line-height:1;font-weight:700;color:#fff;text-shadow:2px 2px 0 rgba(43,43,43,.35)}
+h1 small{display:block;font-size:15px;font-weight:500;color:#FFF3D1;text-shadow:none;margin-top:3px}
+.sp{flex:1}
+.btn{font-family:var(--f);font-size:15px;font-weight:500;color:var(--ink);background:#fff;border:3px solid var(--ink);border-radius:14px;padding:4px 12px;cursor:pointer;box-shadow:0 3px 0 var(--ink);transition:transform .08s,box-shadow .08s,background .15s;white-space:nowrap;text-decoration:none;display:inline-block}
+.btn:hover{transform:translateY(-1px);box-shadow:0 4px 0 var(--ink)}
+.btn:active{transform:translateY(2px);box-shadow:0 1px 0 var(--ink)}
+.btn.on{background:var(--yel)}
+.btn.go{background:var(--green);color:#fff}
+.btn.big{font-size:20px;padding:7px 20px;border-radius:18px}
+.btn.red{background:var(--red);color:#fff}
+.seg{display:inline-flex;gap:4px}
+main{display:grid;grid-template-columns:minmax(0,1fr) 410px;gap:14px;min-height:0}
+.stage{position:relative;background:#FFFDF4;border:3px solid var(--ink);border-radius:24px;min-height:0;overflow:hidden;box-shadow:0 4px 0 var(--ink)}
+.stage svg{width:100%;height:100%;display:block;user-select:none;-webkit-user-select:none}
+.scene{transition:opacity .6s}
+.panel{display:flex;flex-direction:column;gap:12px;min-height:0;overflow:auto;padding:2px 6px 8px 2px}
+.card{background:var(--card);border:3px solid var(--ink);border-radius:20px;padding:12px 15px;box-shadow:0 4px 0 var(--ink)}
+.stepno{display:inline-block;font-size:15px;font-weight:600;color:#fff;background:var(--red);border:2px solid var(--ink);border-radius:999px;padding:1px 12px}
+.stitle{font-size:25px;line-height:1.1;margin:7px 0 6px;font-weight:700}
+.lab{font-size:14px;font-weight:600;color:var(--mut);margin:9px 0 3px;display:flex;align-items:center;gap:6px}
+.say{font-size:17px;line-height:1.45}
+.say .w{border-radius:5px;transition:background .15s}
+.say .w.cur{background:var(--hl)}
+.det{margin:4px 0 0;padding-left:20px}
+.det li{margin:4px 0;line-height:1.3;font-size:16px}
+.det li.warn{color:var(--red);list-style:"⚠ "}
+.eq{font-size:16px;line-height:1.55}
+.eq b{color:var(--red)}
+footer{display:flex;align-items:center;gap:8px;flex-wrap:wrap;background:var(--sun);border:3px solid var(--ink);border-radius:18px;padding:6px 10px;box-shadow:0 4px 0 var(--ink)}
+.dots{display:flex;gap:5px;flex-wrap:wrap}
+.dot{width:30px;height:30px;border-radius:50%;border:3px solid var(--ink);display:grid;place-items:center;font-size:14px;font-weight:600;cursor:pointer;background:#fff;font-family:var(--f);color:var(--ink);padding:0}
+.dot.done{background:#9FE3B8}
+.dot.cur{background:var(--red);color:#fff}
+select{font-family:var(--f);font-size:15px;color:var(--ink);background:#fff;border:3px solid var(--ink);border-radius:10px;padding:3px 6px;max-width:220px}
+.small{font-size:14px;color:var(--mut)}
+.sig{position:fixed;right:10px;bottom:3px;font-size:10px;opacity:.26;font-style:italic;pointer-events:none;color:var(--ink);z-index:30;letter-spacing:.3px}
+.ol{stroke:#2B2B2B;stroke-width:3.5;stroke-linejoin:round;stroke-linecap:round}
+.lbl{font-family:var(--f);font-size:16px;font-weight:500;fill:#2B2B2B}
+.lbs{font-family:var(--f);font-size:13px;fill:#6B5B45}
+.ttl{font-family:var(--f);font-size:22px;font-weight:700;fill:#2B2B2B}
+.lead{stroke:#6B5B45;stroke-width:1.6;stroke-dasharray:4 4;fill:none}
+.ov{position:fixed;inset:0;background:rgba(43,43,43,.45);display:none;align-items:center;justify-content:center;z-index:20;padding:16px}
+.ov.show{display:flex}
+.sheet{width:min(1150px,96vw);max-height:92vh;background:#FFFDF4;border:3px solid var(--ink);border-radius:24px;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 6px 0 var(--ink)}
+.sheet .hd{display:flex;gap:8px;align-items:center;padding:10px 14px;border-bottom:3px solid var(--ink);flex-wrap:wrap;background:var(--sun)}
+.sheet .bd{padding:16px 24px 24px;overflow:auto;font-size:17px;line-height:1.5}
+.sheet h2{font-size:28px;margin:4px 0 8px;font-weight:700}
+.sheet h3{font-size:21px;margin:16px 0 6px;font-weight:700;color:var(--red)}
+.formula{background:#fff;border:3px dashed var(--blue);border-radius:14px;padding:9px 14px;margin:8px 0;font-size:17px;overflow-x:auto}
+.mech{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px;margin:8px 0}
+.mech .card{font-size:16px}
+.mech .n{display:inline-grid;place-items:center;width:30px;height:30px;border-radius:50%;background:var(--yel);border:2px solid var(--ink);font-weight:700;margin-bottom:4px}
+.calc{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px;margin:8px 0}
+.calc label{display:flex;flex-direction:column;font-size:15px;color:var(--mut)}
+.calc input{font-family:var(--f);font-size:18px;color:var(--ink);border:3px solid var(--ink);border-radius:10px;padding:3px 8px;background:#fff}
+.res{font-size:19px;margin-top:8px}
+.res b{color:var(--red)}
+details{background:#fff;border:3px solid var(--ink);border-radius:14px;padding:8px 12px;margin:8px 0}
+summary{cursor:pointer;font-weight:500}
+.intro{max-width:900px}
+.intro .bd ol li{margin:3px 0}
+.f{display:flex;flex-direction:column;gap:4px;margin:9px 0;font-size:15px;color:var(--mut);font-weight:500}
+.f input[type=text]{font-family:var(--f);font-size:18px;color:var(--ink);border:3px solid var(--ink);border-radius:10px;padding:2px 8px;width:130px;background:#fff}
+.f>span{display:flex;align-items:center;gap:6px;color:var(--ink)}
+.f.ck{flex-direction:row;align-items:center;gap:8px;color:var(--ink);font-size:16px;cursor:pointer}
+.f.ck input{width:20px;height:20px;accent-color:var(--green)}
+.rg input{flex:1;accent-color:var(--red)}
+.rg b{min-width:52px;text-align:right;font-size:19px;color:var(--red)}
+.pick{display:flex;flex-wrap:wrap;gap:6px}
+.pick .btn{font-size:14px;padding:3px 10px;box-shadow:0 2px 0 var(--ink);white-space:normal;text-align:left}
+.pick .btn.on{background:var(--blue);color:#fff}
+.fb{margin-top:8px;font-size:16px;line-height:1.35;border-radius:14px}
+.fb.ok{background:#DDF6E6;border:3px solid var(--green);color:#135C30;padding:8px 10px}
+.fb.bad{background:#FFE1E3;border:3px solid var(--red);color:#8E1F2B;padding:8px 10px}
+.fb.hint{background:#FFF4C2;border:3px dashed #C9A227;color:#6B5500;padding:8px 10px}
+.acts{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.badge{font-size:15px;font-weight:600;border:3px solid var(--ink);color:var(--ink);border-radius:999px;padding:2px 12px;background:#fff}
+.dot:disabled,.btn:disabled{opacity:.45;cursor:not-allowed;transform:none}
+.who{display:flex;gap:14px;flex-wrap:wrap;margin:8px 0}
+.who label{display:flex;flex-direction:column;font-size:15px;color:var(--mut)}
+.who input{font-family:var(--f);font-size:18px;color:var(--ink);border:3px solid var(--ink);border-radius:12px;padding:4px 8px;background:#fff;width:260px;max-width:80vw}
+.tt{border-collapse:collapse;font-size:14px;margin:6px 0;background:#fff}
+.tt th,.tt td{border:2px solid var(--ink);padding:3px 7px;text-align:center}
+.tt th{background:var(--sun);font-weight:600}
+.rep table{border-collapse:collapse;width:100%;font-size:15px;background:#fff;margin:6px 0}
+.rep th,.rep td{border:2px solid var(--ink);padding:5px 8px;text-align:left;vertical-align:top}
+.rep th{background:var(--sun);font-weight:600}
+.grade{font-size:38px;font-weight:700;color:var(--red);line-height:1}
+.note{background:#FFF4C2;border:3px dashed #C9A227;border-radius:14px;padding:7px 12px;font-size:15px;color:#6B5500;margin:8px 0}
+.mini{font-size:10px;opacity:.3;font-style:italic;text-align:right;margin-top:16px}
+@media print{body{overflow:visible;background:#fff}.app,.sig,#ovIntro,#ovTheory{display:none!important}#ovReport{position:static;display:block!important;background:none;padding:0}#ovReport .sheet{width:100%;max-height:none;border:0;box-shadow:none}#ovReport .hd{display:none}#ovReport .bd{overflow:visible}}
+@media (max-width:1050px){body{overflow:auto}.app{height:auto}main{grid-template-columns:1fr}.stage{height:62vh}}
+</style>
+</head>
+<body>
+<div class="app">
+<header>
+  <a class="btn" href="../index.html" title="Barcha laboratoriyalar">⌂ Ro’yxat</a>
+  <h1>Polielektrolitlarning gidrodinamik xossalari<small>Laboratoriya ishi № 8 · virtual tajriba</small></h1>
+  <div class="sp"></div>
+  <span class="badge" id="scoreBadge" hidden>Ball: 0</span>
+  <div class="seg" id="modeSeg">
+    <button class="btn on" data-mode="demo">🎬 Namoyish</button>
+    <button class="btn" data-mode="prac">✍ Mustaqil</button>
+  </div>
+  <button class="btn" id="bTheory" title="T">📖 Nazariya</button>
+  <button class="btn" id="bReport">📋 Natija</button>
+  <button class="btn on" id="bLabels" title="N">🏷 Nomlar</button>
+  <button class="btn on" id="bVoice" title="M">🎙 Diktor</button>
+  <button class="btn on" id="bSfx">🔊 Tovush</button>
+  <button class="btn" id="bFull" title="F">⛶ To’liq ekran</button>
+</header>
+
+<main>
+<div class="stage">
+<svg id="svg" viewBox="0 0 900 600" preserveAspectRatio="xMidYMid meet" aria-label="Laboratoriya qurilmasi">
+<defs>
+  <clipPath id="cRes"><ellipse cx="280" cy="488" rx="56" ry="28"/></clipPath>
+  <clipPath id="cT3"><rect x="320" y="62" width="12" height="116"/><circle cx="326" cy="210" r="34"/><rect x="324" y="242" width="4" height="162"/><ellipse cx="326" cy="420" rx="13" ry="18"/><rect x="321" y="434" width="10" height="38"/></clipPath>
+</defs>
+
+<!-- ============ VISKOZIMETR ============ -->
+<g id="sc-visc" class="scene" opacity="0">
+  <path d="M150 470 C162 470 160 452 172 452" fill="none" stroke="#2B2B2B" stroke-width="5" stroke-linecap="round"/>
+  <rect x="30" y="400" width="122" height="145" rx="18" fill="#FF8A65" class="ol"/>
+  <rect x="44" y="418" width="94" height="40" rx="9" fill="#2B2B2B"/>
+  <text id="thTxt" x="91" y="446" text-anchor="middle" fill="#B6FF3B" style="font-family:Consolas,monospace;font-size:21px">20,0°</text>
+  <circle cx="66" cy="492" r="14" fill="#FFD54F" class="ol"/><line x1="66" y1="492" x2="66" y2="481" stroke="#2B2B2B" stroke-width="3" stroke-linecap="round"/>
+  <circle id="thLamp" cx="114" cy="492" r="9" fill="#ccc" class="ol"/>
+  <text x="91" y="533" text-anchor="middle" style="font-family:var(--f);font-size:15px;font-weight:600;fill:#fff">termostat</text>
+
+  <rect x="170" y="130" width="330" height="420" rx="26" fill="#E6F7FF" class="ol"/>
+  <rect id="bathW" x="178" y="168" width="314" height="374" rx="20" fill="#8ED8FF" opacity=".55"/>
+  <path d="M178 170 q13 -6 26 0 t26 0 t26 0 t26 0 t26 0 t26 0 t26 0 t26 0 t26 0 t26 0 t26 0 t26 0" fill="none" stroke="#3D9BE0" stroke-width="2.5"/>
+  <g id="bB"></g>
+  <g id="prop"><ellipse cx="440" cy="524" rx="16" ry="5" fill="#FFD54F" stroke="#2B2B2B" stroke-width="2"/></g>
+  <rect x="436" y="300" width="8" height="222" fill="#9AA5B4" stroke="#2B2B2B" stroke-width="2"/>
+  <rect x="455" y="96" width="13" height="302" rx="6.5" fill="#fff" class="ol"/>
+  <circle cx="461.5" cy="404" r="11" fill="#E84855" class="ol"/>
+  <rect id="merc" x="459" y="300" width="5" height="100" fill="#E84855"/>
+
+  <g id="gVisc">
+    <rect x="222" y="58" width="22" height="412" fill="#F4FBFF" opacity=".75"/>
+    <ellipse cx="280" cy="488" rx="58" ry="30" fill="#F4FBFF" opacity=".75"/>
+    <rect x="318" y="62" width="16" height="116" fill="#F4FBFF" opacity=".75"/>
+    <circle cx="326" cy="210" r="36" fill="#F4FBFF" opacity=".75"/>
+    <ellipse cx="326" cy="420" rx="15" ry="20" fill="#F4FBFF" opacity=".75"/>
+    <rect x="384" y="62" width="14" height="364" fill="#F4FBFF" opacity=".75"/>
+    <rect id="resL" x="220" y="520" width="122" height="0" fill="#5EC4F5" clip-path="url(#cRes)"/>
+    <rect id="colL" x="300" y="470" width="60" height="0" fill="#5EC4F5" clip-path="url(#cT3)"/>
+    <rect id="t1L" x="225" y="470" width="16" height="0" fill="#5EC4F5"/>
+    <g fill="none" class="ol">
+      <path d="M222 58 V467 M244 58 V472"/>
+      <ellipse cx="233" cy="58" rx="13" ry="4"/>
+      <ellipse cx="280" cy="488" rx="58" ry="30"/>
+      <path d="M318 64 V177 M334 64 V177"/>
+      <circle cx="326" cy="210" r="36"/>
+      <path d="M322 245 V402 M330 245 V402"/>
+      <ellipse cx="326" cy="420" rx="15" ry="20"/>
+      <path d="M319 438 V470 M333 438 V467"/>
+      <path d="M384 62 V410 H340 M398 62 V426 H340"/>
+      <ellipse cx="391" cy="62" rx="9" ry="3"/>
+    </g>
+    <line x1="308" y1="168" x2="344" y2="168" stroke="#E84855" stroke-width="4" stroke-linecap="round"/>
+    <line x1="308" y1="252" x2="344" y2="252" stroke="#E84855" stroke-width="4" stroke-linecap="round"/>
+    <g id="nok"><rect x="320" y="56" width="12" height="12" fill="#B83246" stroke="#2B2B2B" stroke-width="2"/><ellipse cx="326" cy="34" rx="20" ry="24" fill="#E84855" class="ol"/><ellipse cx="319" cy="26" rx="5" ry="8" fill="#fff" opacity=".45"/></g>
+    <g id="clamp" opacity="0"><rect x="375" y="52" width="32" height="20" rx="9" fill="#22A45D" class="ol"/><text x="391" y="67" text-anchor="middle" style="font-family:var(--f);font-size:13px;font-weight:700;fill:#fff">yopiq</text></g>
+    <g style="font-family:var(--f);font-size:14px;font-weight:700" text-anchor="middle">
+      <circle cx="233" cy="34" r="11" fill="#FFD54F" class="ol" stroke-width="2.5"/><text x="233" y="39">1</text>
+      <circle cx="420" cy="92" r="11" fill="#FFD54F" class="ol" stroke-width="2.5"/><text x="420" y="97">2</text>
+      <circle cx="304" cy="330" r="11" fill="#FFD54F" class="ol" stroke-width="2.5"/><text x="304" y="335">3</text>
+      <circle cx="372" cy="188" r="11" fill="#FFD54F" class="ol" stroke-width="2.5"/><text x="372" y="193">4</text>
+    </g>
+  </g>
+
+  <g id="bub"><rect x="424" y="10" width="200" height="46" rx="23" fill="#fff" class="ol"/><path d="M446 56 l-12 14 l26 -14" fill="#fff" class="ol"/><rect x="440" y="50" width="26" height="5" fill="#fff"/>
+    <text id="bubTxt" x="524" y="40" text-anchor="middle" style="font-family:var(--f);font-size:16px;font-weight:600;fill:#2B2B2B"></text></g>
+
+  <rect x="678" y="68" width="24" height="18" rx="5" fill="#FFD54F" class="ol"/>
+  <circle cx="690" cy="152" r="66" fill="#fff" stroke="#2B2B2B" stroke-width="5"/>
+  <circle cx="690" cy="152" r="55" fill="none" stroke="#FFD54F" stroke-width="7"/>
+  <g id="swTicks"></g>
+  <line id="swHand" x1="690" y1="152" x2="690" y2="106" stroke="#E84855" stroke-width="5" stroke-linecap="round"/>
+  <circle cx="690" cy="152" r="7" fill="#2B2B2B"/>
+  <circle id="swLamp" cx="744" cy="96" r="8" fill="#ccc" class="ol" stroke-width="2.5"/>
+  <rect x="632" y="222" width="116" height="26" rx="13" fill="#2B2B2B"/><text id="swTxt" x="690" y="241" text-anchor="middle" style="font-family:Consolas,monospace;font-size:17px;font-weight:700;fill:#B6FF3B">0,0 s</text>
+
+  <rect x="600" y="252" width="282" height="164" rx="18" fill="#fff" class="ol"/>
+  <text x="616" y="279" style="font-family:var(--f);font-size:18px;font-weight:700;fill:#2B2B2B">O’lchashlar</text>
+  <text id="rdC" x="616" y="303" class="lbs" style="font-size:14px"></text>
+  <text id="rd1" x="616" y="328" class="lbl"></text><text id="rd2" x="616" y="352" class="lbl"></text><text id="rd3" x="616" y="376" class="lbl"></text>
+  <text id="rdM" x="616" y="402" class="lbl" style="fill:#22A45D;font-weight:600"></text>
+
+  <rect x="556" y="534" width="330" height="13" rx="6" fill="#C98B5A" class="ol"/>
+  <ellipse id="botRing" cx="600" cy="486" rx="40" ry="62" fill="none" stroke="#E84855" stroke-width="4" stroke-dasharray="9 7" opacity="0"/>
+  <g id="bottles"></g>
+  <line id="pStr" x1="233" y1="54" x2="233" y2="460" stroke="#5EC4F5" stroke-width="5" stroke-linecap="round" opacity="0"/>
+  <g id="pip">
+    <rect x="-9" y="-150" width="18" height="24" rx="6" fill="#FFD54F" class="ol" stroke-width="3"/>
+    <rect x="-5" y="-128" width="10" height="44" fill="#F4FBFF" class="ol" stroke-width="2.5"/>
+    <ellipse cx="0" cy="-66" rx="12" ry="20" fill="#F4FBFF" class="ol" stroke-width="2.5"/>
+    <ellipse id="pipL" cx="0" cy="-66" rx="9" ry="0" fill="#5EC4F5"/>
+    <path d="M-4 -47 L-4 -14 L0 0 L4 -14 L4 -47" fill="#F4FBFF" class="ol" stroke-width="2.5"/>
+    <line x1="-9" y1="-112" x2="9" y2="-112" stroke="#E84855" stroke-width="2.5"/>
+  </g>
+
+  <g id="labels">
+    <text x="160" y="40" text-anchor="end" class="lbl">rezina nok</text><path class="lead" d="M166 36 L304 36"/>
+    <text x="160" y="98" text-anchor="end" class="lbl">1 — keng naycha</text><path class="lead" d="M166 94 L220 94"/>
+    <text x="160" y="216" text-anchor="end" class="lbl">4 — o’lchov sharchasi</text><path class="lead" d="M166 212 L288 212"/>
+    <text x="160" y="300" text-anchor="end" class="lbl">3 — kapillyar naycha</text><path class="lead" d="M166 296 L320 296"/>
+    <text x="160" y="378" text-anchor="end" class="lbl">rezervuar</text><path class="lead" d="M166 374 L246 470"/>
+    <text x="512" y="96" class="lbl">2 — havo naychasi</text><path class="lead" d="M506 92 L400 92"/>
+    <text x="512" y="172" class="lbl" style="fill:#E84855">yuqori belgi</text><path class="lead" d="M506 168 L346 168"/>
+    <text x="512" y="256" class="lbl" style="fill:#E84855">pastki belgi</text><path class="lead" d="M506 252 L346 252"/>
+    <text x="512" y="332" class="lbl">termometr</text><path class="lead" d="M506 328 L470 328"/>
+  </g>
+</g>
+
+<!-- ============ GRAFIK ============ -->
+<g id="sc-graph" class="scene" opacity="0"><g id="gPlot"></g></g>
+
+<!-- ============ MAKROION ============ -->
+<g id="sc-coil" class="scene" opacity="0">
+  <rect x="18" y="20" width="424" height="560" rx="24" fill="#fff" class="ol"/>
+  <rect x="458" y="20" width="424" height="560" rx="24" fill="#fff" class="ol"/>
+  <text x="230" y="58" text-anchor="middle" class="ttl">Makroion o’rami</text>
+  <text x="670" y="58" text-anchor="middle" class="ttl">Qarama-qarshi ionlar</text>
+  <text id="cTL" x="230" y="86" text-anchor="middle" class="lbl"></text>
+  <text id="cTR" x="670" y="86" text-anchor="middle" class="lbl"></text>
+  <g id="cL"></g><g id="cR"></g>
+  <text id="cSL" x="230" y="560" text-anchor="middle" class="lbl" style="fill:#E84855;font-weight:600"></text>
+  <text id="cSR1" x="670" y="536" text-anchor="middle" class="lbl" style="fill:#7B4FD8;font-weight:600"></text>
+  <text id="cSR2" x="670" y="562" text-anchor="middle" class="lbl" style="fill:#22A45D;font-weight:600"></text>
+</g>
+</svg>
+</div>
+
+<div class="panel">
+  <div class="card">
+    <div class="stepno" id="stepNo">1-bosqich</div>
+    <div class="stitle" id="stepTitle">…</div>
+    <div class="lab" id="lab1">🎙 Diktor nima qilinishini aytadi:</div>
+    <div class="say" id="say"></div>
+    <div class="lab" id="lab2">📌 Aniq ma’lumotlar:</div>
+    <ul class="det" id="det"></ul>
+  </div>
+  <div class="card" id="taskCard" hidden>
+    <div class="lab" style="margin-top:0">✍ Sizning harakatingiz:</div>
+    <div id="taskBody"></div>
+    <div class="acts">
+      <button class="btn go" id="bCheck">✔ Tekshirish</button>
+      <button class="btn" id="bHint">💡 Yordam (−1 ball)</button>
+      <button class="btn go" id="bGo" style="display:none">Keyingi bosqich ▶</button>
+    </div>
+    <div class="fb" id="fb"></div>
+  </div>
+  <div class="card" id="eqCard">
+    <div class="lab" style="margin-top:0">⚗ Asosiy formulalar</div>
+    <div class="eq" id="eqBox"></div>
+  </div>
+</div>
+</main>
+
+<footer>
+  <button class="btn" id="bPrev" title="←">◀ Oldingi</button>
+  <button class="btn big go" id="bPlay" title="Probel">▶ Ijro etish</button>
+  <button class="btn" id="bNext" title="→">Keyingi ▶</button>
+  <div class="dots" id="dots"></div>
+  <div class="sp"></div>
+  <label class="small"><input type="checkbox" id="cAuto" checked> avto davom</label>
+  <label class="small">Tezlik <select id="sSpeed"><option value="0.75">0,75×</option><option value="1" selected>1×</option><option value="1.5">1,5×</option><option value="2">2×</option></select></label>
+  <label class="small">Ovoz <select id="sVoice"></select></label>
+</footer>
+</div>
+
+<div class="sig">by Hayitali</div>
+
+<!-- INTRO -->
+<div class="ov show" id="ovIntro">
+  <div class="sheet intro">
+    <div class="bd">
+      <h2>Laboratoriya ishi № 8 — Polielektrolitlarning suvli va tuzli eritmalarining gidrodinamik xossalari</h2>
+      <p><b style="color:var(--red)">Dars maqsadi:</b> qisman neytrallangan poliakril kislotasi (PAK) eritmasini izoion suyultirish sharoitini topish va makroionlar tomonidan qarama-qarshi ionlarning bog’lanish darajasini aniqlash.</p>
+      <h3>Identiv maqsadlar</h3>
+      <ol>
+        <li>Izoion suyultirish mohiyatini tushuntiradi.</li>
+        <li>Keltirilgan qovushqoqlikni viskozimetrik usulda aniqlaydi.</li>
+        <li>Bog’lanmagan qarama-qarshi ionlar ulushini hisoblaydi.</li>
+        <li>Ionlarning bog’lanish darajasini aniqlaydi.</li>
+      </ol>
+      <p class="note">ℹ Qo’llanmada bu ish uchun o’lchov raqamlari berilmagan. Dasturdagi oqish vaqtlari polielektrolit eritmasining o’quv modeli asosida hisoblangan <b>namunaviy (o’quv) qiymatlar</b>dir.</p>
+      <p class="small" id="voiceInfo">Ovozlar tekshirilmoqda…</p>
+      <p class="small">Klaviatura: <b>Probel</b> — ijro, <b>← →</b> — bosqichlar, <b>F</b> — to’liq ekran, <b>N</b> — nomlar, <b>M</b> — diktor, <b>T</b> — nazariya.</p>
+      <div class="who">
+        <label>Talabaning F.I.Sh<input id="iName" type="text" placeholder="Aliyev Vali" autocomplete="off"></label>
+        <label>Guruh<input id="iGroup" type="text" placeholder="KT-21" autocomplete="off"></label>
+      </div>
+      <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:12px">
+        <button class="btn big go" data-start="prac">✍ Mustaqil bajarish — talaba o’zi bajaradi</button>
+        <button class="btn big" data-start="demo">🎬 Namoyish — diktor ko’rsatadi</button>
+      </div>
+      <p class="small" id="introErr" style="color:var(--red);min-height:1.4em"></p>
+    </div>
+  </div>
+</div>
+
+<!-- REPORT -->
+<div class="ov" id="ovReport">
+  <div class="sheet">
+    <div class="hd">
+      <b style="font-size:24px;font-weight:700">📋 Yakuniy natija</b>
+      <div class="sp"></div>
+      <button class="btn" id="rSpeak">🎙 O’qib berish</button>
+      <button class="btn" id="rPrint">🖨 Chop etish / PDF</button>
+      <button class="btn" id="rAgain">⟲ Qaytadan</button>
+      <button class="btn red" id="rClose">✕ Yopish</button>
+    </div>
+    <div class="bd rep" id="repBody"></div>
+  </div>
+</div>
+
+<!-- THEORY -->
+<div class="ov" id="ovTheory">
+  <div class="sheet">
+    <div class="hd">
+      <div class="seg" id="thTabs" style="flex-wrap:wrap">
+        <button class="btn on" data-t="t1">Polielektrolitlar</button>
+        <button class="btn" data-t="t2">Gidrodinamik xossalar</button>
+        <button class="btn" data-t="t3">Hisoblash</button>
+        <button class="btn" data-t="t4">Reaktiv va jihozlar</button>
+        <button class="btn" data-t="t5">Savollar</button>
+      </div>
+      <div class="sp"></div>
+      <button class="btn" id="thSpeak">🎙 O’qib berish</button>
+      <button class="btn red" id="thClose">✕ Yopish</button>
+    </div>
+    <div class="bd">
+      <section id="t1">
+        <h2>Polielektrolitlar</h2>
+        <p>Makromolekulasining har bir zvenosida yoki ko’p zvenolarida ionlanuvchi guruhlar bo’lgan polimerlar <b>polielektrolitlar</b> deyiladi. Suvda ular dissotsilanib, ko’p zaryadli <b>makroion</b> va kichik molekulyar <b>qarama-qarshi ionlar</b> hosil qiladi.</p>
+        <h3>Sinflanishi</h3>
+        <ul>
+          <li><b>Polikislotalar</b> — poliakril va polimetakril kislotalari, polistirolsulfokislota: –COOH, –SO₃H guruhlar.</li>
+          <li><b>Poliasoslar</b> — polivinilpiridin, polietilenimin: –NH₂, =NH, piridin azoti.</li>
+          <li><b>Poliamfolitlar</b> — bir vaqtda kislotali va asosli guruhlar tutadi: oqsillar, akril kislota bilan vinilpiridin sopolimerlari.</li>
+        </ul>
+        <p>Kuchli polielektrolitlar (sulfokislotalar, to’rtlamchi ammoniy tuzlari) har qanday pH da to’liq ionlangan. Kuchsiz polielektrolitlarda (PAK) ionlanish darajasi pH ga va <b>neytrallanish darajasi α</b> ga bog’liq.</p>
+        <div class="formula">[–CH₂–CH(COOH)–]ₙ + m NaOH ⟶ [–CH₂–CH(COOH)–]ₙ₋ₘ[–CH₂–CH(COO⁻ Na⁺)–]ₘ + m H₂O &nbsp;&nbsp; α = m / n</div>
+        <h3>Potensiometrik titrlash</h3>
+        <p>Kichik molekulyar kislota uchun Genderson–Xasselbax tenglamasi pH = pK + lg(α/(1 − α)). Polikislotada har bir yangi proton zaryadlangan zanjirdan ajraladi, buning uchun qo’shimcha elektrostatik ish ΔG<sub>el</sub> sarflanadi:</p>
+        <div class="formula">pH = pK₀ + lg(α / (1 − α)) + 0,434 · ΔG<sub>el</sub> / RT &nbsp;&nbsp;yoki&nbsp;&nbsp; pH = pK<sub>a</sub> + n · lg(α / (1 − α)), &nbsp; n &gt; 1</div>
+        <p>Zaryad ortgan sari protonni ajratish qiyinlashadi, shuning uchun polikislotaning ko’rinma pK si neytrallanish darajasi bilan ortadi.</p>
+        <h3>Qarama-qarshi ionlarning bog’lanishi</h3>
+        <p>Makroion atrofida elektr maydoni kuchli bo’lgani uchun qarama-qarshi ionlarning (bu ishda Na⁺) katta qismi zanjir yaqinida ushlanib qoladi — ular <b>bog’langan</b> ionlar. Qolgan qismi eritmada erkin harakat qiladi. Erkin ionlar ulushi <b>i</b>, bog’lanish darajasi <b>1 − i</b>.</p>
+      </section>
+      <section id="t2" hidden>
+        <h2>Polielektrolit eritmalarining gidrodinamik xossalari</h2>
+        <div class="formula">η<sub>nis</sub> = η / η₀ ≈ t / t₀ &nbsp;·&nbsp; η<sub>sol</sub> = η<sub>nis</sub> − 1 &nbsp;·&nbsp; η<sub>kelt</sub> = η<sub>sol</sub> / C &nbsp;·&nbsp; [η] = lim (η<sub>sol</sub> / C) , C → 0</div>
+        <p>Neytral polimerlar uchun keltirilgan qovushqoqlik konsentratsiyaga chiziqli bog’liq (Xaggins tenglamasi): η<sub>sol</sub>/C = [η] + k<sub>X</sub>[η]²C. Polielektrolitlarda esa suv bilan suyultirganda η<sub>kelt</sub> kamaymaydi, aksincha keskin <b>ortadi</b> — bu <b>polielektrolit effekti</b>.</p>
+        <div class="mech">
+          <div class="card"><div class="n">1</div>Suvda –COO⁻Na⁺ guruhlar dissotsilanadi. Na⁺ ionlarining bir qismi zanjir yaqinida qoladi va zaryadlarni ekranlaydi.</div>
+          <div class="card"><div class="n">2</div>Suyultirilganda eritmaning ion kuchi kamayadi, erkin ionlar makroiondan uzoqlashadi, ekranlash zaiflashadi.</div>
+          <div class="card"><div class="n">3</div>Zanjirdagi bir xil ishorali zaryadlar bir-birini itaradi, o’ram yoyiladi, makromolekula egallagan hajm ortadi — η<sub>kelt</sub> ortadi.</div>
+          <div class="card"><div class="n">4</div>Tuz (NaCl) qo’shilsa, zaryadlar ekranlanadi, o’ram siqiladi va η<sub>kelt</sub> kamayadi.</div>
+        </div>
+        <p>Suvli eritmalar uchun Fuoss empirik tenglamasi:</p>
+        <div class="formula">η<sub>sol</sub> / C = A / (1 + B · √C)</div>
+        <h3>Izoion suyultirish</h3>
+        <p>Polielektrolit eritmasi suv bilan emas, balki shunday konsentratsiyali NaCl eritmasi bilan suyultiriladiki, eritmaning ion kuchi suyultirish davomida <b>o’zgarmaydi</b>. Bu holda o’ram o’lchami doimiy qoladi va η<sub>kelt</sub>–C bog’liqligi to’g’ri chiziq bo’ladi, uni C → 0 ga ekstrapolyatsiya qilib [η] topiladi.</p>
+        <ul>
+          <li>Tuz konsentratsiyasi katta bo’lsa — suyultirishda ion kuchi <b>ortadi</b>, η<sub>kelt</sub> kamayadi (egri pastga).</li>
+          <li>Tuz konsentratsiyasi kichik bo’lsa yoki suv bo’lsa — ion kuchi <b>kamayadi</b>, η<sub>kelt</sub> ortadi (egri yuqoriga).</li>
+          <li>Izoion sharoitda qo’shilgan tuz konsentratsiyasi polielektrolit eritmasidagi <b>erkin</b> qarama-qarshi ionlar konsentratsiyasiga teng:</li>
+        </ul>
+        <div class="formula">C<sub>NaCl</sub> = i · C<sub>tuz guruh</sub> &nbsp;→&nbsp; i = C<sub>NaCl</sub> / C<sub>tuz guruh</sub>; &nbsp; bog’lanish darajasi = 1 − i<br>C<sub>tuz guruh</sub> = α · C<sub>PAK</sub>(g/l) / M<sub>zveno</sub>, &nbsp; M<sub>zveno</sub> = 72 g/mol</div>
+        <p class="note">Dasturdagi oqish vaqtlari o’quv modelidan olingan (t₀ ≈ 84,6 s, izoion qator 0,00125 M NaCl, i ≈ 0,18). Ular haqiqiy tajriba natijasi emas — <b>namunaviy (o’quv) qiymatlar</b>.</p>
+      </section>
+      <section id="t3" hidden>
+        <h2>Hisoblash kalkulyatori</h2>
+        <h3>Qovushqoqlik</h3>
+        <div class="calc">
+          <label>t₀ (erituvchi), s<input id="k0" type="number" step="0.1" value="84.6"></label>
+          <label>t (eritma), s<input id="k1" type="number" step="0.1" value="290.0"></label>
+          <label>C, g/dl<input id="k2" type="number" step="0.001" value="0.1"></label>
+        </div>
+        <div class="res" id="kRes1"></div>
+        <h3>Qarama-qarshi ionlarning bog’lanishi</h3>
+        <div class="calc">
+          <label>C(PAK), g/dl<input id="k3" type="number" step="0.01" value="0.1"></label>
+          <label>Neytrallanish darajasi α<input id="k4" type="number" step="0.05" value="0.5"></label>
+          <label>M(zveno), g/mol<input id="k5" type="number" step="1" value="72"></label>
+          <label>Izoion C(NaCl), mol/l<input id="k6" type="number" step="0.00005" value="0.00125"></label>
+        </div>
+        <div class="res" id="kRes2"></div>
+      </section>
+      <section id="t4" hidden>
+        <h2>Reaktivlar va jihozlar</h2>
+        <h3>Reaktivlar</h3>
+        <p>Neytrallanish darajasi 0,5 bo’lgan poliakril kislotasining suvli eritmasi (~0,1 g/dl); NaCl eritmalari: 0,005 M; 0,0025 M; 0,00125 M; 0,000625 M; distillangan suv.</p>
+        <h3>Jihozlar</h3>
+        <p>Termostat (25 °C), Ubbelode viskozimetri, sekundomer, rezina nok, 10 ml li silindr, 10 ml li pipetka.</p>
+        <h3>Ishning bajarilish tartibi</h3>
+        <ol>
+          <li>Viskozimetrga 7 ml distillangan suv quyib, oqish vaqti t₀ aniqlanadi.</li>
+          <li>Suv to’kiladi, viskozimetr quritiladi, 7 ml PAK eritmasining oqish vaqti o’lchanadi.</li>
+          <li>Viskozimetrning o’zida ketma-ket 7 ml va 14 ml suv bilan suyultirib, har konsentratsiyada oqish vaqti o’lchanadi.</li>
+          <li>Har o’lchashda bir-biridan 0,2 s dan ko’p farq qilmaydigan 3 ta natija olinadi.</li>
+          <li>Yangi 7 ml PAK eritmasi o’qituvchi bergan C₁ konsentratsiyali NaCl bilan 3,5; 7 va 14 ml qo’shib suyultiriladi; so’ng C₂ bilan takrorlanadi.</li>
+          <li>Uchta η<sub>kelt</sub>–C egri chizig’i bitta grafikda chiziladi; to’g’ri chiziq bergan qator — izoion; [η], i va 1 − i topiladi.</li>
+        </ol>
+        <h3>Xavfsizlik</h3>
+        <ul>
+          <li>Viskozimetr nozik shisha asbob — uni faqat shtativ qisqichida ushlang, kapillyarni egmang.</li>
+          <li>Suyuqlikni og’iz bilan so’rmang — faqat rezina nok bilan.</li>
+          <li>Termostat elektr tarmog’iga ulangan: ho’l qo’l bilan tugmalarga tegmang.</li>
+          <li>Poliakril kislotasi eritmasi ko’zga tushsa, ko’p suv bilan yuving.</li>
+        </ul>
+      </section>
+      <section id="t5" hidden>
+        <h2>Nazorat savollari</h2>
+        <details><summary>1. Polielektrolit nima? Misollar keltiring.</summary>Zanjirida ionlanuvchi guruhlar bo’lgan polimer. Polikislotalar (PAK), poliasoslar (polivinilpiridin), poliamfolitlar (oqsillar).</details>
+        <details><summary>2. Nima uchun suv bilan suyultirganda η<sub>kelt</sub> ortadi?</summary>Ion kuchi kamayib, zanjirdagi zaryadlar ekranlanmay qoladi, ular bir-birini itaradi va o’ram yoyiladi. Makromolekula egallagan hajm ortgani uchun keltirilgan qovushqoqlik ortadi.</details>
+        <details><summary>3. Izoion suyultirish nima?</summary>Polielektrolit eritmasini ion kuchi o’zgarmaydigan konsentratsiyadagi tuz eritmasi bilan suyultirish. Bunda η<sub>kelt</sub>–C to’g’ri chiziq bo’ladi.</details>
+        <details><summary>4. Ko’p tuz bilan suyultirganda egri chiziq nima uchun pastga egiladi?</summary>Qo’shilgan tuz konsentratsiyasi erkin ionlarnikidan katta, suyultirishda ion kuchi ortadi, o’ram siqiladi va η<sub>kelt</sub> kamayadi.</details>
+        <details><summary>5. Bog’lanish darajasi qanday topiladi?</summary>Izoion qatordagi NaCl konsentratsiyasi erkin Na⁺ konsentratsiyasiga teng: i = C(NaCl) / C(tuz guruh); bog’lanish darajasi 1 − i.</details>
+        <details><summary>6. Nima uchun har o’lchashda 3 ta natija olinadi?</summary>Tasodifiy xatolarni (sekundomerni bosish, havo pufakchasi, chang) aniqlash uchun. Natijalar 0,2 s dan ko’p farq qilsa, o’lchash takrorlanadi.</details>
+        <details><summary>7. Potensiometrik titrlashda polikislotaning pK si nima uchun o’zgaradi?</summary>Zanjir zaryadi ortgan sari protonni ajratish uchun qo’shimcha elektrostatik ish (ΔG<sub>el</sub>) kerak bo’ladi, shuning uchun ko’rinma pK neytrallanish darajasi bilan ortadi.</details>
+      </section>
+    </div>
+  </div>
+</div>
+
+<script>
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const NS='http://www.w3.org/2000/svg';
+function el(tag,a,p){const e=document.createElementNS(NS,tag);for(const k in a)e.setAttribute(k,a[k]);if(p)p.appendChild(e);return e}
+const E={};document.querySelectorAll('[id]').forEach(n=>E[n.id]=n);
+const fx=(n,d)=>(d==null?String(n):(+n).toFixed(d)).replace('.',',');
+
+/* ---------- o’quv modeli (namunaviy qiymatlar) ---------- */
+const T0=84.6,C0=0.1,V0=7,AL=0.5,MZ=72,IB=0.18,KH=0.4;
+const SER=[
+ {n:'Suv',d:'distillangan suv',cs:0,adds:[7,14],c:'#3D7DFF',mk:'c',bot:0},
+ {n:'0,005 M NaCl',d:'0,005 M NaCl',cs:0.005,adds:[3.5,7,14],c:'#E84855',mk:'s',bot:2},
+ {n:'0,00125 M NaCl',d:'0,00125 M NaCl',cs:0.00125,adds:[3.5,7,14],c:'#22A45D',mk:'d',bot:3}];
+const ionI=(C,cs)=>cs*(1-C/C0)+IB*AL*10*C/MZ;
+const etaInt=I=>1+0.5/Math.sqrt(I);
+const etaRed=(C,cs)=>{const e=etaInt(ionI(C,cs));return e*(1+KH*e*C)};
+function mulberry(a){return()=>{a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+const RND=mulberry(Date.now()%1e6);
+const r1=v=>Math.round(v*10)/10, r2=v=>Math.round(v*100)/100;
+const D={};
+function read3(tt){return[0,1,2].map(()=>r1(tt+(RND()*2-1)*.08))}
+(function gen(){D.t0r=read3(T0);D.t0=r2(D.t0r.reduce((a,b)=>a+b)/3);
+ D.S=SER.map(s=>{let V=V0;const pts=[{C:C0,V,add:0}];s.adds.forEach(a=>{V+=a;pts.push({C:C0*V0/V,V,add:a})});
+  pts.forEach(p=>{p.Cr=Math.round(p.C*1e4)/1e4;p.r=read3(T0*(1+etaRed(p.C,s.cs)*p.C));p.tm=r2(p.r.reduce((a,b)=>a+b)/3);p.nis=p.tm/D.t0;p.sol=p.nis-1;p.kelt=p.sol/p.Cr});return{pts}});
+ const f=D.S[0].pts[0].r;D.out=[f[0],f[1],r1(f[2]+.6)];})();
+function lfit(P){const n=P.length,sx=P.reduce((a,p)=>a+p.x,0),sy=P.reduce((a,p)=>a+p.y,0),sxx=P.reduce((a,p)=>a+p.x*p.x,0),sxy=P.reduce((a,p)=>a+p.x*p.y,0);const b=(n*sxy-sx*sy)/(n*sxx-sx*sx);return{a:(sy-b*sx)/n,b}}
+const FIT=lfit(D.S[2].pts.map(p=>({x:p.Cr,y:p.kelt})));
+const CZ=C0*10/MZ,CG=AL*CZ,II=SER[2].cs/CG,BD=1-II;
+
+/* ---------- statik grafika ---------- */
+for(let k=0;k<12;k++){const a=k*Math.PI/6;el('line',{x1:690+48*Math.sin(a),y1:152-48*Math.cos(a),x2:690+(k%3?42:38)*Math.sin(a),y2:152-(k%3?42:38)*Math.cos(a),stroke:'#2B2B2B','stroke-width':k%3?2:4,'stroke-linecap':'round'},E.swTicks)}
+const BOT=[{n:'Suv',s:'distill.',c:'#BFE9FF',l:'#5EC4F5'},{n:'PAK',s:'0,1 g/dl',c:'#C9F2C4',l:'#7ED68C'},{n:'NaCl',s:'0,005 M',c:'#FFD0D5',l:'#F59AA6'},{n:'NaCl',s:'0,00125 M',c:'#D3F5DD',l:'#8FDDA8'}];
+const BX=[600,672,744,816];
+BOT.forEach((b,i)=>{const cx=BX[i],g=el('g',{},E.bottles);
+ el('rect',{x:cx-10,y:432,width:20,height:20,fill:'#F4FBFF',class:'ol','stroke-width':3},g);
+ el('rect',{x:cx-13,y:424,width:26,height:10,rx:3,fill:'#2B2B2B'},g);
+ el('rect',{x:cx-26,y:448,width:52,height:86,rx:13,fill:b.c,class:'ol','stroke-width':3},g);
+ el('rect',{x:cx-22,y:470,width:44,height:42,rx:7,fill:'#fff',stroke:'#2B2B2B','stroke-width':2},g);
+ el('text',{x:cx,y:489,'text-anchor':'middle',style:'font-family:var(--f);font-size:13px;font-weight:700;fill:#2B2B2B'},g).textContent=b.n;
+ el('text',{x:cx,y:505,'text-anchor':'middle',style:'font-family:var(--f);font-size:10.5px;fill:#6B5B45'},g).textContent=b.s});
+/* makroion o’rami geometriyasi */
+const CN=30,CPa=[],CPb=[],NAa=[],NAb=[],SALT=[];
+(function(){const r=mulberry(7);let x=230,y=320;for(let k=0;k<CN;k++){CPa.push([x,y]);for(let tr=0;tr<20;tr++){const a=r()*Math.PI*2,nx=x+15*Math.cos(a),ny=y+15*Math.sin(a);if(Math.hypot(nx-230,ny-320)<54){x=nx;y=ny;break}}}
+ for(let k=0;k<CN;k++)CPb.push([62+k*11.4,320+62*Math.sin(k*.42)+(r()-.5)*14]);
+ for(let k=1;k<CN;k+=2){const a=r()*Math.PI*2;NAa.push([CPa[k][0]+15*Math.cos(a),CPa[k][1]+15*Math.sin(a)]);
+  let px,py;do{px=50+r()*360;py=120+r()*400}while(CPb.some(p=>Math.hypot(p[0]-px,p[1]-py)<42));NAb.push([px,py])}
+ for(let k=0;k<12;k++)SALT.push([50+r()*360,120+r()*400,k%2])})();
+const BN=44,BP=[],BI0=[],BI1=[];
+(function(){const r=mulberry(11);for(let k=0;k<BN;k++)BP.push([490+k*8.2,315+46*Math.sin(k*.3)]);
+ for(let q=0;q<22;q++){const b=BP[2*q+1];BI0.push([480+r()*390,120+r()*390]);
+  if(q%5===2&&q<20){BI1.push([495+r()*360,r()<.5?130+r()*60:440+r()*60])}else{const s=q%2?1:-1;BI1.push([b[0]+(r()-.5)*6,b[1]+s*(16+r()*5)])}}})();
+
+/* ---------- holat ---------- */
+const BASE={scene:'visc',th:20,vy:0,vOp:1,res:0,men:470,t1:470,liq:'#5EC4F5',clamp:0,sq:0,pip:0,pipB:0,pipL:0,pStr:0,bot:-1,sw:0,swOn:0,bub:'',
+ rdC:'',rd:['','',''],rdM:'',air:0,
+ g0:0,g1:0,g2:0,gc0:0,gc1:0,gc2:0,gLine:0,gEta:0,gHL:-1,
+ coil:0,salt:0,bind:0,cTL:'',cTR:'',cSL:'',cSR1:'',cSR2:''};
+let S={...BASE,rd:['','','']};
+const PF={on:0};
+function resetState(){S={...BASE,rd:['','','']};PF.on=0;bathB.length=0;airB.length=0}
+
+/* ---------- audio ---------- */
+let AC=null,sfxOn=true,voiceOn=true,speed=1;
+const ac=()=>AC||(AC=new (window.AudioContext||window.webkitAudioContext)());
+let NB=null;function nbuf(){if(NB)return NB;const a=ac();NB=a.createBuffer(1,a.sampleRate*2,a.sampleRate);const d=NB.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=Math.random()*2-1;return NB}
+function tone(f1,f2,d,v=.15,type='sine',delay=0){if(!sfxOn)return;const a=ac(),t0=a.currentTime+delay,o=a.createOscillator(),g=a.createGain();o.type=type;o.frequency.setValueAtTime(f1,t0);o.frequency.exponentialRampToValueAtTime(f2,t0+d);g.gain.setValueAtTime(.0001,t0);g.gain.exponentialRampToValueAtTime(v,t0+.01);g.gain.exponentialRampToValueAtTime(.0001,t0+d);o.connect(g).connect(a.destination);o.start(t0);o.stop(t0+d+.05)}
+function noise(d,v,f,q=1,type='bandpass'){if(!sfxOn)return;const a=ac(),s=a.createBufferSource();s.buffer=nbuf();s.loop=true;const fl=a.createBiquadFilter();fl.type=type;fl.frequency.value=f;fl.Q.value=q;const g=a.createGain(),t0=a.currentTime;g.gain.setValueAtTime(.0001,t0);g.gain.linearRampToValueAtTime(v,t0+.08);g.gain.setValueAtTime(v,t0+Math.max(.1,d-.2));g.gain.linearRampToValueAtTime(.0001,t0+d);s.connect(fl).connect(g).connect(a.destination);s.start(t0);s.stop(t0+d+.05)}
+const SFX={
+ drip:()=>tone(1500,420,.09,.16),
+ bubble:()=>tone(260+Math.random()*400,700+Math.random()*700,.05+Math.random()*.04,.05),
+ pour:(d=1.5)=>noise(d/speed,.11,950,.7),
+ pump:()=>{noise(.35,.12,600,.9);tone(180,120,.25,.05,'triangle')},
+ click:()=>tone(1100,800,.035,.07,'square'),
+ tick:()=>tone(2400,2300,.025,.04,'square'),
+ clink:()=>{tone(2700,2600,.18,.07,'triangle');tone(4000,3900,.14,.04,'triangle',.02)},
+ ding:()=>{tone(880,880,.7,.1,'triangle');tone(1318,1318,.7,.07,'triangle',.09)},
+ pop:()=>tone(500,1200,.08,.08),
+ water:()=>noise(1.4,.07,520,.6),
+ buzz:()=>{tone(230,150,.28,.11,'square');tone(180,120,.3,.08,'square',.12)}};
+const LOOPS={};
+function startLoop(k){const a=ac(),g=a.createGain();g.gain.value=0;g.connect(a.destination);const nodes=[];let vol=.03;
+ const nz=(f,q,type)=>{const s=a.createBufferSource();s.buffer=nbuf();s.loop=true;const fl=a.createBiquadFilter();fl.type=type||'bandpass';fl.frequency.value=f;fl.Q.value=q;s.connect(fl).connect(g);s.start();nodes.push(s)};
+ if(k==='hum'){nz(140,1.5,'lowpass');const o=a.createOscillator();o.frequency.value=100;const og=a.createGain();og.gain.value=.15;o.connect(og).connect(g);o.start();nodes.push(o);vol=.035}
+ g.gain.linearRampToValueAtTime(vol,a.currentTime+.4);
+ return{stop(){const t=a.currentTime;g.gain.cancelScheduledValues(t);g.gain.setValueAtTime(g.gain.value,t);g.gain.linearRampToValueAtTime(0,t+.35);nodes.forEach(n=>n.stop(t+.4))}}}
+function loops(){const on=sfxOn&&AC;const want={hum:on&&S.scene==='visc'&&S.th>20.4};
+ for(const k in want){if(want[k]&&!LOOPS[k])LOOPS[k]=startLoop(k);else if(!want[k]&&LOOPS[k]){LOOPS[k].stop();LOOPS[k]=null}}}
+
+/* ---------- diktor ---------- */
+let voices=[],voice=null,userVoice=null;
+function rankVoice(v){if(/^uz/i.test(v.lang)||/uzbek|o.zbek/i.test(v.name))return 0;if(/^tr/i.test(v.lang))return 1;if(/^kk|^ky|^az/i.test(v.lang))return 2;if(/^en/i.test(v.lang))return 3;return 9}
+function loadVoices(){if(!('speechSynthesis' in window)){E.voiceInfo.textContent='Bu brauzer ovozli o’qishni qo’llamaydi — matn ekranda ko’rsatiladi.';return}
+ voices=speechSynthesis.getVoices().slice().sort((a,b)=>rankVoice(a)-rankVoice(b));
+ E.sVoice.innerHTML='';voices.forEach((v,i)=>{const o=document.createElement('option');o.value=i;o.textContent=`${v.name.replace(/Microsoft |Online \(Natural\) - /g,'')} (${v.lang})`;E.sVoice.appendChild(o)});
+ voice=userVoice&&voices.includes(userVoice)?userVoice:(voices[0]||null);if(voice)E.sVoice.value=voices.indexOf(voice);
+ const uz=voices.find(v=>rankVoice(v)===0);
+ E.voiceInfo.innerHTML=uz?`🎙 Diktor ovozi: <b>${uz.name}</b> — o’zbek tilida.`:`⚠ Bu kompyuterda o’zbekcha ovoz topilmadi. Eng yaxshi natija uchun faylni <b>Microsoft Edge</b> brauzerida oching (Madina / Sardor ovozlari). Hozircha ${voice?voice.name:'standart'} ovozi ishlatiladi, matn ekranda ko’rinadi.`}
+if('speechSynthesis' in window){loadVoices();speechSynthesis.onvoiceschanged=loadVoices}
+E.sVoice.onchange=()=>{userVoice=voice=voices[+E.sVoice.value]};
+let wordSpans=[];
+function setSay(text){E.say.innerHTML='';wordSpans=[];let idx=0;text.split(/(\s+)/).forEach(tok=>{if(/^\s+$/.test(tok)||!tok){E.say.appendChild(document.createTextNode(tok))}else{const s=document.createElement('span');s.className='w';s.textContent=tok;s.dataset.s=idx;E.say.appendChild(s);wordSpans.push(s)}idx+=tok.length})}
+function hlAt(ci){let c=null;for(const s of wordSpans){if(+s.dataset.s<=ci)c=s;else break}wordSpans.forEach(s=>s.classList.toggle('cur',s===c))}
+function speak(text,t,hl=true){return new Promise(res=>{
+ const me={dead:false};if(speak.cur)speak.cur.dead=true;speak.cur=me;const dead=()=>t.dead||me.dead;const H=hl?hlAt:()=>{};
+ const words=text.split(/\s+/).length;
+ if(!voiceOn||!('speechSynthesis' in window)||!voices.length){const ms=Math.max(2500,words*330)/speed;let k=0;const iv=setInterval(()=>{if(dead()){clearInterval(iv);return res()}k+=200;H(text.length*k/ms);if(k>=ms){clearInterval(iv);H(-1);res()}},200);return}
+ speechSynthesis.cancel();const parts=[];const re=/[^.!?]+[.!?]*/g;let m;while((m=re.exec(text))){if(m[0].trim())parts.push({s:m.index+(m[0].length-m[0].trimStart().length),txt:m[0].trim()})}
+ let i=0;const next=()=>{if(dead()||i>=parts.length){H(-1);return res()}const p=parts[i];const u=new SpeechSynthesisUtterance(p.txt);if(voice){u.voice=voice;u.lang=voice.lang}else u.lang='uz-UZ';u.rate=.95;
+  let done=false;const fin=()=>{if(done)return;done=true;clearTimeout(guard);i++;next()};const guard=setTimeout(fin,p.txt.length*140+4000);
+  u.onboundary=e=>H(p.s+(e.charIndex||0));u.onstart=()=>H(p.s);u.onend=fin;u.onerror=fin;speechSynthesis.speak(u)};next()})}
+
+/* ---------- animatsiya yordamchilari ---------- */
+class Cancel extends Error{}
+function hex(h){h=h.replace('#','');return[0,2,4].map(i=>parseInt(h.substr(i,2),16))}
+function mix(a,b,t){const pa=hex(a),pb=hex(b);return'#'+pa.map((v,i)=>Math.round(v+(pb[i]-v)*t).toString(16).padStart(2,'0')).join('')}
+function ctx(t){const chk=()=>{if(t.dead)throw new Cancel()};return{
+ W:ms=>{chk();if(t.fast)return Promise.resolve();return new Promise((r,j)=>setTimeout(()=>t.dead?j(new Cancel()):r(),ms/speed))},
+ T:(o,ms=1000)=>{chk();if(t.fast){Object.assign(S,o);return Promise.resolve()}const from={};for(const k in o)from[k]=S[k];const t0=performance.now(),dur=ms/speed;
+  return new Promise((r,j)=>{(function f(now){if(t.dead)return j(new Cancel());const p=Math.min(1,(now-t0)/dur),e=p<.5?2*p*p:1-Math.pow(-2*p+2,2)/2;
+   for(const k in o){const a=from[k],b=o[k];S[k]=(typeof b==='string'&&b[0]==='#')?mix(a,b,e):(typeof b==='number'?a+(b-a)*e:b)}p<1?requestAnimationFrame(f):r()})(t0)})},
+ L:(o,ms=1000)=>{chk();if(t.fast){Object.assign(S,o);return Promise.resolve()}const from={};for(const k in o)from[k]=S[k];const t0=performance.now(),dur=ms/speed;
+  return new Promise((r,j)=>{(function f(now){if(t.dead)return j(new Cancel());const p=Math.min(1,(now-t0)/dur);for(const k in o)S[k]=from[k]+(o[k]-from[k])*p;p<1?requestAnimationFrame(f):r()})(t0)})},
+ set:o=>{chk();Object.assign(S,o)},
+ fast:()=>t.fast,
+ sfx:(n,...a)=>{if(!t.fast&&!t.dead&&SFX[n])SFX[n](...a)}}}
+
+/* ---------- bosqichlar kutubxonasi ---------- */
+const mean3=a=>a.reduce((x,y)=>x+y,0)/a.length;
+const lvl=ml=>518-ml/32*60;
+async function pipPour(c,b,ml){c.set({pipB:b,bot:b});c.sfx('clink');await c.T({pipL:1},700);await c.T({pip:1},900);
+ const nl=S.res>0?mix(S.liq,BOT[b].l,ml/(S.res+ml)):BOT[b].l;c.set({pStr:1});c.sfx('pour',1.3);await c.T({pipL:0,res:S.res+ml,liq:nl},1300);c.set({pStr:0});await c.T({pip:0},700);c.set({bot:-1})}
+async function drain(c){c.set({bub:'Viskozimetr bo’shatiladi'});c.sfx('water');await c.T({res:0,men:470},900);c.set({rd:['','',''],rdM:'',rdC:'',sw:0});await c.W(300);c.set({bub:'Quritildi ✓'});await c.W(500)}
+async function mixWait(c){c.set({clamp:1,air:1,bub:'Nok bilan aralashtiramiz'});for(let k=0;k<3;k++){c.sfx('pump');await c.T({sq:1},260);await c.T({sq:0},260)}
+ c.set({air:0,clamp:0,bub:'Harorat tenglashmoqda…'});await c.T({sw:300},1400);c.set({sw:0})}
+async function runOne(c,tt,idx,full){
+ if(full){c.set({clamp:1,bub:'2-naycha berkitildi'});c.sfx('click');await c.W(350);c.sfx('pump');await c.T({sq:1,men:150},900);await c.T({sq:0},300);
+  c.set({clamp:0,bub:'Meniskusni kuzating!'});c.sfx('click');const K=Math.max(8,tt/7),v=84/tt;
+  await c.L({men:168},18/v/K*1000);c.sfx('tick');c.set({swOn:1,sw:0});await c.L({men:252,sw:tt},tt/K*1000);c.set({swOn:0});c.sfx('tick');await c.L({men:404},(152/v)/K*1000*.4);c.set({men:470})}
+ else{c.set({sw:0,swOn:1});await c.L({sw:tt},650);c.set({swOn:0});c.sfx('tick')}
+ const rd=[...S.rd];rd[idx]=`${idx+1}) ${fx(tt,1)} s`;c.set({rd});await c.W(250)}
+async function measure3(c,reads,label,full){c.set({rdC:label,rd:['','',''],rdM:''});
+ for(let k=0;k<3;k++)await runOne(c,reads[k],k,full&&k===0);
+ c.set({rdM:`o’rtacha: ${fx(r2(mean3(reads)),2)} s`,bub:`t = ${fx(r2(mean3(reads)),2)} s`});c.sfx('ding')}
+const lab=(q,j)=>{const p=D.S[q].pts[j];return`${j?SER[q].d+' bilan · ':'PAK · '}C = ${fx(p.Cr,4)} g/dl · V = ${fx(p.V,1)} ml`};
+async function series(c,q,firstFull){await drain(c);c.set({bub:'7 ml PAK eritmasi'});await pipPour(c,1,7);
+ await measure3(c,D.S[q].pts[0].r,lab(q,0),firstFull);
+ for(let j=1;j<D.S[q].pts.length;j++){const p=D.S[q].pts[j];c.set({bub:`+ ${fx(p.add)} ml ${q?'NaCl':'suv'}`});await pipPour(c,SER[q].bot,p.add);await mixWait(c);await measure3(c,p.r,lab(q,j),false)}}
+const stPrep=async c=>{c.set({scene:'visc',vy:-520,th:20,bub:'Termostatni yoqamiz'});c.sfx('click');await c.T({th:25},3200);
+ c.set({bub:'Viskozimetr o’rnatiladi'});c.sfx('clink');await c.T({vy:0},1400);c.set({bub:'15 daqiqa kutamiz'});await c.T({sw:900},2600);c.set({sw:0,bub:'Tayyor ✓'});c.sfx('ding');await c.W(400)};
+const stT0=async c=>{c.set({scene:'visc',bub:'7 ml distillangan suv'});await pipPour(c,0,7);await measure3(c,D.t0r,'Distillangan suv · V = 7 ml',true);c.set({bub:`t₀ = ${fx(D.t0,2)} s`})};
+const stPak=async c=>{c.set({scene:'visc'});await drain(c);c.set({bub:'7 ml PAK eritmasi'});await pipPour(c,1,7);await measure3(c,D.S[0].pts[0].r,lab(0,0),true);c.set({bub:`η kelt = ${fx(D.S[0].pts[0].kelt,1)} dl/g`})};
+const stDilW=async c=>{c.set({scene:'visc'});for(let j=1;j<3;j++){const p=D.S[0].pts[j];c.set({bub:`+ ${fx(p.add)} ml suv`});await pipPour(c,0,p.add);await mixWait(c);await measure3(c,p.r,lab(0,j),j===1)}};
+const stEffect=async c=>{c.set({scene:'graph',g0:1,gc0:0});await c.W(600);for(let k=2;k<=3;k++){c.sfx('pop');c.set({g0:k});await c.W(650)}await c.T({gc0:1},1600);await c.W(1500);
+ c.set({scene:'coil',coil:0,salt:0,bind:0,cTL:'Suv bilan suyultiramiz',cTR:'Na⁺ ionlari eritmada',cSL:'',cSR1:'',cSR2:''});await c.W(700);await c.T({coil:1},3600);c.set({cSL:'O’ram yoyildi → η kelt ortdi'});c.sfx('ding');await c.W(1800);
+ c.set({cTL:'NaCl qo’shilsa'});await c.T({salt:1,coil:.12},3000);c.set({cSL:'Zaryadlar ekranlandi → o’ram siqildi'});c.sfx('ding');await c.W(600)};
+const stSalt=q=>async c=>{c.set({scene:'visc'});await series(c,q,false);c.set({bub:'Qator o’lchandi ✓'})};
+const stGraph=async c=>{c.set({scene:'graph',g0:3,gc0:1,g1:0,g2:0,gc1:0,gc2:0,gLine:0,gEta:0,gHL:-1});await c.W(500);
+ for(let k=1;k<=4;k++){c.sfx('pop');c.set({g1:k});await c.W(450)}await c.T({gc1:1},1300);
+ for(let k=1;k<=4;k++){c.sfx('pop');c.set({g2:k});await c.W(450)}await c.W(500);c.set({gHL:2});await c.T({gLine:1},2200);c.sfx('ding');c.set({gEta:1});await c.W(600)};
+const stBind=async c=>{c.set({scene:'coil',coil:.12,salt:1,bind:0,cTL:'Izoion sharoit: 0,00125 M NaCl',cTR:'22 ta Na⁺ ioni',cSL:'Ion kuchi o’zgarmaydi',cSR1:'',cSR2:''});await c.W(800);
+ await c.T({bind:1},4200);c.set({cSR1:`bog’langan: 18 ta (${fx(Math.round(BD*100))} %) → 1 − i = ${fx(BD,2)}`});c.sfx('ding');await c.W(700);c.set({cSR2:`erkin: 4 ta (${fx(Math.round(II*100))} %) → i = ${fx(II,2)}`});c.sfx('ding');await c.W(500)};
+
+const EQ=`η<sub>nis</sub> = t / t₀ · η<sub>sol</sub> = η<sub>nis</sub> − 1<br>η<sub>kelt</sub> = η<sub>sol</sub> / C &nbsp; (dl/g)<br>suyultirish: C = C₀ · V₀ / V<br><b>izoion:</b> C<sub>NaCl</sub> = i · C<sub>tuz guruh</sub><br>bog’lanish darajasi = 1 − i`;
+const STEPS=[
+{t:'Termostat va viskozimetrni tayyorlash',act:stPrep,
+ say:'Birinchi bosqich. Termostatni yoqib, haroratni yigirma besh darajaga sozlaymiz. Toza va quruq Ubbelode viskozimetrini termostatga tik holda o’rnatamiz. Viskozimetr va termostat harorati tenglashishi uchun o’n besh daqiqa kutamiz. Qovushqoqlik haroratga juda sezgir, shuning uchun harorat o’zgarmasligi kerak.',
+ det:['Termostat: <b>25,0 ± 0,1 °C</b>','Viskozimetr toza, quruq, <b>tik</b> holda','Haroratni tenglash: <b>15 min</b>','Jihozlar: termostat, Ubbelode viskozimetri, sekundomer, rezina nok, 10 ml pipetka, 10 ml silindr','Viskozimetr nozik — kapillyarni egmang']},
+{t:'Suvning oqish vaqti t₀',act:stT0,
+ say:'Ikkinchi bosqich. Pipetka bilan viskozimetrning keng naychasiga yetti millilitr distillangan suv quyamiz. Ikkinchi, havo naychasini berkitamiz va rezina nok bilan suvni o’lchov sharchasining yuqorisigacha ko’taramiz. Naychani ochamiz. Meniskus yuqori belgidan o’tganda sekundomerni yoqamiz, pastki belgiga yetganda to’xtatamiz. O’lchashni uch marta takrorlaymiz. Natijalar bir-biridan ko’pi bilan nol butun o’ndan ikki soniya farq qilishi kerak.',
+ det:['Distillangan suv: <b>7 ml</b> (pipetkada)','2-naycha berkitiladi, suyuqlik nok bilan 3-naychadan so’riladi','Sekundomer: <b>yuqori belgi → pastki belgi</b>','3 ta natija, farqi <b>≤ 0,2 s</b>',`Namunaviy natija: t₀ = <b>${fx(D.t0,2)} s</b>`]},
+{t:'PAK eritmasining oqish vaqti',act:stPak,
+ say:'Uchinchi bosqich. Suvni to’kib, viskozimetrni quritamiz. Unga yetti millilitr qisman neytrallangan poliakril kislotasi eritmasini quyamiz. Eritmada har decilitrda nol butun o’ndan bir gramm polimer bor. Oqish vaqtini xuddi shunday uch marta o’lchaymiz. So’ng nisbiy, solishtirma va keltirilgan qovushqoqlikni hisoblaymiz.',
+ det:['PAK, neytrallanish darajasi <b>α = 0,5</b>','C₀ = <b>0,1 g/dl</b>, V₀ = 7 ml','η<sub>nis</sub> = t / t₀ ; η<sub>sol</sub> = η<sub>nis</sub> − 1','η<sub>kelt</sub> = η<sub>sol</sub> / C',`Natija: t = ${fx(D.S[0].pts[0].tm,2)} s → η<sub>kelt</sub> = <b>${fx(D.S[0].pts[0].kelt,1)} dl/g</b>`]},
+{t:'Suv bilan suyultirish',act:stDilW,
+ say:'To’rtinchi bosqich. Eritmani viskozimetrning o’zida suyultiramiz. Avval yetti millilitr, so’ng yana o’n to’rt millilitr distillangan suv qo’shamiz. Har qo’shgandan keyin nok bilan havo yuborib aralashtiramiz, harorat tenglashishini kutamiz va oqish vaqtini uch marta o’lchaymiz.',
+ det:['7 ml PAK + 7 ml suv → V = 14 ml, <b>C = 0,05 g/dl</b>','+ 14 ml suv → V = 28 ml, <b>C = 0,025 g/dl</b>','C = C₀ · V₀ / V','Har suyultirishdan keyin aralashtirish va 5–10 min kutish']},
+{t:'Polielektrolit effekti',act:stEffect,
+ say:'Beshinchi bosqich. Suv bilan suyultirganda keltirilgan qovushqoqlik kamaymaydi, aksincha ortadi. Bu polielektrolit effekti deyiladi. Suyultirilganda eritmaning ion kuchi kamayadi, zanjirdagi manfiy zaryadlar ekranlanmay qoladi va bir-birini itaradi. Makromolekula o’rami yoyilib, katta hajm egallaydi. Natriy xlorid qo’shilsa, zaryadlar ekranlanadi va o’ram yana siqiladi. Suvli qatorni nol konsentratsiyaga ekstrapolyatsiya qilib bo’lmaydi.',
+ det:['Suvda: C kamaysa → η<sub>kelt</sub> <b>ortadi</b>','Sabab: –COO⁻ guruhlarning itarilishi, o’ram yoyiladi','Suyultirishda ion kuchi kamayadi','Tuz qo’shilsa — ekranlanish, o’ram siqiladi','Egri chiziqdan [η] ni topib bo’lmaydi']},
+{t:'Tuz bilan suyultirish: 0,005 M NaCl',act:stSalt(1),
+ say:'Oltinchi bosqich. Viskozimetrni yuvib quritamiz va yangi yetti millilitr poliakril kislotasi eritmasini quyamiz. Uni o’qituvchi bergan birinchi natriy xlorid eritmasi bilan suyultiramiz. Bu eritmaning har litrida besh millimol tuz bor. Ketma-ket uch yarim, yetti va o’n to’rt millilitr qo’shib, har safar oqish vaqtini o’lchaymiz.',
+ det:['Yangi 7 ml PAK (C₀ = 0,1 g/dl)','Suyultiruvchi: <b>C₁ = 0,005 M NaCl</b>','Qo’shiladi: <b>3,5 → 7 → 14 ml</b>','V: 10,5 → 17,5 → 31,5 ml','C: 0,0667 → 0,04 → 0,0222 g/dl']},
+{t:'Tuz bilan suyultirish: 0,00125 M NaCl',act:stSalt(2),
+ say:'Yettinchi bosqich. Tajribani ikkinchi natriy xlorid eritmasi bilan takrorlaymiz. Bu eritmaning har litrida bir butun yuzdan yigirma besh millimol tuz bor. Yana yangi yetti millilitr polimer eritmasiga uch yarim, yetti va o’n to’rt millilitr tuz eritmasi qo’shib, oqish vaqtlarini o’lchaymiz.',
+ det:['Yangi 7 ml PAK (C₀ = 0,1 g/dl)','Suyultiruvchi: <b>C₂ = 0,00125 M NaCl</b>','Qo’shiladi: <b>3,5 → 7 → 14 ml</b>','Har konsentratsiyada 3 ta natija, farqi ≤ 0,2 s']},
+{t:'Grafik va izoion sharoit',act:stGraph,
+ say:'Sakkizinchi bosqich. Uchala qator uchun keltirilgan qovushqoqlikning konsentratsiyaga bog’liqligini bitta grafikda chizamiz. Suv bilan suyultirilganda egri chiziq yuqoriga ko’tariladi. Besh millimolli tuz bilan pastga tushadi, chunki tuz ortiqcha. Bir butun yuzdan yigirma besh millimolli tuz bilan esa nuqtalar to’g’ri chiziqda yotadi. Demak, bu izoion suyultirish sharoiti. To’g’ri chiziqni nol konsentratsiyagacha davom ettirib, xarakteristik qovushqoqlikni topamiz.',
+ det:['Suv: egri chiziq ↑ (polielektrolit bo’kishi)','0,005 M: egri chiziq ↓ (tuz ortiqcha)','0,00125 M: <b>to’g’ri chiziq — izoion</b>',`C → 0: [η] = <b>${fx(FIT.a,1)} dl/g</b>`]},
+{t:'Ionlarning bog’lanish darajasi',act:stBind,
+ say:'To’qqizinchi bosqich. Izoion sharoitda qo’shilgan tuz konsentratsiyasi eritmadagi erkin qarama-qarshi ionlar konsentratsiyasiga teng. Polimer konsentratsiyasi litrda bir gramm, zveno massasi yetmish ikki. Demak, zvenolar konsentratsiyasi litrda taxminan o’n to’rt millimol, tuz guruhlari esa ikki marta kam, ya’ni yetti millimol atrofida. Bog’lanmagan ionlar ulushi nol butun o’n sakkiz, bog’lanish darajasi esa nol butun sakson ikki. Demak, natriy ionlarining sakson ikki foizi makroion bilan bog’langan.',
+ det:['0,1 g/dl = <b>1 g/l</b>',`C<sub>zveno</sub> = 1 / 72 = <b>${fx(CZ,4)} mol/l</b>`,`C<sub>tuz guruh</sub> = 0,5 · ${fx(CZ,4)} = <b>${fx(CG,5)} mol/l</b>`,`i = 0,00125 / ${fx(CG,5)} = <b>${fx(II,2)}</b>`,`Bog’lanish darajasi 1 − i = <b>${fx(BD,2)}</b>`]}
+];
+
+/* ---------- grafik ---------- */
+const GX0=90,GX1=585,GY0=70,GY1=515,GCM=.11,GVM=45;
+const GX=C=>GX0+C/GCM*(GX1-GX0),GY=v=>GY1-Math.max(0,Math.min(GVM,v))/GVM*(GY1-GY0);
+const FF=`font-family="Fredoka,'Segoe UI',sans-serif"`;
+function mk(q,x,y,r=7){const c=SER[q].c;x=x.toFixed(1);y=y.toFixed(1);
+ if(q===0)return`<circle cx="${x}" cy="${y}" r="${r}" fill="${c}" stroke="#2B2B2B" stroke-width="2"/>`;
+ if(q===1)return`<rect x="${x-r}" y="${y-r}" width="${2*r}" height="${2*r}" rx="2" fill="${c}" stroke="#2B2B2B" stroke-width="2"/>`;
+ return`<path d="M${x} ${y-r-2} L${+x+r+2} ${y} L${x} ${+y+r+2} L${x-r-2} ${y} Z" fill="${c}" stroke="#2B2B2B" stroke-width="2"/>`}
+function plotG(o,tbl=true){let s=`<rect x="20" y="20" width="${tbl?578:860}" height="560" rx="22" fill="#fff" class="ol"/>`;
+ for(let v=0;v<=GVM;v+=5){const y=GY(v).toFixed(1);s+=`<line x1="${GX0}" x2="${GX1}" y1="${y}" y2="${y}" stroke="#F0E6CC" stroke-width="1.5"/><text x="${GX0-10}" y="${+y+5}" text-anchor="end" ${FF} font-size="13" fill="#6B5B45">${v}</text>`}
+ for(let k=0;k<=5;k++){const C=k*.02,x=GX(C).toFixed(1);s+=`<line x1="${x}" x2="${x}" y1="${GY0}" y2="${GY1}" stroke="#F4ECD6" stroke-width="1.5"/><text x="${x}" y="${GY1+22}" text-anchor="middle" ${FF} font-size="13" fill="#6B5B45">${fx(C,2)}</text>`}
+ s+=`<line x1="${GX0}" y1="${GY1}" x2="${GX1+8}" y2="${GY1}" stroke="#2B2B2B" stroke-width="3.5" stroke-linecap="round"/><line x1="${GX0}" y1="${GY1}" x2="${GX0}" y2="${GY0-12}" stroke="#2B2B2B" stroke-width="3.5" stroke-linecap="round"/>`;
+ s+=`<text x="${GX1+8}" y="${GY1+46}" text-anchor="end" ${FF} font-size="15" font-weight="600" fill="#2B2B2B">C, g/dl</text><text x="${GX0+8}" y="${GY0-20}" ${FF} font-size="15" font-weight="600" fill="#2B2B2B">η kelt = η sol / C, dl/g</text>`;
+ const n=[o.g0,o.g1,o.g2].map(v=>Math.floor(v+1e-6)),gc=[o.gc0,o.gc1,o.gc2];
+ [0,1].forEach(q=>{if(gc[q]>0){const pts=[],cm=D.S[q].pts[D.S[q].pts.length-1].C,c1=.1,ce=c1-(c1-cm)*Math.min(1,gc[q]);for(let C=c1;C>=ce-1e-9;C-=(c1-cm)/40)pts.push(`${GX(C).toFixed(1)},${GY(etaRed(C,SER[q].cs)).toFixed(1)}`);
+  s+=`<polyline points="${pts.join(' ')}" fill="none" stroke="${SER[q].c}" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>`}});
+ if(o.gLine>0){const cm=D.S[2].pts[3].Cr,x0c=.105,xe=x0c-x0c*Math.min(1,o.gLine),L=C=>FIT.a+FIT.b*C;const xs=Math.max(xe,cm);
+  s+=`<line x1="${GX(x0c).toFixed(1)}" y1="${GY(L(x0c)).toFixed(1)}" x2="${GX(xs).toFixed(1)}" y2="${GY(L(xs)).toFixed(1)}" stroke="${SER[2].c}" stroke-width="${o.gHL===2?5:3.5}" stroke-linecap="round"/>`;
+  if(xe<cm)s+=`<line x1="${GX(cm).toFixed(1)}" y1="${GY(L(cm)).toFixed(1)}" x2="${GX(xe).toFixed(1)}" y2="${GY(L(xe)).toFixed(1)}" stroke="${SER[2].c}" stroke-width="3" stroke-dasharray="8 7" stroke-linecap="round"/>`}
+ D.S.forEach((sr,q)=>sr.pts.slice(0,n[q]).forEach(p=>s+=mk(q,GX(p.Cr),GY(p.kelt))));
+ if(o.gHL===2&&o.gLine>.5)s+=`<rect x="${GX(.052)}" y="${GY(FIT.a+FIT.b*.052)+12}" width="78" height="26" rx="13" fill="#22A45D" stroke="#2B2B2B" stroke-width="2"/><text x="${GX(.052)+39}" y="${GY(FIT.a+FIT.b*.052)+30}" text-anchor="middle" ${FF} font-size="14" font-weight="600" fill="#fff">izoion</text>`;
+ if(o.gEta){const x=GX(0),y=GY(FIT.a);s+=`<circle cx="${x}" cy="${y.toFixed(1)}" r="9" fill="#FFD54F" stroke="#2B2B2B" stroke-width="3"/><rect x="${x+14}" y="${y-48}" width="150" height="32" rx="16" fill="#FFD54F" stroke="#2B2B2B" stroke-width="2.5"/><text x="${x+89}" y="${y-27}" text-anchor="middle" ${FF} font-size="16" font-weight="700" fill="#2B2B2B">[η] = ${fx(FIT.a,1)} dl/g</text>`}
+ if(!tbl)return s;
+ s+=`<rect x="612" y="20" width="270" height="560" rx="22" fill="#fff" class="ol"/><text x="747" y="52" text-anchor="middle" ${FF} font-size="19" font-weight="700" fill="#2B2B2B">Natijalar</text>`;
+ let y=80;s+=`<text x="${634}" y="${y}" ${FF} font-size="12.5" fill="#6B5B45">C, g/dl</text><text x="${730}" y="${y}" ${FF} font-size="12.5" fill="#6B5B45" text-anchor="middle">t, s</text><text x="${862}" y="${y}" ${FF} font-size="12.5" fill="#6B5B45" text-anchor="end">η kelt</text>`;y+=10;
+ SER.forEach((sr,q)=>{y+=24;s+=mk(q,640,y-5,6)+`<text x="656" y="${y}" ${FF} font-size="15" font-weight="600" fill="${sr.c}">${q?sr.n:'Suv bilan'}</text>`;
+  D.S[q].pts.forEach((p,j)=>{y+=24;const on=j<n[q];s+=`<text x="634" y="${y}" ${FF} font-size="14" fill="#2B2B2B" opacity="${on?1:.25}">${fx(p.Cr,4)}</text><text x="730" y="${y}" ${FF} font-size="14" fill="#2B2B2B" text-anchor="middle" opacity="${on?1:.25}">${on?fx(p.tm,2):'…'}</text><text x="862" y="${y}" ${FF} font-size="14" font-weight="600" fill="#2B2B2B" text-anchor="end" opacity="${on?1:.25}">${on?fx(p.kelt,1):'…'}</text>`});y+=6});
+ s+=`<text x="634" y="${y+30}" ${FF} font-size="13" fill="#6B5B45">t₀ (suv) = ${fx(D.t0,2)} s</text><text x="634" y="${y+52}" ${FF} font-size="12" fill="#6B5B45">namunaviy (o’quv) qiymatlar</text>`;
+ return s}
+
+/* ---------- chizish (render) ---------- */
+const bathB=[],airB=[];
+let last=performance.now(),propA=0,gKey='',lastTick=0;
+const SC=['visc','graph','coil'];
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+function A(e,k,v){e.setAttribute(k,v)}
+function swFmt(s){return s>=600?`${Math.round(s/60)} min`:fx(s,1)+' s'}
+function lerpP(a,b,t){return[a[0]+(b[0]-a[0])*t,a[1]+(b[1]-a[1])*t]}
+function frame(now){const dt=Math.min(.05,(now-last)/1000);last=now;
+ for(const k of SC){const g=E['sc-'+k],on=S.scene===k;if(g._on!==on){g._on=on;g.style.opacity=on?1:0;g.style.pointerEvents=on?'auto':'none'}}
+ if(PF.on){const tau=(now-PF.start)/1000*PF.K,v=84/PF.tt;S.men=Math.min(404,150+v*tau);if(PF.swRun)S.sw=(now-PF.swStart)/1000*PF.K;if(S.men>=404){PF.on=0;S.men=470;if(PF.swRun){PF.swRun=0;S.swOn=0;PF.late=1}}}
+ if(S.scene==='visc'){
+  A(E.gVisc,'transform',`translate(0 ${S.vy.toFixed(1)})`);
+  E.thTxt.textContent=fx(S.th,1)+'°';A(E.thLamp,'fill',S.th>20.4?'#B6FF3B':'#ccc');const my=398-(S.th-15)*12;A(E.merc,'y',my);A(E.merc,'height',400-my);
+  if(S.th>20.4){propA+=dt*14;A(E.prop,'transform',`translate(440 524) scale(${Math.cos(propA).toFixed(2)} 1) translate(-440 -524)`);if(Math.random()<dt*6)bathB.push({x:430+Math.random()*20,y:512,r:2+Math.random()*3,v:50+Math.random()*40})}
+  let s='';for(let i=bathB.length-1;i>=0;i--){const b=bathB[i];b.y-=b.v*dt;b.x+=Math.sin(b.y/14)*.5;if(b.y<178)bathB.splice(i,1);else s+=`<circle cx="${b.x.toFixed(1)}" cy="${b.y.toFixed(1)}" r="${b.r.toFixed(1)}" fill="#fff" opacity=".7" stroke="#3D9BE0" stroke-width="1.2"/>`}E.bB.innerHTML=s;
+  const ly=S.res>0?lvl(S.res):520;A(E.resL,'y',ly);A(E.resL,'height',Math.max(0,520-ly));A(E.resL,'fill',S.liq);
+  A(E.t1L,'y',Math.min(470,ly));A(E.t1L,'height',Math.max(0,470-ly));A(E.t1L,'fill',S.liq);
+  A(E.colL,'y',S.men);A(E.colL,'height',Math.max(0,472-S.men));A(E.colL,'fill',S.liq);A(E.colL,'opacity',S.men<469?1:0);
+  if(S.air&&Math.random()<dt*30)airB.push({x:250+Math.random()*60,y:512,r:2+Math.random()*3,v:60+Math.random()*50});
+  s='';for(let i=airB.length-1;i>=0;i--){const b=airB[i];b.y-=b.v*dt;if(b.y<ly)airB.splice(i,1);else s+=`<circle cx="${b.x.toFixed(1)}" cy="${b.y.toFixed(1)}" r="${b.r.toFixed(1)}" fill="#fff" stroke="#2B2B2B" stroke-width="1"/>`}
+  if(S.air&&sfxOn&&AC&&Math.random()<dt*8)SFX.bubble();
+  E.bB.innerHTML+=s;
+  A(E.nok,'transform',`translate(326 34) scale(${(1+.2*S.sq).toFixed(3)} ${(1-.32*S.sq).toFixed(3)}) translate(-326 -34)`);A(E.clamp,'opacity',S.clamp);
+  const pb=[BX[S.pipB],424],pt=[233,52],p=S.pip,px=pb[0]+(pt[0]-pb[0])*p,py=pb[1]+(pt[1]-pb[1])*p-Math.sin(Math.PI*p)*90;
+  A(E.pip,'transform',`translate(${px.toFixed(1)} ${py.toFixed(1)})`);A(E.pip,'opacity',S.bot>=0||S.pip>0||S.pipL>0?1:0);A(E.pipL,'ry',(18*S.pipL).toFixed(1));A(E.pipL,'fill',BOT[S.pipB].l);
+  A(E.pStr,'opacity',S.pStr);A(E.pStr,'stroke',BOT[S.pipB].l);A(E.pStr,'y2',Math.max(60,ly));
+  A(E.botRing,'opacity',S.bot>=0?1:0);if(S.bot>=0)A(E.botRing,'cx',BX[S.bot]);
+  E.swTxt.textContent=swFmt(S.sw);const ha=(S.sw%60)*6*Math.PI/180;A(E.swHand,'x2',(690+46*Math.sin(ha)).toFixed(1));A(E.swHand,'y2',(152-46*Math.cos(ha)).toFixed(1));A(E.swLamp,'fill',S.swOn?'#22A45D':'#ccc');
+  if(S.swOn&&sfxOn&&AC&&now-lastTick>480){lastTick=now;SFX.tick()}
+  E.bubTxt.textContent=S.bub;A(E.bub,'opacity',S.bub?1:0);
+  E.rdC.textContent=S.rdC;E.rd1.textContent=S.rd[0];E.rd2.textContent=S.rd[1];E.rd3.textContent=S.rd[2];E.rdM.textContent=S.rdM;
+ }
+ else if(S.scene==='graph'){const key=[S.g0,S.g1,S.g2,S.gc0,S.gc1,S.gc2,S.gLine,S.gEta,S.gHL].map(v=>typeof v==='number'?v.toFixed(3):v).join('|');if(key!==gKey){gKey=key;E.gPlot.innerHTML=plotG(S)}}
+ else if(S.scene==='coil'){
+  let s='';const pts=CPa.map((a,k)=>lerpP(a,CPb[k],S.coil));
+  s+=`<polyline points="${pts.map(p=>p.map(v=>v.toFixed(1)).join(',')).join(' ')}" fill="none" stroke="#2B2B2B" stroke-width="6" stroke-linejoin="round" stroke-linecap="round"/>`;
+  pts.forEach((p,k)=>{s+=k%2?`<circle cx="${p[0].toFixed(1)}" cy="${p[1].toFixed(1)}" r="8" fill="#E84855" stroke="#2B2B2B" stroke-width="2"/><text x="${p[0].toFixed(1)}" y="${(p[1]+4.5).toFixed(1)}" text-anchor="middle" font-size="14" font-weight="700" fill="#fff" ${FF}>−</text>`:`<circle cx="${p[0].toFixed(1)}" cy="${p[1].toFixed(1)}" r="5" fill="#FFD54F" stroke="#2B2B2B" stroke-width="2"/>`});
+  const wob=k=>Math.sin(now/500+k)*2;
+  NAa.forEach((a,k)=>{const p=lerpP(a,NAb[k],S.coil*(1-S.salt*.7));s+=`<circle cx="${(p[0]+wob(k)).toFixed(1)}" cy="${(p[1]+wob(k+3)).toFixed(1)}" r="9" fill="#7B4FD8" stroke="#2B2B2B" stroke-width="2"/><text x="${(p[0]+wob(k)).toFixed(1)}" y="${(p[1]+wob(k+3)+4.5).toFixed(1)}" text-anchor="middle" font-size="13" font-weight="700" fill="#fff" ${FF}>+</text>`});
+  if(S.salt>0)SALT.forEach((a,k)=>{const x=(a[0]+wob(k*2)).toFixed(1),y=(a[1]+wob(k)).toFixed(1);s+=`<g opacity="${S.salt.toFixed(2)}"><circle cx="${x}" cy="${y}" r="8" fill="${a[2]?'#22A45D':'#7B4FD8'}" stroke="#2B2B2B" stroke-width="2"/><text x="${x}" y="${(+y+4.5).toFixed(1)}" text-anchor="middle" font-size="12" font-weight="700" fill="#fff" ${FF}>${a[2]?'−':'+'}</text></g>`});
+  E.cL.innerHTML=s;
+  s=`<polyline points="${BP.map(p=>p.map(v=>v.toFixed(1)).join(',')).join(' ')}" fill="none" stroke="#2B2B2B" stroke-width="6" stroke-linejoin="round" stroke-linecap="round"/>`;
+  BP.forEach((p,k)=>{s+=k%2?`<circle cx="${p[0].toFixed(1)}" cy="${p[1].toFixed(1)}" r="6.5" fill="#E84855" stroke="#2B2B2B" stroke-width="1.8"/><text x="${p[0].toFixed(1)}" y="${(p[1]+4).toFixed(1)}" text-anchor="middle" font-size="12" font-weight="700" fill="#fff" ${FF}>−</text>`:''});
+  BI0.forEach((a,q)=>{const free=q%5===2&&q<20,p=lerpP(a,BI1[q],S.bind),w=free?Math.sin(now/400+q)*6:wob(q)*.6,x=(p[0]+w).toFixed(1),y=(p[1]+(free?Math.cos(now/450+q)*5:0)).toFixed(1);
+   s+=`<circle cx="${x}" cy="${y}" r="8" fill="${S.bind>.9?(free?'#22A45D':'#7B4FD8'):'#7B4FD8'}" stroke="#2B2B2B" stroke-width="2"/><text x="${x}" y="${(+y+4.5).toFixed(1)}" text-anchor="middle" font-size="12" font-weight="700" fill="#fff" ${FF}>+</text>`});
+  E.cR.innerHTML=s;
+  E.cTL.textContent=S.cTL;E.cTR.textContent=S.cTR;E.cSL.textContent=S.cSL;E.cSR1.textContent=S.cSR1;E.cSR2.textContent=S.cSR2;
+ }
+ loops();requestAnimationFrame(frame)}
+requestAnimationFrame(frame);
+
+/* ---------- mustaqil topshiriqlar ---------- */
+const near=(v,t,tol)=>!isNaN(v)&&Math.abs(v-t)<=tol+1e-9;
+const rel=(v,t,p)=>near(v,t,Math.abs(t)*p);
+const num=(id,label,unit)=>`<label class="f">${label}<span><input id="${id}" type="text" inputmode="decimal" autocomplete="off"> ${unit}</span></label>`;
+const pick=(id,label,opts)=>`<div class="f">${label}<div class="pick" data-id="${id}">${opts.map((o,i)=>`<button type="button" class="btn opt" data-v="${i}">${o}</button>`).join('')}</div></div>`;
+const rng=(id,label,min,max,step,val,unit)=>`<label class="f">${label}<span class="rg"><input id="${id}" type="range" min="${min}" max="${max}" step="${step}" value="${val}"><b id="${id}o">${fx(val)}</b> ${unit}</span></label>`;
+const chk=(id,label)=>`<label class="f ck"><input id="${id}" type="checkbox"> ${label}</label>`;
+const V=id=>parseFloat(String(document.getElementById(id).value).replace(',','.'));
+const P=id=>{const b=document.querySelector(`.pick[data-id="${id}"] .opt.on`);return b?+b.dataset.v:-1};
+const CK=id=>document.getElementById(id).checked;
+const actBtns=list=>`<div class="f"><div class="pick">${list.map(([a,t])=>`<button type="button" class="btn" data-act="${a}">${t}</button>`).join('')}</div></div>`;
+const KELT=(v,p,lbl)=>{if(isNaN(v))return`${lbl} uchun η kelt ni kiriting.`;if(rel(v,p.kelt,.015))return'';
+ if(rel(v,p.sol,.02))return`${lbl}: siz C ga bo’lishni unutdingiz. η kelt = η sol / C, C = ${fx(p.Cr,4)} g/dl.`;
+ if(rel(v,p.sol/C0,.02)&&p.Cr!==C0)return`${lbl}: siz C₀ = 0,1 ga bo’ldingiz. Suyultirilgan eritmaning o’z konsentratsiyasini oling: C = ${fx(p.Cr,4)} g/dl.`;
+ if(rel(v,p.nis/p.Cr,.02))return`${lbl}: siz η nis ni C ga bo’ldingiz. Avval solishtirma qovushqoqlikni toping: η sol = t / t₀ − 1.`;
+ return`${lbl}: η kelt = ${fx(v)} dl/g noto’g’ri. η kelt = (${fx(p.tm,2)} / ${fx(D.t0,2)} − 1) / ${fx(p.Cr,4)}.`};
+const p0=D.S[0].pts;
+
+const tPrep={
+ say:'Topshiriq. Termostat haroratini sozlang, viskozimetr holatini tekshiring va uni termostatga qanday o’rnatishni tanlang. Harorat tenglashishi uchun qancha kutish kerakligini ham belgilang.',
+ guide:['Termostat haroratini surilgich bilan sozlang','Viskozimetr toza va quruqligini belgilang','O’rnatish holatini tanlang','Kutish vaqtini tanlang'],
+ hint:'25 °C; viskozimetr toza va quruq; tik holda; 15 min kutiladi.',
+ ok:'Harorat doimiy — oqish vaqtlarini bir-biri bilan solishtirish mumkin.',
+ init(c){c.set({scene:'visc',vy:-520,th:20,bub:'Termostatni sozlang'})},
+ html:()=>rng('pT','Termostat harorati',15,35,.5,20,'°C')+chk('pC','Viskozimetr toza va quruq')+pick('pO','Termostatga o’rnatish',['Tik (vertikal)','Biroz qiya'])+pick('pW','Harorat tenglashishini kutish',['Kutmasdan','5 min','15 min']),
+ live:{pT:v=>{S.th=v}},
+ check(){const t=V('pT');
+  if(!near(t,25,.25))return{err:`${fx(t)} °C — bu ishda o’lchashlar 25 °C da olib boriladi. Suvning qovushqoqligi har bir darajada taxminan 2 % ga o’zgaradi, shuning uchun oqish vaqtlari noto’g’ri chiqadi.`};
+  if(!CK('pC'))return{err:'Ho’l yoki iflos viskozimetrda eritma suyulib, konsentratsiya o’zgaradi, chang zarrasi esa kapillyarni to’sib qo’yadi. Viskozimetr toza va quruq bo’lishi shart.'};
+  const o=P('pO');if(o<0)return{err:'O’rnatish holatini tanlang.'};
+  if(o===1)return{err:'Qiya viskozimetrda suyuqlik ustunining balandligi va oqish yo’li o’zgaradi — oqish vaqti noto’g’ri chiqadi. Viskozimetr tik o’rnatiladi.'};
+  const w=P('pW');if(w<0)return{err:'Kutish vaqtini tanlang.'};
+  if(w===0)return{err:'Darhol o’lchansa, viskozimetr va suyuqlik hali termostat haroratiga yetmagan bo’ladi. Harorat tenglashishini kuting.'};
+  if(w===1)return{err:'5 min kam — shisha va suyuqlik harorati to’liq tenglashmaydi. 15 min kuting.'};
+  return{ok:1,vals:{'Harorat':'25 °C','Viskozimetr':'toza, quruq, tik','Kutish':'15 min'}}}};
+
+const tT0=(()=>{const st={pour:0,up:0,reads:[]},TOL=1.6;const info=()=>{const e=$('#t0Info');if(e)e.textContent='Natijalar: '+(st.reads.length?st.reads.map(v=>fx(v,1)+' s').join('; '):'—')};return{
+ say:'Topshiriq. Viskozimetrga distillangan suv quying va uning oqish vaqtini o’zingiz o’lchang. Ikkinchi naychani berkitib, suvni nok bilan yuqori belgidan tepaga ko’taring. Naychani ochgach, meniskus yuqori belgidan o’tganda sekundomerni yoqing, pastki belgiga yetganda to’xtating. Uchta natija oling va o’rtachasini kiriting.',
+ guide:['Suv hajmini tanlab, pipetka bilan quying','✋ 2-naychani berkiting → 🎈 nok bilan so’ring','↗ Naychani oching — meniskus pastga tusha boshlaydi','⏱ <b>yuqori belgida</b> yoqing, <b>pastki belgida</b> to’xtating','3 ta natija → o’rtacha t₀ ni kiriting'],
+ hint:'Meniskus qizil chiziqqa tekkan paytda bosing. O’rtacha: t₀ = (t₁ + t₂ + t₃) / 3.',
+ ok:'Uchala natija bir-biriga yaqin — o’lchash aniq bajarildi.',
+ init(c){st.pour=0;st.up=0;st.reads=[];PF.on=0;PF.swRun=0;c.set({scene:'visc',vy:0,th:25,res:0,men:470,rdC:'Distillangan suv · V = 7 ml',rd:['','',''],rdM:'',sw:0,swOn:0,clamp:0,bub:'Suv quying'})},
+ html:()=>pick('wV','Suv hajmi',['5 ml','7 ml','10 ml'])+actBtns([['pour','💧 Pipetka bilan quyish'],['clamp','✋ 2-naychani berkitish'],['suck','🎈 Nok bilan so’rish'],['open','↗ Naychani ochish'],['sw','⏱ Sekundomer']])+'<div class="small" id="t0Info">Natijalar: —</div>'+num('t0m','O’rtacha t₀','s'),
+ acts:{
+  pour:async(c,ER)=>{if(st.pour)return;const v=P('wV');if(v<0)return ER('Avval suv hajmini tanlang.');
+   if(v===0)return ER('5 ml kam: suyuqlik o’lchov sharchasini to’ldirishga yetmaydi, rezervuarda havo qoladi. Ko’rsatma bo’yicha 7 ml quyiladi.');
+   if(v===2)return ER('10 ml ko’p: ortiqcha suyuqlik oqish shartini buzadi. Barcha o’lchashlar bir xil — 7 ml hajmda olib boriladi.');
+   st.pour=1;await pipPour(c,0,7);c.set({bub:'2-naychani berkiting'})},
+  clamp:async(c,ER)=>{if(!st.pour)return ER('Avval viskozimetrga suv quying.');if(PF.on)return ER('Suyuqlik hali oqyapti — oqib tugashini kuting.');c.sfx('click');c.set({clamp:1,bub:'Endi nok bilan so’ring'})},
+  suck:async(c,ER)=>{if(!st.pour)return ER('Avval viskozimetrga suv quying.');if(PF.on)return ER('Suyuqlik hali oqyapti — oqib tugashini kuting.');
+   if(!S.clamp)return ER('2-naycha ochiq qoldi: nok havoni shu naycha orqali tortadi va suyuqlik o’lchov sharchasiga ko’tarilmaydi. Avval 2-naychani berkiting.');
+   if(st.up)return;PF.late=0;c.sfx('pump');await c.T({sq:1,men:150},900);await c.T({sq:0},300);st.up=1;c.set({bub:'Naychani oching'})},
+  open:async(c,ER)=>{if(PF.on)return;if(!st.up)return ER('Avval 2-naychani berkitib, suyuqlikni nok bilan yuqori belgidan tepaga ko’taring.');
+   if(st.reads.length>=3)return ER('Uchta natija olindi. Endi o’rtacha t₀ ni hisoblab kiriting.');
+   st.up=0;c.sfx('click');c.set({clamp:0,sw:0,swOn:0,bub:'Meniskusni kuzating!'});Object.assign(PF,{on:1,start:performance.now(),tt:D.t0r[st.reads.length],K:8,swRun:0,late:0})},
+  sw:async(c,ER)=>{const now=performance.now();
+   if(PF.swRun){const tau=(now-PF.start)/1000*PF.K,e2=tau-102*PF.tt/84;PF.swRun=0;S.swOn=0;SFX.tick();
+    if(Math.abs(PF.e1)>TOL)return ER(PF.e1<0?`Sekundomer erta yoqildi — meniskus hali yuqori belgiga ${fx(-PF.e1,1)} s yetmagan edi. Natija hisobga olinmaydi, qayta o’lchang.`:`Sekundomer kech yoqildi — meniskus yuqori belgidan ${fx(PF.e1,1)} s oldin o’tib ketgan edi. Natija hisobga olinmaydi, qayta o’lchang.`);
+    if(Math.abs(e2)>TOL)return ER(e2<0?`Sekundomer erta to’xtatildi — meniskus pastki belgiga hali ${fx(-e2,1)} s yetmagan edi. Qayta o’lchang.`:`Sekundomer kech to’xtatildi — meniskus pastki belgidan ${fx(e2,1)} s oldin o’tgan edi. Qayta o’lchang.`);
+    st.reads.push(PF.tt);S.sw=PF.tt;const rd=[...S.rd];rd[st.reads.length-1]=`${st.reads.length}) ${fx(PF.tt,1)} s`;S.rd=rd;SFX.ding();S.bub=st.reads.length<3?'Yana o’lchang':'3 ta natija ✓';info();return}
+   if(PF.late){PF.late=0;return ER('Sekundomer to’xtatilmadi — meniskus pastki belgidan o’tib ketdi. Qayta o’lchang.')}
+   if(!PF.on)return ER('Avval naychani oching — meniskus pastga tusha boshlasin.');
+   PF.e1=(now-PF.start)/1000*PF.K-18*PF.tt/84;PF.swRun=1;PF.swStart=now;S.sw=0;S.swOn=1;SFX.tick()}},
+ check(){if(st.reads.length<3)return{err:`Kamida uch marta o’lchang. Hozir ${st.reads.length} ta natija bor.`};
+  const m=V('t0m');if(isNaN(m))return{err:'O’rtacha t₀ ni kiriting.'};
+  if(!near(m,D.t0,.06))return{err:`O’rtacha noto’g’ri: ${fx(m)} s. t₀ = (${st.reads.map(v=>fx(v,1)).join(' + ')}) / 3.`};
+  return{ok:1,vals:{'Suv':'7 ml','Natijalar':st.reads.map(v=>fx(v,1)).join('; ')+' s','t₀':fx(D.t0,2)+' s'}}},
+ after:async c=>{c.set({rdM:`o’rtacha: ${fx(D.t0,2)} s`,bub:`t₀ = ${fx(D.t0,2)} s`});c.sfx('ding')}}})();
+
+const tPak=(()=>{const st={prep:0,meas:0,redo:0};const info=()=>{const e=$('#pkInfo');if(!e)return;const r=st.redo?p0[0].r:D.out;e.innerHTML='Natijalar: '+(st.meas?r.map(v=>fx(v,1)).join('; ')+' s'+(st.redo?' ✓':' — <b style="color:var(--red)">farq &gt; 0,2 s!</b>'):'—')};return{
+ say:'Topshiriq. Viskozimetrni polimer eritmasi uchun tayyorlang va yetti millilitr poliakril kislotasi eritmasining oqish vaqtini uch marta o’lchang. Natijalar bir-biridan nol butun o’ndan ikki soniyadan ko’p farq qilsa, o’sha o’lchashni takrorlang. So’ng nisbiy, solishtirma va keltirilgan qovushqoqlikni hisoblang.',
+ guide:['Viskozimetrni tayyorlash usulini tanlang va PAK quying','⏱ 3 marta o’lchang; farq &gt; 0,2 s bo’lsa — qayta o’lchang',`t₀ = ${fx(D.t0,2)} s; C₀ = 0,1 g/dl`,'η<sub>nis</sub> = t / t₀ ; η<sub>sol</sub> = η<sub>nis</sub> − 1 ; η<sub>kelt</sub> = η<sub>sol</sub> / C'],
+ hint:`t (o’rtacha) = ${fx(p0[0].tm,2)} s; η nis = ${fx(p0[0].tm,2)} / ${fx(D.t0,2)}; η kelt = (η nis − 1) / 0,1.`,
+ ok:'Qovushqoqliklar to’g’ri hisoblandi.',
+ init(c){st.prep=0;st.meas=0;st.redo=0;c.set({scene:'visc',bub:'Viskozimetrni tayyorlang'})},
+ html:()=>pick('kP','Viskozimetrni tayyorlash',['Suv ustiga PAK eritmasini quyish','Suvni to’kib, quritib, 7 ml PAK quyish'])+actBtns([['fill','💧 PAK quyish'],['meas','⏱ 3 marta o’lchash'],['redo','🔁 Farqli natijani qayta o’lchash']])+'<div class="small" id="pkInfo">Natijalar: —</div>'+num('kN','η nis =','')+num('kS','η sol =','')+num('kK','η kelt =','dl/g'),
+ acts:{
+  fill:async(c,ER)=>{if(st.prep)return;const v=P('kP');if(v<0)return ER('Tayyorlash usulini tanlang.');
+   if(v===0)return ER('Suv ustiga quyilsa, eritma 7 ml suv bilan suyulib, konsentratsiya ikki marta kamayadi — 0,1 g/dl bo’lmaydi. Suvni to’kib, viskozimetrni quriting.');
+   st.prep=1;await drain(c);await pipPour(c,1,7);c.set({rdC:lab(0,0),bub:'O’lchang'})},
+  meas:async(c,ER)=>{if(!st.prep)return ER('Avval viskozimetrga PAK eritmasini quying.');if(st.meas)return;
+   c.set({rd:['','',''],rdM:''});for(let k=0;k<3;k++)await runOne(c,D.out[k],k,k===0);st.meas=1;c.set({rdM:'farq > 0,2 s ✗',bub:'Natijalar mos emas!'});c.sfx('buzz');info()},
+  redo:async(c,ER)=>{if(!st.meas)return ER('Avval uch marta o’lchang.');if(st.redo)return;
+   await runOne(c,p0[0].r[2],2,false);st.redo=1;c.set({rdM:`o’rtacha: ${fx(p0[0].tm,2)} s`,bub:`t = ${fx(p0[0].tm,2)} s`});c.sfx('ding');info()}},
+ check(){if(!st.prep)return{err:'Avval viskozimetrni tayyorlab, PAK eritmasini quying.'};if(!st.meas)return{err:'Oqish vaqtini uch marta o’lchang.'};
+  if(!st.redo)return{err:`Natijalar ${D.out.map(v=>fx(v,1)).join('; ')} s — uchinchisi boshqalaridan ${fx(r1(D.out[2]-D.out[1]),1)} s farq qiladi (ruxsat ≤ 0,2 s). Sababi kapillyardagi havo pufakchasi yoki chang bo’lishi mumkin. Shu o’lchashni qayta bajaring.`};
+  const p=p0[0],n=V('kN'),s=V('kS'),k=V('kK');
+  if(isNaN(n))return{err:'Nisbiy qovushqoqlikni kiriting.'};
+  if(!near(n,p.nis,.01))return{err:near(n,1/p.nis,.01)?'Siz t₀ / t ni hisobladingiz. Nisbiy qovushqoqlik η nis = t / t₀: eritma suvdan qovushqoqroq, shuning uchun η nis > 1.':`η nis noto’g’ri: ${fx(n)}. η nis = ${fx(p.tm,2)} / ${fx(D.t0,2)}.`};
+  if(isNaN(s))return{err:'Solishtirma qovushqoqlikni kiriting.'};
+  if(!near(s,p.sol,.01))return{err:near(s,n,.01)?'η sol = η nis − 1. Siz birni ayirishni unutdingiz.':`η sol noto’g’ri: ${fx(s)}. η sol = η nis − 1.`};
+  const e=KELT(k,p,'C = 0,1 g/dl');if(e)return{err:e};
+  return{ok:1,vals:{'Natijalar':p.r.map(v=>fx(v,1)).join('; ')+' s','t':fx(p.tm,2)+' s','η nis':fx(n),'η sol':fx(s),'η kelt':fx(k)+' dl/g'}}},
+ after:async c=>{c.set({bub:`η kelt = ${fx(p0[0].kelt,1)} dl/g`});c.sfx('ding')}}})();
+
+const tDilW={
+ say:'Topshiriq. Viskozimetrdagi eritmaga avval yetti, keyin yana o’n to’rt millilitr suv qo’shiladi. Har suyultirishdan keyingi konsentratsiyani hisoblang va o’lchashdan oldin nima qilish kerakligini tanlang.',
+ guide:['C = C₀ · V₀ / V, bunda V — viskozimetrdagi umumiy hajm','C₀ = 0,1 g/dl, V₀ = 7 ml','Qo’shilgan hajmlar <b>yig’iladi</b>: 7 → 14 → 28 ml'],
+ hint:'C₁ = 0,1 · 7 / 14 = 0,05 g/dl; C₂ = 0,1 · 7 / 28 = 0,025 g/dl. Aralashtirib, kutib o’lchanadi.',
+ ok:'Konsentratsiyalar to’g’ri — endi har konsentratsiyada oqish vaqti o’lchanadi.',
+ init(c){c.set({scene:'visc',bub:'Suv bilan suyultiramiz'})},
+ html:()=>num('d1','7 ml suvdan keyin C₁','g/dl')+num('d2','yana 14 ml suvdan keyin C₂','g/dl')+pick('dM','Suv qo’shgandan keyin',['Darhol o’lchash','Nok bilan aralashtirib, 5–10 min kutib o’lchash']),
+ check(){const a=V('d1'),b=V('d2');if(isNaN(a))return{err:'C₁ ni kiriting.'};
+  if(!near(a,.05,.0005))return{err:a>.1?'Suyultirganda konsentratsiya kamayadi, ortmaydi.':`C₁ = ${fx(a)} noto’g’ri. C₁ = C₀ · V₀ / V = 0,1 · 7 / (7 + 7).`};
+  if(isNaN(b))return{err:'C₂ ni kiriting.'};
+  if(!near(b,.025,.0005))return{err:near(b,.05,.0005)?'Siz 14 ml ni umumiy hajm deb oldingiz. Viskozimetrda 7 + 7 + 14 = 28 ml bo’ladi: C₂ = 0,1 · 7 / 28.':near(b,.0333,.0008)?'Oldingi 7 ml suvni unutdingiz: umumiy hajm 7 + 7 + 14 = 28 ml.':`C₂ = ${fx(b)} noto’g’ri. C₂ = 0,1 · 7 / 28.`};
+  const m=P('dM');if(m<0)return{err:'O’lchashdan oldin nima qilishni tanlang.'};
+  if(m===0)return{err:'Aralashtirilmasa, eritma bir jinsli bo’lmaydi; kutilmasa, qo’shilgan suv harorati tenglashmaydi — oqish vaqtlari sakrab chiqadi.'};
+  return{ok:1,vals:{'C₁':'0,05 g/dl','C₂':'0,025 g/dl','Tartib':'aralashtirib, kutib o’lchash'}}}};
+
+const tWres={
+ say:'Topshiriq. Suv bilan suyultirilgan ikki eritma uchun keltirilgan qovushqoqlikni hisoblang. So’ng suyultirganda keltirilgan qovushqoqlik nima uchun ortishini tanlang.',
+ guide:[`t₀ = ${fx(D.t0,2)} s`,`C = 0,05 g/dl: t = <b>${fx(p0[1].tm,2)} s</b>`,`C = 0,025 g/dl: t = <b>${fx(p0[2].tm,2)} s</b>`,'η kelt = (t / t₀ − 1) / C'],
+ hint:`η kelt = (${fx(p0[1].tm,2)} / ${fx(D.t0,2)} − 1) / 0,05 va (${fx(p0[2].tm,2)} / ${fx(D.t0,2)} − 1) / 0,025.`,
+ ok:'Suyultirilgan sari η kelt ortyapti — bu polielektrolit effekti.',
+ init(c){c.set({scene:'graph',g0:1,gc0:0,g1:0,g2:0,gc1:0,gc2:0,gLine:0,gEta:0,gHL:-1})},
+ html:()=>num('w1','η kelt (C = 0,05)','dl/g')+num('w2','η kelt (C = 0,025)','dl/g')+pick('wW','Nima uchun η kelt ortadi?',['Polimer zanjiri parchalanib ketadi','Ion kuchi kamayadi: zaryadlar itarilib, o’ram yoyiladi','Eritma soviydi va qovushqoqlik ortadi']),
+ check(){let e=KELT(V('w1'),p0[1],'C = 0,05');if(e)return{err:e};e=KELT(V('w2'),p0[2],'C = 0,025');if(e)return{err:e};
+  const w=P('wW');if(w<0)return{err:'Sababni tanlang.'};
+  if(w===0)return{err:'Yo’q, suyultirish zanjirni parchalamaydi — molekulyar massa o’zgarmaydi. Sabab — zaryadlarning itarilishi va o’ramning yoyilishi.'};
+  if(w===2)return{err:'Harorat termostatda doimiy 25 °C. Sabab — ion kuchining kamayishi va o’ramning yoyilishi.'};
+  return{ok:1,vals:{'η kelt (0,05)':fx(V('w1'))+' dl/g','η kelt (0,025)':fx(V('w2'))+' dl/g','Sabab':'o’ram yoyiladi'}}}};
+
+const tSalt1={
+ say:'Topshiriq. Izoion sharoitni topish uchun yangi yetti millilitr polimer eritmasini o’qituvchi bergan birinchi tuz eritmasi bilan suyultiring. Viskozimetrni tayyorlash usulini va suyultiruvchini tanlang, so’ng uch yarim, yetti va o’n to’rt millilitr qo’shilgandan keyingi konsentratsiyalarni hisoblang.',
+ guide:['Viskozimetrni tayyorlang','Suyultiruvchi: <b>C₁ = 0,005 M NaCl</b>','Hajmlar yig’iladi: 7 → 10,5 → 17,5 → 31,5 ml','C = 0,1 · 7 / V (to’rt xona aniqlikda)'],
+ hint:'C = 0,1 · 7 / 10,5 = 0,0667; 0,1 · 7 / 17,5 = 0,04; 0,1 · 7 / 31,5 = 0,0222 g/dl.',
+ ok:'Konsentratsiyalar to’g’ri — qator o’lchanadi.',
+ init(c){c.set({scene:'visc',bub:'Birinchi tuz qatori'})},
+ html:()=>pick('sP','Viskozimetr',['Oldingi eritma ustiga davom ettirish','Yuvib, quritib, yangi 7 ml PAK quyish'])+pick('sB','Suyultiruvchi',['Distillangan suv','NaCl 0,005 M','NaCl 0,00125 M'])+num('s1','+3,5 ml → C','g/dl')+num('s2','+7 ml → C','g/dl')+num('s3','+14 ml → C','g/dl'),
+ check(){const p=P('sP');if(p<0)return{err:'Viskozimetrni tayyorlash usulini tanlang.'};
+  if(p===0)return{err:'Viskozimetrda suv bilan suyultirilgan eritma qolgan — uning konsentratsiyasi va ion tarkibi boshqa. Har qator yangi 7 ml PAK eritmasi bilan boshlanadi.'};
+  const b=P('sB');if(b<0)return{err:'Suyultiruvchini tanlang.'};
+  if(b===0)return{err:'Suv bilan qator allaqachon o’lchandi. Endi o’qituvchi bergan birinchi tuz eritmasi — 0,005 M NaCl kerak.'};
+  if(b===2)return{err:'Bu ikkinchi tuz eritmasi, u keyingi bosqichda ishlatiladi. Hozir C₁ = 0,005 M NaCl.'};
+  const a1=V('s1'),a2=V('s2'),a3=V('s3');
+  if(isNaN(a1)||!near(a1,.0667,.0007))return{err:isNaN(a1)?'Birinchi konsentratsiyani kiriting.':`${fx(a1)} noto’g’ri. C = 0,1 · 7 / (7 + 3,5).`};
+  if(isNaN(a2)||!near(a2,.04,.0005))return{err:isNaN(a2)?'Ikkinchi konsentratsiyani kiriting.':near(a2,.05,.001)?'Oldingi 3,5 ml ni unutdingiz: V = 7 + 3,5 + 7 = 17,5 ml.':`${fx(a2)} noto’g’ri. C = 0,1 · 7 / 17,5.`};
+  if(isNaN(a3)||!near(a3,.0222,.0004))return{err:isNaN(a3)?'Uchinchi konsentratsiyani kiriting.':(near(a3,.0333,.001)||near(a3,.025,.0005))?'Barcha qo’shilgan hajmlarni yig’ing: V = 7 + 3,5 + 7 + 14 = 31,5 ml.':`${fx(a3)} noto’g’ri. C = 0,1 · 7 / 31,5.`};
+  return{ok:1,vals:{'Suyultiruvchi':'0,005 M NaCl','C':'0,0667; 0,04; 0,0222 g/dl'}}}};
+
+const tSalt2=(()=>{const st={run:0};return{
+ say:'Topshiriq. Ikkinchi tuz eritmasi bilan qatorni o’lchang. To’g’ri suyultiruvchini tanlab, o’lchashni boshlang. So’ng oxirgi ikki konsentratsiya uchun keltirilgan qovushqoqlikni hisoblang.',
+ guide:['Suyultiruvchini tanlang va ▶ qatorni o’lchang','Natijalar jadvalda chiqadi',`t₀ = ${fx(D.t0,2)} s`,'η kelt = (t / t₀ − 1) / C'],
+ hint:`η kelt = (t / ${fx(D.t0,2)} − 1) / C; C = 0,04 va 0,0222 g/dl.`,
+ ok:'Bu qatorda η kelt suyultirish bilan bir tekis kamayyapti.',
+ init(c){st.run=0;c.set({scene:'visc',bub:'Ikkinchi tuz qatori'})},
+ html:()=>pick('qB','Suyultiruvchi',['NaCl 0,005 M','NaCl 0,00125 M','Distillangan suv'])+actBtns([['run','▶ Qatorni o’lchash']])+'<div id="q7Tab" class="small">Jadval o’lchashdan keyin chiqadi.</div>'+num('q1','η kelt (C = 0,04)','dl/g')+num('q2','η kelt (C = 0,0222)','dl/g'),
+ acts:{run:async(c,ER)=>{if(st.run)return;const b=P('qB');if(b<0)return ER('Suyultiruvchini tanlang.');
+   if(b===0)return ER('0,005 M NaCl bilan qator oldingi bosqichda o’lchangan. Endi C₂ = 0,00125 M kerak.');
+   if(b===2)return ER('Suv bilan qator allaqachon o’lchangan. Ikkinchi tuz eritmasi — 0,00125 M NaCl.');
+   st.run=1;await series(c,2,false);c.set({bub:'Qator o’lchandi ✓'});
+   $('#q7Tab').innerHTML=`<table class="tt"><tr><th>C, g/dl</th><th>t, s</th></tr>${D.S[2].pts.map(p=>`<tr><td>${fx(p.Cr,4)}</td><td>${fx(p.tm,2)}</td></tr>`).join('')}</table>t₀ = ${fx(D.t0,2)} s`}},
+ check(){if(!st.run)return{err:'Avval to’g’ri suyultiruvchini tanlab, qatorni o’lchang.'};
+  const P2=D.S[2].pts;let e=KELT(V('q1'),P2[2],'C = 0,04');if(e)return{err:e};e=KELT(V('q2'),P2[3],'C = 0,0222');if(e)return{err:e};
+  return{ok:1,vals:{'Suyultiruvchi':'0,00125 M NaCl','η kelt (0,04)':fx(V('q1'))+' dl/g','η kelt (0,0222)':fx(V('q2'))+' dl/g'}}},
+ after:async c=>{c.sfx('ding')}}})();
+
+const tGraph={
+ say:'Topshiriq. Grafikda uchta qator nuqtalari chizilgan. Qaysi qator to’g’ri chiziq berishini, ya’ni izoion suyultirish sharoitini aniqlang. So’ng shu to’g’ri chiziqni nol konsentratsiyagacha davom ettirib, xarakteristik qovushqoqlikni toping.',
+ guide:['Nuqtalari bitta to’g’ri chiziqda yotgan qatorni tanlang','[η] — chiziqning <b>C = 0</b> dagi qiymati (ordinata o’qi bilan kesishuvi)','Ikki nuqtadan og’malikni toping: b = Δη / ΔC; [η] = η − b · C'],
+ hint:`Yashil nuqtalar to’g’ri chiziqda yotadi. Og’malik ≈ ${fx(FIT.b,0)}; [η] ≈ ${fx(P2last().kelt,1)} − ${fx(FIT.b,0)} · ${fx(P2last().Cr,4)}.`,
+ ok:'Izoion qatorning ordinata bilan kesishuvi — xarakteristik qovushqoqlik.',
+ init(c){c.set({scene:'graph',g0:3,gc0:1,g1:4,g2:4,gc1:0,gc2:0,gLine:0,gEta:0,gHL:-1})},
+ html:()=>pick('gS','To’g’ri chiziq beradigan qator',['Suv bilan','0,005 M NaCl','0,00125 M NaCl'])+num('gE','[η] (C → 0)','dl/g'),
+ check(){const q=P('gS');if(q<0)return{err:'Qatorni tanlang.'};
+  if(q===0)return{err:'Suv bilan suyultirilganda nuqtalar yuqoriga keskin egiladi — bu polielektrolit bo’kishi, to’g’ri chiziq emas.'};
+  if(q===1)return{err:'Bu qator pastga egiladi: tuz ortiqcha, suyultirishda ion kuchi ortadi va o’ram siqiladi.'};
+  const e=V('gE');if(isNaN(e))return{err:'[η] qiymatini kiriting.'};
+  if(!near(e,FIT.a,1))return{err:near(e,D.S[2].pts[0].kelt,1.2)?'Bu C = 0,1 dagi qiymat. [η] — chiziqning C = 0 dagi qiymati: to’g’ri chiziqni ordinata o’qigacha davom ettiring.':`[η] = ${fx(e)} dl/g noto’g’ri. Yashil nuqtalar orqali chiziq o’tkazib, uni C = 0 gacha davom ettiring.`};
+  return{ok:1,vals:{'Izoion qator':'0,00125 M NaCl','[η]':fx(e)+' dl/g'}}},
+ after:async c=>{c.set({gHL:2});await c.T({gc1:1},800);await c.T({gLine:1},1800);c.set({gEta:1});c.sfx('ding')}};
+function P2last(){return D.S[2].pts[3]}
+
+const tBind={
+ say:'Topshiriq. Izoion sharoitdan foydalanib, bog’lanmagan qarama-qarshi ionlar ulushini va ionlarning bog’lanish darajasini hisoblang. Polimer konsentratsiyasi decilitrda nol butun o’ndan bir gramm, neytrallanish darajasi nol butun besh, zveno massasi yetmish ikki.',
+ guide:['0,1 g/dl ni g/l ga o’tkazing','C<sub>zveno</sub> = C(g/l) / 72','C<sub>tuz guruh</sub> = α · C<sub>zveno</sub>, α = 0,5','i = C<sub>NaCl</sub>(izoion) / C<sub>tuz guruh</sub>','Bog’lanish darajasi = 1 − i'],
+ hint:`1 g/l / 72 = ${fx(CZ,4)} mol/l; × 0,5 = ${fx(CG,5)}; i = 0,00125 / ${fx(CG,5)} = ${fx(II,2)}; 1 − i = ${fx(BD,2)}.`,
+ ok:'Natriy ionlarining katta qismi makroion bilan bog’langan.',
+ init(c){c.set({scene:'coil',coil:.12,salt:1,bind:0,cTL:'Izoion sharoit: 0,00125 M NaCl',cTR:'22 ta Na⁺ ioni',cSL:'',cSR1:'',cSR2:''})},
+ html:()=>num('b1','C zveno','mol/l')+num('b2','C tuz guruh','mol/l')+num('b3','i (erkin ionlar ulushi)','')+num('b4','Bog’lanish darajasi 1 − i',''),
+ check(){const a=V('b1'),b=V('b2'),i=V('b3'),d=V('b4');
+  if(isNaN(a))return{err:'Zvenolar konsentratsiyasini kiriting.'};
+  if(!near(a,CZ,.0003))return{err:near(a,CZ/10,.00005)?'0,1 g/dl = 1 g/l (1 l = 10 dl). Siz decilitrdagi massani litrdagi deb oldingiz.':near(a,MZ,1)?'Bo’lish tartibi teskari: C = m / M = 1 / 72.':`C zveno = ${fx(a)} noto’g’ri. C = 1 g/l / 72 g/mol.`};
+  if(isNaN(b))return{err:'Tuz guruhlari konsentratsiyasini kiriting.'};
+  if(!near(b,CG,.0002))return{err:near(b,CZ,.0003)?'Neytrallanish darajasi α = 0,5 ni unutdingiz: zvenolarning faqat yarmi tuz (–COONa) holida.':`C tuz guruh = ${fx(b)} noto’g’ri. C = 0,5 · ${fx(CZ,4)}.`};
+  if(isNaN(i))return{err:'i ni kiriting.'};
+  if(!near(i,II,.01))return{err:i>1?'Ulush birdan katta bo’la olmaydi. i = C(NaCl) / C(tuz guruh).':near(i,SER[2].cs/CZ,.01)?'Siz zvenolar konsentratsiyasiga bo’ldingiz. Tuz guruhlari konsentratsiyasini oling.':`i = ${fx(i)} noto’g’ri. i = 0,00125 / ${fx(CG,5)}.`};
+  if(isNaN(d))return{err:'Bog’lanish darajasini kiriting.'};
+  if(!near(d,BD,.01))return{err:`Bog’lanish darajasi = 1 − i = 1 − ${fx(II,2)}.`};
+  return{ok:1,vals:{'C zveno':fx(a)+' mol/l','C tuz guruh':fx(b)+' mol/l','i':fx(i),'1 − i':fx(d)}}}};
+
+const TK=[tPrep,tT0,tPak,tDilW,tWres,tSalt1,tSalt2,tGraph,tBind];
+
+/* ---------- boshqaruv ---------- */
+let mode='demo',cur=0,tok={dead:true},auto=true,doneSet=new Set();
+let REC=[],maxReach=0,curC=null,busy=false,pStart=Date.now(),STU={name:'',group:''},REPTXT='';
+const steps=()=>STEPS,tasks=()=>TK;
+const strip=h=>h.replace(/<br>/g,'. ').replace(/<[^>]+>/g,'').replace(/•/g,'');
+const esc=s=>s.replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const score=r=>r.passed?Math.max(0,10-2*r.err.length-r.hint):0;
+function newRec(){REC=steps().map(()=>({att:0,err:[],hint:0,passed:false,vals:{}}));maxReach=0;pStart=Date.now()}
+function say(txt){if(voiceOn)speak(strip(txt),{dead:false},false)}
+function updScore(){const b=E.scoreBadge;b.hidden=mode!=='prac';if(mode!=='prac')return;
+ const tot=REC.reduce((a,r)=>a+score(r),0),errs=REC.reduce((a,r)=>a+r.err.length,0);b.textContent=`Ball: ${tot} / ${steps().length*10} · xato: ${errs}`}
+function renderDots(){const pr=mode==='prac';E.dots.innerHTML='';steps().forEach((s,i)=>{const b=document.createElement('button');const ok=pr?REC[i].passed:doneSet.has(i);
+ b.className='dot'+(i===cur?' cur':ok?' done':'');b.textContent=i+1;b.title=s.t;if(pr&&i>maxReach)b.disabled=true;b.onclick=()=>goTo(i,true);E.dots.appendChild(b)})}
+function renderPanel(){const st=steps()[cur],pr=mode==='prac',tk=pr&&tasks()[cur];
+ E.stepNo.textContent=`${cur+1}-bosqich / ${steps().length}`;E.stepTitle.textContent=st.t;
+ E.lab1.textContent=pr?'🎯 Topshiriq (diktor tushuntiradi):':'🎙 Diktor nima qilinishini aytadi:';
+ E.lab2.textContent=pr?'🧭 Qanday bajariladi:':'📌 Aniq ma’lumotlar:';
+ setSay(pr?tk.say:st.say);
+ E.det.innerHTML=(pr?tk.guide:st.det).map(d=>`<li${/nozik|egmang/.test(d)?' class="warn"':''}>${d}</li>`).join('');
+ E.eqBox.innerHTML=EQ;E.taskCard.hidden=!pr;E.eqCard.hidden=pr;E.cAuto.parentNode.style.display=pr?'none':'';
+ if(pr)E.bPlay.textContent='🎙 Topshiriqni qayta eshitish';renderDots();updScore()}
+function fbSet(cls,html){E.fb.className='fb'+(cls?' '+cls:'');E.fb.innerHTML=html}
+function addErr(msg){REC[cur].err.push(strip(msg));fbSet('bad','✗ '+msg);SFX.buzz();say(msg);updScore()}
+function renderTask(){const tk=tasks()[cur],r=REC[cur];E.taskBody.innerHTML=tk.html();fbSet('','');
+ E.bCheck.style.display=r.passed?'none':'';E.bHint.style.display=r.passed?'none':'';E.bGo.style.display=r.passed?'':'none';
+ E.bGo.textContent=cur===steps().length-1?'📋 Yakuniy natija':'Keyingi bosqich ▶';
+ if(r.passed){E.taskBody.querySelectorAll('input,button').forEach(x=>x.disabled=true);fbSet('ok','✓ Bu bosqich bajarilgan. '+Object.entries(r.vals).map(([k,v])=>`${k}: ${v}`).join('; '))}}
+
+async function goTo(i,play){tok.dead=true;if('speechSynthesis' in window)speechSynthesis.cancel();busy=false;Object.assign(PF,{on:0,swRun:0,late:0});
+ const t={dead:false,fast:true};tok=t;resetState();const list=steps(),pr=mode==='prac';i=clamp(i,0,list.length-1);
+ for(let j=0;j<i;j++){try{await list[j].act(ctx(t))}catch(e){if(!(e instanceof Cancel))console.error(e)}if(t.dead)return}
+ if(pr){const tk=tasks()[i];if(REC[i].passed){try{await list[i].act(ctx(t))}catch(e){}if(t.dead)return}
+  t.fast=false;cur=i;maxReach=Math.max(maxReach,i);curC=ctx(t);
+  if(!REC[i].passed){if(tk.init)tk.init(curC);else curC.set({scene:tk.sc||'visc'})}
+  renderPanel();renderTask();if(play&&!REC[i].passed)speak(tk.say,t);return}
+ t.fast=false;cur=i;renderPanel();E.bPlay.textContent=play?'⟲ Qaytadan':'▶ Ijro etish';if(!play)return;
+ try{await Promise.all([list[i].act(ctx(t)),speak(list[i].say,t)])}catch(e){if(!(e instanceof Cancel))console.error(e);return}
+ if(t.dead)return;doneSet.add(i);renderDots();E.bPlay.textContent='⟲ Qaytadan';
+ if(auto&&i<list.length-1){await new Promise(r=>setTimeout(r,1400));if(!t.dead)goTo(i+1,true)}
+ else if(i===list.length-1){E.stepNo.textContent='✓ Tajriba yakunlandi';SFX.ding();setTimeout(()=>{if(!t.dead)openReport()},1500)}}
+
+const PRAISE=['To’g’ri!','Barakalla, to’g’ri!','Ajoyib, hammasi to’g’ri!','To’g’ri bajarildi!'];
+async function doCheck(){const tk=tasks()[cur],r=REC[cur];if(r.passed||busy)return;let res;try{res=tk.check()}catch(e){console.error(e);return}
+ r.att++;if(!res.ok){addErr(res.err);return}
+ r.passed=true;r.vals=res.vals||{};r.p=res.p;const pz=PRAISE[Math.floor(Math.random()*PRAISE.length)];
+ fbSet('ok','✓ '+pz+' '+(tk.ok||''));SFX.ding();say(pz+' '+(tk.ok||''));
+ E.bCheck.style.display='none';E.bHint.style.display='none';E.taskBody.querySelectorAll('input,button').forEach(x=>x.disabled=true);
+ busy=true;const t=tok;
+ try{await(tk.after?tk.after(curC,res):steps()[cur].act(curC))}catch(e){if(!(e instanceof Cancel))console.error(e);busy=false;return}
+ busy=false;if(t.dead)return;E.bGo.style.display='';renderDots();updScore();
+ if(cur===steps().length-1)setTimeout(()=>{if(!t.dead)openReport()},1500)}
+async function runAct(n){if(busy)return;busy=true;const t=tok;try{await tasks()[cur].acts[n](curC,addErr)}catch(e){if(!(e instanceof Cancel))console.error(e)}if(tok===t)busy=false}
+
+E.taskBody.addEventListener('click',e=>{const b=e.target.closest('button');if(!b||b.disabled)return;
+ if(b.classList.contains('opt')){b.parentNode.querySelectorAll('.opt').forEach(x=>x.classList.toggle('on',x===b));SFX.click();if(E.fb.classList.contains('bad'))fbSet('','');return}
+ if(b.dataset.act){if(b.dataset.act==='sw'){tasks()[cur].acts.sw(curC,addErr);return}runAct(b.dataset.act)}});
+E.taskBody.addEventListener('input',e=>{const x=e.target,tk=tasks()[cur];
+ if(x.type==='range'){const o=document.getElementById(x.id+'o');if(o)o.textContent=fx(x.value);if(tk.live&&tk.live[x.id])tk.live[x.id](+x.value)}
+ if(E.fb.classList.contains('bad'))fbSet('','')});
+E.bCheck.onclick=doCheck;
+E.bHint.onclick=()=>{const tk=tasks()[cur],r=REC[cur];if(r.passed)return;r.hint=1;fbSet('hint','💡 '+tk.hint);say(tk.hint);updScore()};
+E.bGo.onclick=()=>cur===steps().length-1?openReport():goTo(cur+1,true);
+
+/* ---------- yakuniy hisobot ---------- */
+function openReport(){const pr=mode==='prac',list=steps();
+ let h=`<h2>Laboratoriya ishi № 8 — Polielektrolitlarning suvli va tuzli eritmalarining gidrodinamik xossalari</h2><p>`;
+ if(pr)h+=`<b style="color:var(--red)">Talaba:</b> ${esc(STU.name)}${STU.group?` · <b style="color:var(--red)">Guruh:</b> ${esc(STU.group)}`:''}<br>`;
+ h+=`Polimer: PAK (α = 0,5), 0,1 g/dl · Harorat: 25 °C · Sana: ${new Date().toLocaleDateString('ru-RU')} · Rejim: ${pr?'mustaqil bajarish':'namoyish'}${pr?` · Sarflangan vaqt: ${Math.max(1,Math.round((Date.now()-pStart)/60000))} min`:''}</p>`;
+ let speech='Tajriba yakunlandi. ';
+ if(pr){const tot=REC.reduce((a,r)=>a+score(r),0),max=list.length*10,pct=Math.round(tot/max*100),errs=REC.reduce((a,r)=>a+r.err.length,0),hints=REC.reduce((a,r)=>a+r.hint,0),notDone=REC.filter(r=>!r.passed).length;
+  const g=pct>=86?5:pct>=71?4:pct>=55?3:2,gt={5:'a’lo',4:'yaxshi',3:'qoniqarli',2:'qoniqarsiz'}[g];
+  h+=`<div style="display:flex;gap:30px;align-items:flex-end;flex-wrap:wrap;margin:6px 0 4px"><div><div class="small">Baho</div><div class="grade">${g} — ${gt}</div></div><div><div class="small">Ball</div><div class="grade" style="font-size:30px">${tot} / ${max} (${pct} %)</div></div><div><div class="small">Xatolar</div><div class="grade" style="font-size:30px">${errs}</div></div><div><div class="small">Yordamdan foydalanildi</div><div class="grade" style="font-size:30px">${hints}</div></div></div>`;
+  if(notDone)h+=`<p style="color:var(--red)">⚠ ${notDone} ta bosqich hali bajarilmagan — ular uchun ball berilmadi.</p>`;
+  h+=`<p class="small">Baholash: har bosqich 10 ball; har bir xato −2, yordam −1 ball.</p>`;
+  h+=`<h3>Bosqichlar bo’yicha natijalar</h3><table><tr><th>№</th><th>Bosqich</th><th>Kiritilgan qiymatlar</th><th>Xato</th><th>Yordam</th><th>Ball</th></tr>`+list.map((s,i)=>{const r=REC[i];return`<tr><td>${i+1}</td><td>${s.t}</td><td>${r.passed?Object.entries(r.vals).map(([k,v])=>`${k}: ${v}`).join('<br>'):'<span style="color:var(--red)">bajarilmagan</span>'}</td><td>${r.err.length}</td><td>${r.hint?'ha':'—'}</td><td>${score(r)}/10</td></tr>`}).join('')+`</table>`;
+  const el=REC.map((r,i)=>r.err.length?`<li>${i+1}. ${list[i].t}<ul>${r.err.map(e=>`<li>${esc(e)}</li>`).join('')}</ul></li>`:'').join('');
+  h+=`<h3>Xatolar va izohlar</h3>`+(el?`<ul class="det">${el}</ul>`:'<p>Birorta ham xato qilinmadi. Barakalla!</p>');
+  speech+=`${STU.name}, siz ${max} balldan ${tot} ball to’pladingiz. Bahoingiz: ${g}, ${gt}. Xatolar soni: ${errs}. `}
+ h+=`<h3>Tajriba natijalari</h3><p class="note">ℹ Oqish vaqtlari o’quv modelidan olingan <b>namunaviy (o’quv) qiymatlar</b> — haqiqiy tajriba natijasi emas.</p>`;
+ h+=`<p>Distillangan suv (7 ml): ${D.t0r.map(v=>fx(v,1)).join('; ')} s → <b>t₀ = ${fx(D.t0,2)} s</b></p>`;
+ SER.forEach((sr,q)=>{h+=`<p style="margin:10px 0 2px"><b style="color:${sr.c}">${q?'Suyultiruvchi: '+sr.n:'Suyultiruvchi: distillangan suv'}</b></p><table><tr><th>Qo’shildi, ml</th><th>V, ml</th><th>C, g/dl</th><th>t₁; t₂; t₃, s</th><th>t, s</th><th>η nis</th><th>η sol</th><th>η kelt, dl/g</th></tr>`+
+  D.S[q].pts.map(p=>`<tr><td>${p.add?fx(p.add):'7 ml PAK'}</td><td>${fx(p.V,1)}</td><td>${fx(p.Cr,4)}</td><td>${p.r.map(v=>fx(v,1)).join('; ')}</td><td>${fx(p.tm,2)}</td><td>${fx(p.nis,3)}</td><td>${fx(p.sol,3)}</td><td><b>${fx(p.kelt,1)}</b></td></tr>`).join('')+`</table>`});
+ h+=`<h3>η kelt — C grafigi</h3><svg viewBox="0 0 900 600" style="width:100%;max-width:860px;display:block">${plotG({g0:3,g1:4,g2:4,gc0:1,gc1:1,gc2:0,gLine:1,gEta:1,gHL:2})}</svg>`;
+ h+=`<h3>Hisoblangan kattaliklar</h3><table><tr><th>Ko’rsatkich</th><th>Qiymat</th></tr>
+ <tr><td>Izoion suyultirish sharoiti</td><td><b>C(NaCl) = 0,00125 M</b> — η kelt–C to’g’ri chiziq</td></tr>
+ <tr><td>Izoion chiziq tenglamasi</td><td>η kelt = ${fx(FIT.a,2)} + ${fx(FIT.b,1)} · C</td></tr>
+ <tr><td>Xarakteristik qovushqoqlik [η]</td><td><b>${fx(FIT.a,1)} dl/g</b></td></tr>
+ <tr><td>Zvenolar konsentratsiyasi</td><td>1 g/l / 72 = ${fx(CZ,4)} mol/l</td></tr>
+ <tr><td>Tuz guruhlari konsentratsiyasi</td><td>0,5 · ${fx(CZ,4)} = ${fx(CG,5)} mol/l</td></tr>
+ <tr><td>Bog’lanmagan ionlar ulushi i</td><td>0,00125 / ${fx(CG,5)} = <b>${fx(II,2)}</b></td></tr>
+ <tr><td>Bog’lanish darajasi 1 − i</td><td><b style="color:var(--red)">${fx(BD,2)}</b></td></tr></table>
+ <h3>Asosiy formulalar</h3><div class="formula">η<sub>nis</sub> = t / t₀ · η<sub>sol</sub> = η<sub>nis</sub> − 1 · η<sub>kelt</sub> = η<sub>sol</sub> / C · C = C₀ · V₀ / V<br>izoion sharoit: C<sub>NaCl</sub> = i · C<sub>tuz guruh</sub>; C<sub>tuz guruh</sub> = α · C<sub>PAK</sub> / M<sub>zveno</sub></div>`;
+ const xul=`Qisman neytrallangan poliakril kislotasi eritmasi suv bilan suyultirilganda keltirilgan qovushqoqlik ${fx(D.S[0].pts[0].kelt,1)} dan ${fx(D.S[0].pts[2].kelt,1)} dl/g gacha ortdi — bu polielektrolit effekti: ion kuchi kamayib, makroion o’rami yoyiladi. 0,005 M natriy xlorid bilan suyultirilganda tuz ortiqcha bo’lgani uchun keltirilgan qovushqoqlik kamaydi. 0,00125 M natriy xlorid bilan suyultirilganda nuqtalar to’g’ri chiziqda yotdi, demak bu izoion suyultirish sharoiti. Uni nol konsentratsiyaga ekstrapolyatsiya qilib xarakteristik qovushqoqlik ${fx(FIT.a,1)} dl/g topildi. Bog’lanmagan qarama-qarshi ionlar ulushi ${fx(II,2)}, bog’lanish darajasi ${fx(BD,2)} — natriy ionlarining ${Math.round(BD*100)} foizi makroion bilan bog’langan.`;
+ h+=`<h3>Xulosa</h3><p>${xul}</p><div class="mini">by Hayitali</div>`;
+ E.repBody.innerHTML=h;E.ovReport.classList.add('show');E.repBody.scrollTop=0;REPTXT=speech+xul}
+
+E.rSpeak.onclick=()=>speak(REPTXT.replace(/%/g,' foiz').replace(/dl\/g/g,'decilitr gramm'),{dead:false},false);
+if(E.rPrint)E.rPrint.onclick=()=>window.print();
+E.rClose.onclick=()=>{E.ovReport.classList.remove('show');if('speechSynthesis' in window)speechSynthesis.cancel()};
+E.rAgain.onclick=()=>{E.rClose.click();if(mode==='prac')newRec();doneSet=new Set();goTo(0,true)};
+E.bReport.onclick=openReport;
+
+function setMode(m){if(m==='prac'&&!STU.name){E.ovIntro.classList.add('show');E.introErr.textContent='Mustaqil bajarish uchun ismingizni kiriting.';return}
+ mode=m;$$('#modeSeg .btn').forEach(b=>b.classList.toggle('on',b.dataset.mode===m));newRec();doneSet=new Set();goTo(0,m==='prac')}
+$$('#modeSeg .btn').forEach(b=>b.onclick=()=>setMode(b.dataset.mode));
+$$('[data-start]').forEach(b=>b.onclick=()=>{const md=b.dataset.start;STU.name=E.iName.value.trim();STU.group=E.iGroup.value.trim();
+ if(md==='prac'&&!STU.name){E.introErr.textContent='Ismingizni kiriting — u yakuniy hisobotda ko’rsatiladi.';E.iName.focus();return}
+ E.introErr.textContent='';ac().resume();E.ovIntro.classList.remove('show');setMode(md)});
+E.iName.oninput=()=>E.introErr.textContent='';
+E.bPlay.onclick=()=>{ac().resume();if(mode==='prac'){if(!REC[cur].passed)speak(tasks()[cur].say,tok)}else goTo(cur,true)};
+E.bNext.onclick=()=>{if(mode==='prac'&&!REC[cur].passed){fbSet('bad','Avval ushbu bosqich topshirig’ini bajaring va “Tekshirish” ni bosing.');return}if(cur<steps().length-1)goTo(cur+1,true);else openReport()};
+E.bPrev.onclick=()=>goTo(cur-1,true);
+E.cAuto.onchange=()=>auto=E.cAuto.checked;E.sSpeed.onchange=()=>speed=+E.sSpeed.value;
+E.bLabels.onclick=()=>{E.bLabels.classList.toggle('on');E.labels.style.display=E.bLabels.classList.contains('on')?'':'none'};
+E.bVoice.onclick=()=>{voiceOn=!voiceOn;E.bVoice.classList.toggle('on',voiceOn);if(!voiceOn&&'speechSynthesis' in window)speechSynthesis.cancel()};
+E.bSfx.onclick=()=>{sfxOn=!sfxOn;E.bSfx.classList.toggle('on',sfxOn)};
+E.bFull.onclick=()=>{document.fullscreenElement?document.exitFullscreen():document.documentElement.requestFullscreen().catch(()=>{})};
+E.bTheory.onclick=()=>E.ovTheory.classList.add('show');
+E.thClose.onclick=()=>{E.ovTheory.classList.remove('show');if('speechSynthesis' in window)speechSynthesis.cancel()};
+let thTab='t1';$$('#thTabs .btn').forEach(b=>b.onclick=()=>{thTab=b.dataset.t;$$('#thTabs .btn').forEach(x=>x.classList.toggle('on',x===b));['t1','t2','t3','t4','t5'].forEach(id=>E[id].hidden=id!==thTab);if('speechSynthesis' in window)speechSynthesis.cancel()});
+E.thSpeak.onclick=()=>{const txt=E[thTab].innerText.replace(/[\[\]ₙₘ⟶⁻⁺→]/g,' ').replace(/%/g,' foiz');speak(txt,{dead:false},false)};
+function calc(){const t0=+E.k0.value,t=+E.k1.value,c=+E.k2.value;
+ E.kRes1.innerHTML=t0>0&&t>0&&c>0?`η nis = <b>${fx((t/t0).toFixed(3))}</b> · η sol = <b>${fx((t/t0-1).toFixed(3))}</b> · η kelt = <b>${fx(((t/t0-1)/c).toFixed(2))} dl/g</b>`:'<span class="small" style="color:var(--red)">Qiymatlar musbat bo’lishi kerak.</span>';
+ const cp=+E.k3.value,al=+E.k4.value,mz=+E.k5.value,cn=+E.k6.value;
+ if(!(cp>0&&al>0&&al<=1&&mz>0&&cn>0)){E.kRes2.innerHTML='<span class="small" style="color:var(--red)">Qiymatlarni tekshiring: 0 &lt; α ≤ 1, qolganlari musbat.</span>';return}
+ const cz=cp*10/mz,cg=al*cz,i=cn/cg;E.kRes2.innerHTML=`C zveno = <b>${fx(cz.toFixed(4))}</b> mol/l · C tuz guruh = <b>${fx(cg.toFixed(5))}</b> mol/l · i = <b>${fx(i.toFixed(3))}</b> · 1 − i = <b>${fx((1-i).toFixed(3))}</b>${i>1?' <span style="color:var(--red)">(i &gt; 1 — bu tuz konsentratsiyasi izoion bo’la olmaydi)</span>':''}`}
+['k0','k1','k2','k3','k4','k5','k6'].forEach(id=>E[id].oninput=calc);calc();
+document.addEventListener('keydown',e=>{const tg=e.target.tagName;if(tg==='INPUT'||tg==='SELECT'||tg==='BUTTON'&&e.key===' ')return;const k=e.key.toLowerCase();
+ if(E.ovIntro.classList.contains('show'))return;
+ if(k==='escape'){E.thClose.click();E.rClose.click();return}
+ if(E.ovReport.classList.contains('show'))return;
+ if(k===' '){e.preventDefault();E.bPlay.click()}else if(k==='arrowright')E.bNext.click();else if(k==='arrowleft')E.bPrev.click();
+ else if(k==='f')E.bFull.click();else if(k==='n')E.bLabels.click();else if(k==='m')E.bVoice.click();else if(k==='t')E.ovTheory.classList.toggle('show')});
+newRec();goTo(0,false);
+</script>
+</body>
+</html>
