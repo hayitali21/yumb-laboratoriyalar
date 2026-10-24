@@ -1,0 +1,1064 @@
+<!doctype html>
+<html lang="uz">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Tolalarni aniqlash — virtual laboratoriya</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&family=Patrick+Hand&display=swap" rel="stylesheet">
+<style>
+:root{--paper:#FBF6E9;--rule:#DED4B6;--ink:#1F3A93;--ink2:#3D56A8;--red:#C0392B;--green:#2E7D32;--pencil:#5B5B6E;--hl:#FFF0A0;
+--hand:'Patrick Hand','Segoe Print','Comic Sans MS',cursive;--title:'Caveat','Segoe Print','Comic Sans MS',cursive}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%}
+body{background-color:var(--paper);background-image:repeating-linear-gradient(to bottom,transparent 0 31px,var(--rule) 31px 32px);color:var(--ink);font-family:var(--hand);font-size:18px;overflow:hidden}
+body::before{content:"";position:fixed;left:58px;top:0;bottom:0;width:2px;background:#E9A3A3;pointer-events:none;z-index:0}
+.app{position:relative;z-index:1;display:grid;grid-template-rows:auto minmax(0,1fr) auto;height:100vh;padding:10px 18px 10px 78px;gap:10px}
+header{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+h1{font-family:var(--title);font-size:40px;margin:0;line-height:.95;font-weight:700}
+h1 small{display:block;font-size:21px;color:var(--pencil);font-weight:500}
+.sp{flex:1}
+.btn{font-family:var(--hand);font-size:17px;color:var(--ink);background:#fffdf6;border:2px solid var(--ink);border-radius:14px 9px 15px 8px;padding:5px 13px;cursor:pointer;box-shadow:2px 3px 0 rgba(31,58,147,.22);transition:transform .1s,background .2s;white-space:nowrap;text-decoration:none;display:inline-block}
+.btn:hover{transform:translateY(-1px) rotate(-.6deg);background:#fff}
+.btn:active{transform:translateY(1px)}
+.btn.on{background:var(--ink);color:#fffdf6}
+.btn.big{font-size:22px;padding:8px 22px}
+.btn.red{border-color:var(--red);color:var(--red)}
+.seg{display:inline-flex}
+.seg .btn{border-radius:0;box-shadow:none}
+.seg .btn:first-child{border-radius:14px 0 0 9px}
+.seg .btn:last-child{border-radius:0 9px 15px 0;border-left:0}
+main{display:grid;grid-template-columns:minmax(0,1fr) 410px;gap:16px;min-height:0}
+.stage{position:relative;background:rgba(255,255,255,.4);border:2px dashed rgba(31,58,147,.35);border-radius:18px;min-height:0;overflow:hidden}
+.stage svg{width:100%;height:100%;display:block;user-select:none;-webkit-user-select:none}
+.scene{transition:opacity .7s}
+.panel{display:flex;flex-direction:column;gap:12px;min-height:0;overflow:auto;padding:2px 6px 6px 2px}
+.card{background:#fffdf5;border:2px solid var(--ink);border-radius:6px 14px 8px 16px;padding:12px 15px;box-shadow:3px 4px 0 rgba(31,58,147,.16);position:relative}
+.card::before{content:"";position:absolute;top:-10px;left:42%;width:70px;height:20px;background:rgba(250,220,120,.65);transform:rotate(-3deg)}
+.stepno{font-family:var(--title);font-size:24px;color:var(--red);line-height:1}
+.stitle{font-family:var(--title);font-size:34px;line-height:1.02;margin:2px 0 8px;font-weight:700}
+.lab{font-size:15px;color:var(--pencil);margin:8px 0 2px;display:flex;align-items:center;gap:6px}
+.say{font-size:19px;line-height:1.45;color:#22305e}
+.say .w{border-radius:4px;transition:background .15s}
+.say .w.cur{background:var(--hl)}
+.det{margin:4px 0 0;padding-left:20px}
+.det li{margin:4px 0;line-height:1.3;font-size:17px}
+.det li.warn{color:var(--red);list-style:"⚠ "}
+.eq{font-size:17px;line-height:1.5}
+.eq b{color:var(--red);font-weight:400}
+footer{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.dots{display:flex;gap:6px;flex-wrap:wrap}
+.dot{width:28px;height:28px;border-radius:50%;border:2px solid var(--ink);display:grid;place-items:center;font-size:14px;cursor:pointer;background:#fffdf6;font-family:var(--hand);color:var(--ink);padding:0}
+.dot.done{background:#D4E2FF}
+.dot.cur{background:var(--red);border-color:var(--red);color:#fff}
+select{font-family:var(--hand);font-size:16px;color:var(--ink);background:#fffdf6;border:2px solid var(--ink);border-radius:9px;padding:4px 6px;max-width:220px}
+.small{font-size:15px;color:var(--pencil)}
+.sig{position:fixed;right:10px;bottom:3px;font-size:10px;opacity:.26;font-style:italic;pointer-events:none;color:var(--pencil);z-index:30;letter-spacing:.3px}
+.lbl{font-family:var(--hand);font-size:17px;fill:#4B4B66}
+.lbs{font-family:var(--hand);font-size:13px;fill:#4B4B66}
+.ttl{font-family:var(--title);font-size:26px;fill:#1F3A93;font-weight:700}
+.ink{stroke:#1F3A93;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+.glass{fill:#EAF3FA;stroke:#1F3A93;stroke-width:2.2;stroke-linejoin:round}
+.metal{fill:#BAC1CE;stroke:#1F3A93;stroke-width:1.8}
+.lead{stroke:#6B6B80;stroke-width:1.3;stroke-dasharray:4 4;fill:none}
+.ov{position:fixed;inset:0;background:rgba(30,35,60,.38);display:none;align-items:center;justify-content:center;z-index:20;padding:16px}
+.ov.show{display:flex}
+.sheet{width:min(1150px,96vw);max-height:92vh;background-color:var(--paper);background-image:repeating-linear-gradient(to bottom,transparent 0 31px,var(--rule) 31px 32px);border:2px solid var(--ink);border-radius:10px;display:flex;flex-direction:column;overflow:hidden;box-shadow:6px 8px 0 rgba(31,58,147,.25)}
+.sheet .hd{display:flex;gap:8px;align-items:center;padding:12px 16px;border-bottom:2px solid var(--ink);flex-wrap:wrap;background:#fffdf5}
+.sheet .bd{padding:16px 26px 24px;overflow:auto;font-size:19px;line-height:1.5}
+.sheet h2{font-family:var(--title);font-size:36px;margin:6px 0 6px;font-weight:700}
+.sheet h3{font-family:var(--title);font-size:28px;margin:14px 0 4px;font-weight:700;color:var(--red)}
+.formula{background:#fffdf5;border:2px dashed var(--ink2);border-radius:10px;padding:10px 14px;margin:8px 0;font-size:19px;overflow-x:auto}
+.mech{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px;margin:8px 0}
+.mech .card{font-size:17px}
+.mech .card::before{display:none}
+.mech .n{font-family:var(--title);font-size:26px;color:var(--red)}
+.calc{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;margin:8px 0}
+.calc label{display:flex;flex-direction:column;font-size:16px;color:var(--pencil)}
+.calc select{max-width:none;font-size:15px}
+.res{font-size:22px;margin-top:8px}
+.res b{color:var(--red);font-weight:400}
+details{background:#fffdf5;border:2px solid var(--ink);border-radius:8px 12px 8px 14px;padding:8px 12px;margin:8px 0}
+summary{cursor:pointer}
+.intro{max-width:880px}
+.intro .bd ol li{margin:4px 0}
+.f{display:flex;flex-direction:column;gap:4px;margin:9px 0;font-size:16px;color:var(--pencil)}
+.f input[type=text]{font-family:var(--hand);font-size:19px;color:var(--ink);border:2px solid var(--ink);border-radius:8px;padding:3px 8px;width:120px;background:#fff}
+.f>span{display:flex;align-items:center;gap:6px;color:var(--ink)}
+.f.ck{flex-direction:row;align-items:center;gap:8px;color:var(--ink);font-size:17px;cursor:pointer}
+.f.ck input{width:20px;height:20px;accent-color:var(--ink)}
+.pick{display:flex;flex-wrap:wrap;gap:6px}
+.pick .btn{font-size:15px;padding:4px 10px;box-shadow:none;white-space:normal;text-align:left}
+.pick .btn.on{background:var(--ink);color:#fff}
+.ck8{display:grid;grid-template-columns:1fr 1fr;gap:0 10px}
+.ck8 .f.ck{margin:2px 0}
+.jr{font-size:15px;color:#22305e;background:#fffdf5;border:1.5px dashed var(--ink2);border-radius:8px;padding:6px 10px;margin:6px 0;max-height:190px;overflow:auto}
+.jr ol{margin:4px 0;padding-left:20px}
+.fb{margin-top:8px;font-size:17px;line-height:1.35;border-radius:8px}
+.fb.ok{background:#E3F3E1;border:2px solid var(--green);color:#1F5E22;padding:8px 10px}
+.fb.bad{background:#FBE5E2;border:2px solid var(--red);color:#8E2A1F;padding:8px 10px}
+.fb.hint{background:#FFF6CC;border:2px dashed #C9A227;color:#6B5500;padding:8px 10px}
+.acts{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.badge{font-size:16px;border:2px solid var(--red);color:var(--red);border-radius:10px;padding:3px 10px;background:#fffdf6}
+.dot:disabled,.btn:disabled{opacity:.4;cursor:not-allowed;transform:none}
+.who{display:flex;gap:14px;flex-wrap:wrap;margin:8px 0}
+.who label{display:flex;flex-direction:column;font-size:16px;color:var(--pencil)}
+.who input{font-family:var(--hand);font-size:20px;color:var(--ink);border:2px solid var(--ink);border-radius:8px;padding:4px 8px;background:#fff;width:260px;max-width:80vw}
+.who input#iVar{width:120px}
+.rep table,.rt{border-collapse:collapse;width:100%;font-size:16px;background:#fffdf5;margin:6px 0}
+.rep th,.rep td,.rt th,.rt td{border:1.5px solid var(--ink2);padding:5px 8px;text-align:left;vertical-align:top}
+.rep th,.rt th{background:#E6ECFA;font-weight:400}
+.rt{font-size:15px}
+.tw{overflow-x:auto}
+.grade{font-family:var(--title);font-size:44px;color:var(--red);line-height:1}
+.note{background:#FFF6CC;border:2px dashed #C9A227;border-radius:10px;padding:7px 12px;font-size:16px;color:#6B5500;margin:8px 0}
+.mini{font-size:10px;opacity:.3;font-style:italic;text-align:right;margin-top:16px}
+@media print{body{overflow:visible;background:#fff}body::before,.app,.sig,#ovIntro,#ovTheory{display:none!important}#ovReport{position:static;display:block!important;background:none;padding:0}#ovReport .sheet{width:100%;max-height:none;border:0;box-shadow:none;background:#fff}#ovReport .hd{display:none}#ovReport .bd{overflow:visible}}
+@media (max-width:1050px){body{overflow:auto}.app{height:auto;padding-left:18px}body::before{display:none}main{grid-template-columns:1fr}.stage{height:62vh}}
+</style>
+</head>
+<body>
+<div class="app">
+<header>
+  <a class="btn" href="../index.html" title="Barcha laboratoriyalar">⌂ Ro’yxat</a>
+  <h1>Tolalarni aniqlash<small id="h1s">Laboratoriya ishi № 9 · virtual tajriba</small></h1>
+  <div class="sp"></div>
+  <span class="badge" id="scoreBadge" hidden>Ball: 0</span>
+  <div class="seg" id="modeSeg">
+    <button class="btn on" data-mode="demo">🎬 Namoyish</button>
+    <button class="btn" data-mode="prac">✍ Mustaqil</button>
+  </div>
+  <button class="btn" id="bTheory" title="T">📖 Nazariya</button>
+  <button class="btn" id="bReport">📋 Natija</button>
+  <button class="btn on" id="bLabels" title="N">🏷 Nomlar</button>
+  <button class="btn on" id="bVoice" title="M">🎙 Diktor</button>
+  <button class="btn on" id="bSfx">🔊 Tovush</button>
+  <button class="btn" id="bFull" title="F">⛶ To’liq ekran</button>
+</header>
+
+<main>
+<div class="stage">
+<svg id="svg" viewBox="0 0 900 600" preserveAspectRatio="xMidYMid meet" aria-label="Laboratoriya qurilmasi">
+<defs><clipPath id="cLens"><circle id="lensC" cx="300" cy="330" r="200"/></clipPath></defs>
+
+<!-- ============ YONDIRISH STOLI ============ -->
+<g id="sc-bench" class="scene" opacity="0">
+  <rect x="14" y="14" width="572" height="572" rx="14" fill="#FFFFFF" fill-opacity=".45" class="ink"/>
+  <path d="M14 46 V28 Q14 14 28 14 H572 Q586 14 586 28 V46 Z" fill="#E6ECFA" class="ink"/>
+  <text x="34" y="38" class="lbl" style="font-size:18px">tortish shkafi</text>
+  <circle id="hLamp" cx="528" cy="30" r="5" fill="#ccc" class="ink" stroke-width="1.5"/>
+  <circle cx="556" cy="30" r="11" fill="#fff" class="ink"/><path id="hFan" d="M556 21 V39 M547 30 H565" class="ink"/>
+  <rect x="14" y="540" width="572" height="46" fill="#EADFC4" class="ink"/>
+  <path d="M18 528 C70 530 120 524 168 522" fill="none" stroke="#1F3A93" stroke-width="7" stroke-linecap="round"/>
+  <path d="M18 528 C70 530 120 524 168 522" fill="none" stroke="#E9A26B" stroke-width="4" stroke-linecap="round"/>
+  <circle id="valve" cx="96" cy="527" r="7" fill="#ccc" class="ink"/>
+  <ellipse cx="210" cy="534" rx="56" ry="8" fill="#BAC1CE" class="ink"/>
+  <path d="M168 532 L176 508 H244 L252 532 Z" class="metal"/>
+  <rect x="200" y="380" width="20" height="130" class="metal"/>
+  <rect x="194" y="440" width="32" height="16" rx="3" fill="#8F97A8" class="ink"/>
+  <g id="flm"></g>
+  <g id="tileG"><rect x="390" y="526" width="124" height="14" rx="2" fill="#F6F1E6" class="ink"/></g>
+  <g id="gogG" transform="translate(552 560)"><ellipse cx="-13" cy="0" rx="12" ry="9" fill="#D4E2FF" class="ink"/><ellipse cx="13" cy="0" rx="12" ry="9" fill="#D4E2FF" class="ink"/><path d="M-25 -2 q-6 -8 -2 -14 M25 -2 q6 -8 2 -14" class="ink" fill="none"/></g>
+  <g id="resG"></g>
+  <g id="smk"></g>
+  <g id="litG"></g>
+  <g id="tng"></g>
+  <g id="handG"></g>
+  <g id="resZ"></g>
+  <g id="labels">
+    <text x="60" y="426" class="lbl">gaz gorelkasi</text><path class="lead" d="M150 432 L198 470"/>
+    <text x="244" y="478" class="lbl">havo rostlagich</text><path class="lead" d="M244 470 L228 452"/>
+    <text x="30" y="510" class="lbl">gaz shlangi</text>
+    <text x="452" y="566" text-anchor="middle" class="lbl">keramik plitka</text>
+  </g>
+</g>
+
+<!-- ============ PROBIRKALAR ============ -->
+<g id="sc-tubes" class="scene" opacity="0">
+  <rect x="14" y="14" width="572" height="572" rx="14" fill="#FFFFFF" fill-opacity=".45" class="ink"/>
+  <path d="M14 46 V28 Q14 14 28 14 H572 Q586 14 586 28 V46 Z" fill="#E6ECFA" class="ink"/>
+  <text x="34" y="38" class="lbl" style="font-size:18px">tortish shkafi</text>
+  <rect x="14" y="540" width="572" height="46" fill="#EADFC4" class="ink"/>
+  <rect x="36" y="300" width="10" height="240" fill="#D9B98C" class="ink"/><rect x="554" y="300" width="10" height="240" fill="#D9B98C" class="ink"/>
+  <rect x="30" y="296" width="540" height="16" rx="3" fill="#D9B98C" class="ink"/>
+  <g id="holes"></g>
+  <g id="tubes"></g>
+  <rect x="30" y="444" width="540" height="14" rx="3" fill="#D9B98C" class="ink"/>
+  <g id="tubeLbl"></g>
+</g>
+
+<!-- ============ LUPA ============ -->
+<g id="sc-look" class="scene" opacity="0">
+  <rect x="14" y="14" width="572" height="572" rx="14" fill="#FFFFFF" fill-opacity=".35" stroke="#1F3A93" stroke-width="1.5" stroke-dasharray="6 6"/>
+  <line id="lensH" x1="440" y1="470" x2="540" y2="570" stroke="#8B5A2B" stroke-width="18" stroke-linecap="round"/>
+  <g clip-path="url(#cLens)"><circle cx="300" cy="330" r="420" fill="#F7FBFF"/><g id="lensIn"></g></g>
+  <circle id="lensR" cx="300" cy="330" r="200" fill="none" stroke="#8A8F9C" stroke-width="10"/>
+  <circle id="lensR2" cx="300" cy="330" r="205" fill="none" class="ink"/>
+  <text id="lensX" x="470" y="160" class="ttl" style="font-size:30px">×200</text>
+  <rect x="40" y="548" width="180" height="18" class="glass"/><g id="slideF"></g>
+  <text x="130" y="584" text-anchor="middle" class="lbs" style="font-size:15px">buyum oynasidagi namuna</text>
+</g>
+
+<g id="sc-table" class="scene" opacity="0"><g id="tbl"></g></g>
+<g id="sc-class" class="scene" opacity="0"><g id="clsG"></g></g>
+<g id="sc-pack" class="scene" opacity="0"><g id="pkG"></g></g>
+
+<g id="susG"></g>
+<g id="bubG"></g>
+<g id="stampG"></g>
+</svg>
+</div>
+
+<div class="panel">
+  <div class="card">
+    <div class="stepno" id="stepNo">1-bosqich</div>
+    <div class="stitle" id="stepTitle">…</div>
+    <div class="lab" id="lab1">🎙 Diktor nima qilinishini aytadi:</div>
+    <div class="say" id="say"></div>
+    <div class="lab" id="lab2">📌 Aniq ma’lumotlar:</div>
+    <ul class="det" id="det"></ul>
+  </div>
+  <div class="card" id="taskCard" hidden>
+    <div class="lab" style="margin-top:0">✍ Sizning harakatingiz:</div>
+    <div id="taskBody"></div>
+    <div class="acts">
+      <button class="btn" id="bCheck" style="border-color:var(--green);color:var(--green)">✔ Tekshirish</button>
+      <button class="btn" id="bHint">💡 Yordam (−1 ball)</button>
+      <button class="btn on" id="bGo" style="display:none">Keyingi bosqich ▶</button>
+    </div>
+    <div class="fb" id="fb"></div>
+  </div>
+  <div class="card" id="eqCard">
+    <div class="lab" style="margin-top:0">⚗ Asosiy reaksiyalar va belgilar</div>
+    <div class="eq" id="eqBox"></div>
+  </div>
+</div>
+</main>
+
+<footer>
+  <button class="btn" id="bPrev" title="←">◀ Oldingi</button>
+  <button class="btn big on" id="bPlay" title="Probel">▶ Ijro etish</button>
+  <button class="btn" id="bNext" title="→">Keyingi ▶</button>
+  <div class="dots" id="dots"></div>
+  <div class="sp"></div>
+  <label class="small"><input type="checkbox" id="cAuto" checked> avto davom</label>
+  <label class="small">Tezlik <select id="sSpeed"><option value="0.75">0,75×</option><option value="1" selected>1×</option><option value="1.5">1,5×</option><option value="2">2×</option></select></label>
+  <label class="small">Ovoz <select id="sVoice"></select></label>
+</footer>
+</div>
+
+<div class="sig">by Hayitali</div>
+
+<!-- INTRO -->
+<div class="ov show" id="ovIntro">
+  <div class="sheet intro">
+    <div class="bd">
+      <h2>Laboratoriya ishi № 9 — Tolalarni aniqlash</h2>
+      <p><b style="color:var(--red)">Dars maqsadi:</b> tabiiy, sun’iy va sintetik tolalarning erituvchilar ta’sirida erishi yoki bo’kishini kuzatish, yonish mahsulotlari asosida ularni sinflash.</p>
+      <h3>Identiv maqsadlar</h3>
+      <ol>
+        <li>Tolalarni kelib chiqishiga ko’ra sinflaydi: tabiiy, sun’iy, sintetik.</li>
+        <li>Yondirish sinovi bo’yicha tolaning kimyoviy guruhini aniqlaydi.</li>
+        <li>Yonish mahsulotlarini lakmus bilan tekshirib, tolada azot borligini aniqlaydi.</li>
+        <li>Kislota, ishqor va organik erituvchilarning tolalarga ta’sirini kuzatadi.</li>
+        <li>Kuzatuvlarni aniqlash jadvali bilan solishtirib, noma’lum tolani topadi.</li>
+      </ol>
+      <p class="note">🕵 Bu ish — “detektiv” o’yini: har bir talabaga 8 ta tola ichidan tasodifiy <b>4 ta noma’lum namuna</b> (A, B, C, D) beriladi. A namunada sinovlar bosqichma-bosqich o’rgatiladi, B–D namunalarda sinovlarni talabaning o’zi tanlaydi. Variant raqamini kiritsangiz, xuddi shu namunalar qayta beriladi. Sinov natijalari <b>o’quv aniqlash jadvali</b>dan olinadi.</p>
+      <p class="small" id="voiceInfo">Ovozlar tekshirilmoqda…</p>
+      <p class="small">Klaviatura: <b>Probel</b> — ijro, <b>← →</b> — bosqichlar, <b>F</b> — to’liq ekran, <b>N</b> — nomlar, <b>M</b> — diktor, <b>T</b> — nazariya.</p>
+      <div class="who">
+        <label>Talabaning F.I.Sh<input id="iName" type="text" placeholder="Aliyev Vali" autocomplete="off"></label>
+        <label>Guruh<input id="iGroup" type="text" placeholder="KT-21" autocomplete="off"></label>
+        <label>Variant (ixtiyoriy)<input id="iVar" type="text" inputmode="numeric" placeholder="1–99" autocomplete="off"></label>
+      </div>
+      <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:12px">
+        <button class="btn big on" data-start="prac">✍ Mustaqil bajarish — talaba o’zi bajaradi</button>
+        <button class="btn big" data-start="demo">🎬 Namoyish — diktor ko’rsatadi</button>
+      </div>
+      <p class="small" id="introErr" style="color:var(--red);min-height:1.4em"></p>
+    </div>
+  </div>
+</div>
+
+<!-- REPORT -->
+<div class="ov" id="ovReport">
+  <div class="sheet">
+    <div class="hd">
+      <b style="font-family:var(--title);font-size:30px">📋 Yakuniy natija</b>
+      <div class="sp"></div>
+      <button class="btn" id="rSpeak">🎙 O’qib berish</button>
+      <button class="btn" id="rPrint">🖨 Chop etish / PDF</button>
+      <button class="btn" id="rAgain">⟲ Qaytadan</button>
+      <button class="btn red" id="rClose">✕ Yopish</button>
+    </div>
+    <div class="bd rep" id="repBody"></div>
+  </div>
+</div>
+
+<!-- THEORY -->
+<div class="ov" id="ovTheory">
+  <div class="sheet">
+    <div class="hd">
+      <div class="seg" id="thTabs" style="flex-wrap:wrap">
+        <button class="btn on" data-t="t1">Tolalar sinflanishi</button>
+        <button class="btn" data-t="t2">Aniqlash usullari</button>
+        <button class="btn" data-t="t3">Aniqlovchi</button>
+        <button class="btn" data-t="t4">Reaktiv va jihozlar</button>
+        <button class="btn" data-t="t5">Savollar</button>
+      </div>
+      <div class="sp"></div>
+      <button class="btn" id="thSpeak">🎙 O’qib berish</button>
+      <button class="btn red" id="thClose">✕ Yopish</button>
+    </div>
+    <div class="bd">
+      <section id="t1">
+        <h2>Tolalar va ularning sinflanishi</h2>
+        <p><b>Tola</b> — uzunligi ko’ndalang o’lchamidan ko’p marta katta bo’lgan, egiluvchan va mustahkam jism. Barcha to’qimachilik tolalari yuqori molekulyar birikmalardan — chiziqli tuzilishdagi polimerlardan iborat. Makromolekulalar tola o’qi bo’ylab tartiblangan (orientatsiyalangan), shuning uchun tola cho’zilishga mustahkam.</p>
+        <div class="mech">
+          <div class="card"><div class="n">Tabiiy</div>Tabiatda tayyor holda uchraydi. <b>O’simlik</b> tolalari — paxta, zig’ir (sellyuloza); <b>hayvon</b> tolalari — jun, tabiiy ipak (oqsil).</div>
+          <div class="card"><div class="n">Sun’iy</div>Tabiiy polimerni (asosan sellyulozani) kimyoviy qayta ishlab, eritmadan filyera orqali siqib olinadi: <b>viskoza</b>, <b>atsetat</b>.</div>
+          <div class="card"><div class="n">Sintetik</div>Kichik molekulali moddalar — monomerlardan sintez qilingan polimerlardan olinadi: <b>nitron</b>, <b>xlorin</b>, <b>lavsan</b>, <b>kapron</b>.</div>
+        </div>
+        <p>Sun’iy va sintetik tolalar birgalikda <b>kimyoviy tolalar</b> deyiladi. Ular filyeraning kichik teshiklaridan siqib chiqarilgani uchun sirti silliq, yo’g’onligi bir xil bo’ladi.</p>
+        <div id="fibT"></div>
+      </section>
+      <section id="t2" hidden>
+        <h2>Tolalarni aniqlash usullari</h2>
+        <div class="mech">
+          <div class="card"><div class="n">1. Tashqi ko’rinish</div>Rang, yaltiroqlik, uzunlik, jingalaklik. Lupada: paxta — yassi buralgan lenta, jun — tangachali sirt, kimyoviy tolalar — silliq silindr.</div>
+          <div class="card"><div class="n">2. Yondirish</div>Sellyuloza tolalari tez yonadi, kuygan qog’oz hidi, kul qoladi. Oqsil tolalari kuygan soch hidi bilan sekin yonadi, mo’rt shar qoldiradi. Termoplastik tolalar suyuqlanib, shar hosil qiladi.</div>
+          <div class="card"><div class="n">3. Lakmus</div>Namlangan lakmus yonish mahsulotlariga tutiladi. Azotli tolalardan (oqsil, poliamid, poliakrilonitril) <b>ammiak</b> ajraladi — qizil lakmus ko’karadi. Qolganlaridan kislotali mahsulotlar — ko’k lakmus qizaradi.</div>
+          <div class="card"><div class="n">4. Erituvchilar</div>Konts. HNO₃, konts. H₂SO₄, 10 % NaOH, aseton, fenol. O’xshash tolalarni farqlaydi: paxta va viskoza — NaOH; atsetat va xlorin — asetonda eriydi; kapron va lavsan — fenolda eriydi.</div>
+        </div>
+        <div class="formula">Oqsil, poliamid: … –NH– … + O₂ ⟶ CO₂ + H₂O + <b>NH₃</b>↑ &nbsp;(qizil lakmus ko’karadi)<br>Xlorin: … –CHCl– … ⟶ <b>HCl</b>↑; &nbsp; HCl + AgNO₃ ⟶ <b>AgCl</b>↓ (oq cho’kma) + HNO₃<br>Jun + konts. HNO₃ ⟶ sariq rang (ksantoprotein reaksiyasi — aromatik aminokislotalarning nitrolanishi)<br>Atsetat + NaOH ⟶ sellyuloza + CH₃COONa (sovunlanish)</div>
+        <h3>Aniqlash jadvali (o’quv)</h3>
+        <div id="refT"></div>
+        <p class="note">ℹ Qo’llanmadagi jadvalning erituvchilar ustunlari ko’chirishda siljigan. Dasturdagi ayrim qiymatlar (lavsan va kapronning konts. HNO₃ dagi, xlorinning asetondagi eruvchanligi, fenol ustuni) standart darslik ma’lumotlari bo’yicha tiklangan <b>o’quv qiymatlari</b> — o’qituvchi bilan tekshiring.</p>
+      </section>
+      <section id="t3" hidden>
+        <h2>Aniqlovchi</h2>
+        <p>Kuzatuvlaringizni tanlang — dastur aniqlash jadvali bo’yicha mos keladigan tolalarni ko’rsatadi. Sinov o’tkazilmagan bo’lsa, “—” qoldiring.</p>
+        <div class="calc" id="idf"></div>
+        <div class="res" id="idfRes"></div>
+      </section>
+      <section id="t4" hidden>
+        <h2>Reaktivlar va jihozlar</h2>
+        <h3>Reaktivlar</h3>
+        <p>10 xil tola namunasi; konsentrlangan nitrat kislota HNO₃ (ρ = 1,4 g/sm³); konsentrlangan sulfat kislota H₂SO₄ (ρ = 1,84 g/sm³); 10 % li NaOH eritmasi; aseton; fenol; benzol; lakmus qog’ozi; AgNO₃ eritmasi.</p>
+        <h3>Jihozlar</h3>
+        <p>Gaz gorelkasi, tigel qisqichi, keramik plitka, stakan, probirkalar va probirka shtativi, lupa.</p>
+        <h3>Ishning bajarilish tartibi</h3>
+        <ol>
+          <li>Tolaning tashqi ko’rinishi o’rganiladi: rangi, yaltiroqligi, uzunligi, uziluvchanligi.</li>
+          <li>Tola alangada va alangadan tashqarida yondiriladi; hid va qoldiq kuzatiladi.</li>
+          <li>Yonish mahsulotlariga namlangan lakmus qog’ozi tutiladi.</li>
+          <li>Tolaning konsentrlangan kislota va ishqorda eruvchanligi tekshiriladi.</li>
+          <li>Tolaning organik erituvchilarda eruvchanligi tekshiriladi.</li>
+          <li>Natijalar aniqlash jadvali bilan taqqoslanib, tola aniqlanadi.</li>
+        </ol>
+        <h3>Xavfsizlik</h3>
+        <ul>
+          <li>Yondirish va kislotalar bilan ish faqat <b>tortish shkafida</b> bajariladi.</li>
+          <li>Himoya ko’zoynagi va rezina qo’lqop shart.</li>
+          <li>Tola faqat tigel qisqichi bilan ushlanadi; suyuqlangan tola terini kuydiradi.</li>
+          <li>Hid qo’l bilan yelpib, uzoqdan aniqlanadi: xlorindan HCl, nitrondan sianidli birikmalar ajraladi.</li>
+          <li>Fenol teriga tegsa chuqur kuydiradi — darhol ko’p oqar suv bilan yuving.</li>
+          <li>Konsentrlangan kislotani suvga quyiladi, aksincha emas.</li>
+        </ul>
+      </section>
+      <section id="t5" hidden>
+        <h2>Nazorat savollari</h2>
+        <details><summary>1. Tolalar kelib chiqishiga ko’ra qanday sinflanadi?</summary>Tabiiy (o’simlik — paxta, zig’ir; hayvon — jun, ipak), sun’iy (viskoza, atsetat — tabiiy polimerdan), sintetik (nitron, xlorin, lavsan, kapron — monomerlardan sintez).</details>
+        <details><summary>2. Nima uchun jun va kapron yonganda qizil lakmus ko’karadi?</summary>Ularning tarkibida azot bor (oqsilda peptid, kapronda amid bog’i). Yonishda ammiak ajraladi va muhit ishqoriy bo’ladi.</details>
+        <details><summary>3. Paket masalasi: uchta paketda lavsan, nitron va kapron bor. Ularni qanday ajratasiz?</summary>Avval lakmus: lavsan mahsulotlari kislotali, nitron va kapronniki ishqoriy. So’ng fenol yoki konts. HNO₃: kapron eriydi, nitron erimaydi.</details>
+        <details><summary>4. Paxta va viskozani qanday farqlaysiz?</summary>Ikkalasi ham sellyuloza — bir xil yonadi. 10 % NaOH da paxta faqat bo’kadi, viskoza kuchli bo’kib eriydi; konts. H₂SO₄ da viskoza eritmasi qizil-jigarrang bo’ladi. Viskoza yaltiroq va ho’llanganda oson uziladi.</details>
+        <details><summary>5. Atsetat va xlorin asetonda eriydi. Ularni qanday ajratasiz?</summary>Yondirish: atsetat suyuqlanib, sirka hidi bilan yonadi; xlorin qiyin yonadi, qalin dud chiqaradi. Xlorin yonish gazlari AgNO₃ bilan oq cho’kma beradi. Konts. H₂SO₄ da atsetat eriydi, xlorin erimaydi.</details>
+        <details><summary>6. Nima uchun termoplastik tolalar yondirilganda shar hosil bo’ladi?</summary>Chiziqli sintetik polimerlar qizdirilganda yumshab suyuqlanadi, sirt taranglik tufayli tomchi — shar shaklini oladi va sovib qotadi.</details>
+        <details><summary>7. Junni konts. HNO₃ sarg’aytiradi. Bu qanday reaksiya?</summary>Ksantoprotein reaksiyasi: oqsil tarkibidagi aromatik aminokislotalar (tirozin, triptofan) nitrolanib, sariq rangli birikmalar hosil qiladi.</details>
+        <details><summary>8. Paket masalasi: ikkita paketda jun va nitron bor. Qaysi sinov ajratadi?</summary>Ikkalasidan ham ammiak ajraladi. Lekin jun kuygan soch hidi bilan sekin yonib, ezilib ketadigan shar qoldiradi, 10 % NaOH da eriydi; nitron chaqnab yonadi va NaOH da erimaydi.</details>
+      </section>
+    </div>
+  </div>
+</div>
+
+<script>
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const E={};document.querySelectorAll('[id]').forEach(n=>E[n.id]=n);
+const fx=(n,d)=>(d==null?String(n):(+n).toFixed(d)).replace('.',',');
+
+/* ---------- tolalar (o’quv aniqlash jadvali) ---------- */
+const FIB=[
+ {n:'Paxta',cls:0,f:'(C₆H₁₀O₅)ₙ',fs:'sellyuloza',grp:0,mi:0,fl:0,out:0,sm:0,res:0,lit:'a',ag:0,HN:'e',HS:'e',NA:'b',AS:'n',FE:'n',col:'#FFFFFF',smk:'#B4B4B4',bs:'qog’oz hidi, kul',look:'Oq, xira, yumshoq; qisqa tolalar; ho’llanganda mustahkamligi ortadi'},
+ {n:'Jun',cls:0,f:'oqsil (keratin)',fs:'oqsil',grp:1,mi:1,fl:1,out:1,sm:1,res:1,lit:'b',ag:0,HN:'s',HS:'y',NA:'e',AS:'n',FE:'n',col:'#EFE3C4',smk:'#9A9A9A',bs:'soch hidi, mo’rt shar',look:'Jingalak, elastik, xira; uchlari ingichkalashgan; ho’llanganda mustahkamligi kamayadi'},
+ {n:'Viskoza',cls:1,f:'(C₆H₁₀O₅)ₙ',fs:'gidratsellyuloza',grp:0,mi:2,gr:1,fl:0,out:0,sm:0,res:0,lit:'a',ag:0,HN:'e',HS:'r',NA:'e',AS:'n',FE:'n',col:'#F4F0FF',smk:'#B4B4B4',bs:'qog’oz hidi, kul',look:'Yaltiroq, silliq, uzun ip; ho’llanganda oson uziladi',tx:{NA:'kuchli bo’kadi va eriydi'}},
+ {n:'Atsetat',cls:1,f:'[C₆H₇O₂(OCOCH₃)₃]ₙ',fs:'sellyuloza triatsetati',grp:2,mi:2,fl:2,out:1,sm:2,res:2,lit:'a',ag:0,HN:'e',HS:'e',NA:'g',AS:'e',FE:'n',col:'#FFF6E6',smk:'#C4C4C4',bs:'sirka hidi, qattiq shar',look:'Ipakka o’xshash, yaltiroq, yumshoq; ho’llanganda mustahkamligi biroz kamayadi'},
+ {n:'Nitron',cls:2,f:'(–CH₂–CH(CN)–)ₙ',fs:'poliakrilonitril',grp:2,mi:2,fl:3,out:0,sm:3,res:3,lit:'b',ag:0,HN:'n',HS:'e',NA:'n',AS:'n',FE:'n',col:'#F2E8D6',smk:'#777777',bs:'chaqnaydi, g’ovak shar',look:'Junga o’xshash, yumshoq, issiq tutadi; sirti silliq',tx:{HN:'erimaydi (tutovchi HNO₃ da eriydi)',NA:'erimaydi (qaynatilsa qizaradi)'}},
+ {n:'Xlorin',cls:2,f:'(–CH₂–CHCl–CHCl–)ₙ',fs:'perxlorvinil',grp:2,mi:2,fl:4,out:1,sm:3,res:3,lit:'a',ag:1,HN:'n',HS:'n',NA:'n',AS:'e',FE:'n',col:'#E7E7DD',smk:'#333333',bs:'dudlaydi, mo’rt shar',look:'Xira, qattiqroq; sirti silliq; namni deyarli yutmaydi'},
+ {n:'Lavsan',cls:2,f:'(–OC–C₆H₄–COO–CH₂CH₂–O–)ₙ',fs:'polietilentereftalat',grp:2,mi:2,fl:2,out:1,sm:4,res:2,lit:'a',ag:0,HN:'n',HS:'e',NA:'n',AS:'n',FE:'e',col:'#F6FAFF',smk:'#555555',bs:'badbo’y, qattiq shar',look:'Yaltiroq, elastik, g’ijimlanmaydi; sirti silliq, mustahkam',tx:{FE:'qizdirilganda eriydi'},litx:' (probirka devorida sariq halqa)'},
+ {n:'Kapron',cls:2,f:'(–NH–(CH₂)₅–CO–)ₙ',fs:'poli-ε-kaproamid',grp:2,mi:2,fl:2,out:1,sm:4,res:2,lit:'b',ag:0,HN:'e',HS:'e',NA:'n',AS:'n',FE:'e',col:'#FCFCF4',smk:'#D2D2D2',bs:'badbo’y, qattiq shar',look:'Yaltiroq, juda mustahkam, cho’ziluvchan; sirti silliq'}];
+const CLS=['tabiiy','sun’iy','sintetik'],CLSN=['Tabiiy','Sun’iy','Sintetik'];
+const CLSWHY=['Paxta g’o’za chigitidagi tolalardan olinadi — tabiiy (o’simlik) tola.','Jun qo’y va boshqa hayvonlardan qirqib olinadi — tabiiy (hayvon) tola.','Viskoza yog’och sellyulozasini kimyoviy qayta ishlab, eritmadan tola qilib olinadi — tabiiy polimerdan olingan sun’iy tola.','Atsetat sellyulozani sirka angidridi bilan atsetillab olinadi — tabiiy polimerdan olingan sun’iy tola.','Nitron akrilonitril monomeridan polimerlab sintez qilinadi — sintetik tola.','Xlorin polivinilxloridni qo’shimcha xlorlab olinadi, polivinilxlorid esa vinilxlorid monomeridan sintez qilinadi — sintetik tola.','Lavsan tereftal kislota va etilenglikoldan polikondensatlab sintez qilinadi — sintetik tola.','Kapron kaprolaktamdan polimerlab sintez qilinadi — sintetik tola.'];
+const MI=['yassi, buralgan lenta','tangachali, jingalak silindr','silliq silindr'];
+const FL=['tez, yorqin alanga bilan yonadi','sekin yonadi, chirsillab buriladi','suyuqlanib, tomchilab yonadi','chaqnab, uchqun chiqarib yonadi','qiyin yonadi, qalin qora dud chiqaradi'];
+const FLs=['tez yonadi','sekin, chirsillab yonadi','suyuqlanib yonadi','chaqnab yonadi','qiyin yonadi, dud'];
+const OUT=['alangadan chiqarilganda ham yonishda davom etadi','alangadan chiqarilganda o’chadi'],OUTs=['yonishda davom etadi','o’chadi'],OUTsh=['tashqarida yonadi','tashqarida o’chadi'];
+const SM=['kuygan qog’oz hidi','kuygan soch (pat) hidi','sirka hidi','o’tkir, bo’g’uvchi hid','yoqimsiz, badbo’y hid'],SMs=['qog’oz hidi','soch hidi','sirka hidi','o’tkir hid','badbo’y hid'];
+const RES=['oz miqdorda kulrang yumshoq kul','qora mo’rt shar, ezilsa kukunga aylanadi','qattiq qora (yaltiroq) shar, ezilmaydi','qora g’ovak mo’rt shar'],RESs=['kul','mo’rt shar','qattiq shar','g’ovak shar'];
+const GRP=['Sellyuloza tolasi (paxta, viskoza)','Oqsil tolasi (jun, tabiiy ipak)','Suyuqlanadigan (termoplastik) kimyoviy tola'],GRPS=['sellyuloza tolasi','oqsil tolasi','suyuqlanadigan, ya’ni termoplastik kimyoviy tola'];
+const RT={e:'eriydi',b:'bo’kadi, lekin erimaydi',n:'erimaydi, o’zgarmaydi',s:'bo’kadi va sarg’ayadi',y:'yemiriladi, qorayadi',r:'eriydi, eritma qizil-jigarrang bo’ladi',g:'eritma sarg’ish rangga kiradi (sovunlanadi)'};
+const RTS={e:'eriydi',b:'bo’kadi, lekin erimaydi',n:'erimaydi',s:'bo’kib, sarg’ayadi',y:'yemiriladi',r:'eriydi, eritma qizil-jigarrang bo’ladi',g:'eritma sarg’ayadi'};
+const SH={e:'eriydi',b:'bo’kadi',n:'—',s:'sarg’ayadi',y:'yemiriladi',r:'eriydi, qizg’ish',g:'sarg’ayadi'};
+const SH2={e:'eriydi',b:'bo’kadi',n:'erimaydi',s:'bo’kadi, sarg’ayadi',y:'yemiriladi',r:'eriydi (qizg’ish)',g:'sarg’ayadi'};
+const TB=[{k:'HN',n:'HNO₃',s:'konts.',c:'#FFF4CC'},{k:'HS',n:'H₂SO₄',s:'konts.',c:'#EFEEF6'},{k:'NA',n:'NaOH',s:'10 %',c:'#E6F2FF'},{k:'AS',n:'Aseton',s:'',c:'#F0F8FF'},{k:'FE',n:'Fenol',s:'suyuq',c:'#FBE6EC'},{k:'ag',n:'AgNO₃',s:'eritma',c:'#F2F2F2'}];
+const TBI={HN:0,HS:1,NA:2,AS:3,FE:4,ag:5};
+const TN={look:'Lupa',burn:'Yondirish',lit:'Lakmus',ag:'AgNO₃',HN:'HNO₃ (konts.)',HS:'H₂SO₄ (konts.)',NA:'NaOH 10 %',AS:'Aseton',FE:'Fenol'};
+const TSAY={HN:'Konsentrlangan nitrat kislotada',HS:'Konsentrlangan sulfat kislotada',NA:'O’n foizli natriy gidroksidda',AS:'Asetonda',FE:'Fenolda'};
+const ORD=['Birinchi','Ikkinchi','Uchinchi','To’rtinchi','Beshinchi','Oltinchi','Yettinchi','Sakkizinchi','To’qqizinchi','O’ninchi','O’n birinchi','O’n ikkinchi'];
+const LET='ABCD',BLUE='#4F7BD6',RED='#D9534F';
+const bsig=f=>`${f.fl}${f.out}${f.sm}${f.res}`;
+function fv(i,k){const f=FIB[i];return k==='look'?f.mi:k==='burn'?bsig(f):f[k]}
+function cons(ob){return FIB.map((f,i)=>i).filter(i=>Object.keys(ob).every(k=>fv(i,k)===ob[k]))}
+function oText(i,k){const f=FIB[i];if(k==='look')return MI[f.mi]+(f.gr?', bo’ylama chiziqli':'');
+ if(k==='burn')return`${FL[f.fl]}, ${OUT[f.out]}; ${SM[f.sm]}; qoldiq — ${RES[f.res]}`;
+ if(k==='lit')return f.lit==='a'?'kislotali — ko’k lakmus qizardi'+(f.litx||''):'ishqoriy — qizil lakmus ko’kardi (ammiak)';
+ if(k==='ag')return f.ag?'oq cho’kma (AgCl) tushdi — xlor bor':'cho’kma tushmadi';
+ return(f.tx&&f.tx[k])||RT[f[k]]}
+function jl(i,k){const f=FIB[i];if(k==='look')return['🔍 '+MI[f.mi]+(f.gr?', chiziqli':'')];
+ if(k==='burn')return['🔥 '+FLs[f.fl]+'; '+OUTsh[f.out],'    '+SMs[f.sm]+'; '+RESs[f.res]];
+ if(k==='lit')return['🧻 '+(f.lit==='a'?'kislotali (ko’k → qizil)':'ishqoriy (qizil → ko’k)')];
+ if(k==='ag')return['⚗ AgNO₃: '+(f.ag?'oq cho’kma':'o’zgarmadi')];
+ return['🧪 '+TB[TBI[k]].n+': '+SH2[f[k]]]}
+function burnDiff(p,a){const P=FIB[p],Q=FIB[a],d=[];if(P.fl!==Q.fl)d.push([FL[Q.fl],FL[P.fl]]);if(P.out!==Q.out)d.push([OUT[Q.out],OUT[P.out]]);if(P.sm!==Q.sm)d.push([SM[Q.sm],SM[P.sm]]);if(P.res!==Q.res)d.push(['qoldiq — '+RES[Q.res],'qoldiq — '+RES[P.res]]);
+ return`Yondirishda namuna ${d.map(x=>x[0]).join('; ')}, ${P.n} esa ${d.map(x=>x[1]).join('; ')}.`}
+function contra(p,a,ob){for(const k of Object.keys(ob))if(fv(p,k)!==ob[k])return k==='burn'?burnDiff(p,a):`${TN[k]}: kuzatuvda — «${oText(a,k)}», ${FIB[p].n} uchun esa — «${oText(p,k)}».`;return''}
+const LOCN={HN:'konts. HNO₃ da',HS:'konts. H₂SO₄ da',NA:'10 % NaOH da',AS:'asetonda',FE:'fenolda'};
+function obOf(fi,keys){const o={};keys.forEach(k=>o[k]=fv(fi,k));return o}
+function mulberry(a){return()=>{a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+
+/* ---------- variant ---------- */
+let D={},STEPS=[],TK=[];
+function chainFor(fi){const ks=['burn','lit'],ob=obOf(fi,['look','burn','lit']);const pool=['NA','AS','HN','FE','HS','ag'];
+ while(cons(ob).length>1){let best=null,bn=99;for(const k of pool){if(ks.includes(k))continue;const n=cons({...ob,[k]:fv(fi,k)}).length;if(n<bn){bn=n;best=k}}ks.push(best);ob[best]=fv(fi,best)}
+ if(ks.length===2){const k=['AS','ag','FE','NA','HN','HS'].find(k=>fv(fi,k)!=='n'&&fv(fi,k)!==0);if(k){ks.push(k);ob[k]=fv(fi,k)}}
+ return{ks,ob}}
+function build(seed){const R=mulberry(seed*7919+13);const sh=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(R()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+ let s;do{s=sh([0,1,2,3,4,5,6,7]).slice(0,4)}while(!s.slice(1).some(i=>[0,2,6,7].includes(i)));
+ D={seed,smp:s,pk:sh([6,4,7]),pobs:{}};D.chain=s.map((fi,si)=>si?chainFor(fi):null);
+ STEPS=makeSteps();TK=makeTasks();E.h1s.textContent=`Laboratoriya ishi № 9 · virtual tajriba · variant ${seed}`}
+
+/* ---------- holat ---------- */
+const TUBE0={};for(let i=0;i<6;i++){TUBE0['d'+i]=0;TUBE0['q'+i]=0;TUBE0['c'+i]=''}
+const BASE={scene:'bench',hood:1,gog:1,tile:1,burner:0,fl:0,tgOn:0,tx:600,ty:330,fib:0,melt:0,fOn:0,smoke:0,smokeC:'#999999',resT:0,resZ:0,
+ lit:0,litC:BLUE,lx:40,ly:150,fan:0,fanA:0,bub:'',smp:0,fi:0,el:0,mx:0,mxOn:0,stamp:0,stampT:'',zoom:0,tHL:-1,tel:0,tWin:-1,cl:0,pk:0,...TUBE0};
+let S={...BASE,jr:[],ob:{}};
+function resetState(){S={...BASE,jr:[],ob:{}};SMK.length=0}
+
+/* ---------- audio ---------- */
+let AC=null,sfxOn=true,voiceOn=true,speed=1;
+const ac=()=>AC||(AC=new (window.AudioContext||window.webkitAudioContext)());
+let NB=null;function nbuf(){if(NB)return NB;const a=ac();NB=a.createBuffer(1,a.sampleRate*2,a.sampleRate);const d=NB.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=Math.random()*2-1;return NB}
+function tone(f1,f2,d,v=.15,type='sine',delay=0){if(!sfxOn)return;const a=ac(),t0=a.currentTime+delay,o=a.createOscillator(),g=a.createGain();o.type=type;o.frequency.setValueAtTime(f1,t0);o.frequency.exponentialRampToValueAtTime(f2,t0+d);g.gain.setValueAtTime(.0001,t0);g.gain.exponentialRampToValueAtTime(v,t0+.01);g.gain.exponentialRampToValueAtTime(.0001,t0+d);o.connect(g).connect(a.destination);o.start(t0);o.stop(t0+d+.05)}
+function noise(d,v,f,q=1,type='bandpass'){if(!sfxOn)return;const a=ac(),s=a.createBufferSource();s.buffer=nbuf();s.loop=true;const fl=a.createBiquadFilter();fl.type=type;fl.frequency.value=f;fl.Q.value=q;const g=a.createGain(),t0=a.currentTime;g.gain.setValueAtTime(.0001,t0);g.gain.linearRampToValueAtTime(v,t0+.06);g.gain.setValueAtTime(v,t0+Math.max(.08,d-.2));g.gain.linearRampToValueAtTime(.0001,t0+d);s.connect(fl).connect(g).connect(a.destination);s.start(t0);s.stop(t0+d+.05)}
+const SFX={
+ drip:()=>tone(1500,420,.09,.16),
+ bubble:()=>tone(260+Math.random()*400,700+Math.random()*700,.05+Math.random()*.04,.05),
+ click:()=>tone(1100,800,.035,.07,'square'),
+ clink:()=>{tone(2700,2600,.18,.07,'triangle');tone(4000,3900,.14,.04,'triangle',.02)},
+ ding:()=>{tone(880,880,.7,.1,'triangle');tone(1318,1318,.7,.07,'triangle',.09)},
+ pop:()=>tone(500,1200,.08,.08),
+ fire:()=>noise(.7,.14,420,.6,'lowpass'),
+ sizzle:()=>noise(1.4,.06,4200,1.4),
+ crackle:()=>{for(let k=0;k<9;k++)tone(1800+Math.random()*1500,900,.02,.06,'square',k*.11+Math.random()*.05)},
+ scratch:()=>noise(.22,.05,2600,2.5),
+ water:()=>noise(1,.06,520,.6),
+ buzz:()=>{tone(230,150,.28,.11,'square');tone(180,120,.3,.08,'square',.12)}};
+const LOOPS={};
+function startLoop(k){const a=ac(),g=a.createGain();g.gain.value=0;g.connect(a.destination);const nodes=[];let vol=.03;
+ const nz=(f,q,type)=>{const s=a.createBufferSource();s.buffer=nbuf();s.loop=true;const fl=a.createBiquadFilter();fl.type=type||'bandpass';fl.frequency.value=f;fl.Q.value=q;s.connect(fl).connect(g);s.start();nodes.push(s)};
+ if(k==='burner'){nz(220,.8,'lowpass');vol=.05}
+ if(k==='fan'){nz(700,.5);vol=.012}
+ g.gain.linearRampToValueAtTime(vol,a.currentTime+.4);
+ return{stop(){const t=a.currentTime;g.gain.cancelScheduledValues(t);g.gain.setValueAtTime(g.gain.value,t);g.gain.linearRampToValueAtTime(0,t+.35);nodes.forEach(n=>n.stop(t+.4))}}}
+function loops(){const on=sfxOn&&AC;const want={burner:on&&S.scene==='bench'&&S.burner&&S.fl>.5,fan:on&&(S.scene==='bench'||S.scene==='tubes')&&S.hood>.5};
+ for(const k in want){if(want[k]&&!LOOPS[k])LOOPS[k]=startLoop(k);else if(!want[k]&&LOOPS[k]){LOOPS[k].stop();LOOPS[k]=null}}}
+
+/* ---------- diktor ---------- */
+let voices=[],voice=null,userVoice=null;
+function rankVoice(v){if(/^uz/i.test(v.lang)||/uzbek|o.zbek/i.test(v.name))return 0;if(/^tr/i.test(v.lang))return 1;if(/^kk|^ky|^az/i.test(v.lang))return 2;if(/^en/i.test(v.lang))return 3;return 9}
+function loadVoices(){if(!('speechSynthesis' in window)){E.voiceInfo.textContent='Bu brauzer ovozli o’qishni qo’llamaydi — matn ekranda ko’rsatiladi.';return}
+ voices=speechSynthesis.getVoices().slice().sort((a,b)=>rankVoice(a)-rankVoice(b));
+ E.sVoice.innerHTML='';voices.forEach((v,i)=>{const o=document.createElement('option');o.value=i;o.textContent=`${v.name.replace(/Microsoft |Online \(Natural\) - /g,'')} (${v.lang})`;E.sVoice.appendChild(o)});
+ voice=userVoice&&voices.includes(userVoice)?userVoice:(voices[0]||null);if(voice)E.sVoice.value=voices.indexOf(voice);
+ const uz=voices.find(v=>rankVoice(v)===0);
+ E.voiceInfo.innerHTML=uz?`🎙 Diktor ovozi: <b>${uz.name}</b> — o’zbek tilida.`:`⚠ Bu kompyuterda o’zbekcha ovoz topilmadi. Eng yaxshi natija uchun faylni <b>Microsoft Edge</b> brauzerida oching (Madina / Sardor ovozlari). Hozircha ${voice?voice.name:'standart'} ovozi ishlatiladi, matn ekranda ko’rinadi.`}
+if('speechSynthesis' in window){loadVoices();speechSynthesis.onvoiceschanged=loadVoices}
+E.sVoice.onchange=()=>{userVoice=voice=voices[+E.sVoice.value]};
+let wordSpans=[];
+function setSay(text){E.say.innerHTML='';wordSpans=[];let idx=0;text.split(/(\s+)/).forEach(tok=>{if(/^\s+$/.test(tok)||!tok){E.say.appendChild(document.createTextNode(tok))}else{const s=document.createElement('span');s.className='w';s.textContent=tok;s.dataset.s=idx;E.say.appendChild(s);wordSpans.push(s)}idx+=tok.length})}
+function hlAt(ci){let c=null;for(const s of wordSpans){if(+s.dataset.s<=ci)c=s;else break}wordSpans.forEach(s=>s.classList.toggle('cur',s===c))}
+function speak(text,t,hl=true){return new Promise(res=>{
+ const me={dead:false};if(speak.cur)speak.cur.dead=true;speak.cur=me;const dead=()=>t.dead||me.dead;const H=hl?hlAt:()=>{};
+ const words=text.split(/\s+/).length;
+ if(!voiceOn||!('speechSynthesis' in window)||!voices.length){const ms=Math.max(2500,words*330)/speed;let k=0;const iv=setInterval(()=>{if(dead()){clearInterval(iv);return res()}k+=200;H(text.length*k/ms);if(k>=ms){clearInterval(iv);H(-1);res()}},200);return}
+ speechSynthesis.cancel();const parts=[];const re=/[^.!?]+[.!?]*/g;let m;while((m=re.exec(text))){if(m[0].trim())parts.push({s:m.index+(m[0].length-m[0].trimStart().length),txt:m[0].trim()})}
+ let i=0;const next=()=>{if(dead()||i>=parts.length){H(-1);return res()}const p=parts[i];const u=new SpeechSynthesisUtterance(p.txt);if(voice){u.voice=voice;u.lang=voice.lang}else u.lang='uz-UZ';u.rate=.95;
+  let done=false;const fin=()=>{if(done)return;done=true;clearTimeout(guard);i++;next()};const guard=setTimeout(fin,p.txt.length*140+4000);
+  u.onboundary=e=>H(p.s+(e.charIndex||0));u.onstart=()=>H(p.s);u.onend=fin;u.onerror=fin;speechSynthesis.speak(u)};next()})}
+
+/* ---------- animatsiya yordamchilari ---------- */
+class Cancel extends Error{}
+function hex(h){h=h.replace('#','');return[0,2,4].map(i=>parseInt(h.substr(i,2),16))}
+function mix(a,b,t){const pa=hex(a),pb=hex(b);return'#'+pa.map((v,i)=>Math.round(v+(pb[i]-v)*t).toString(16).padStart(2,'0')).join('')}
+function ctx(t){const chk=()=>{if(t.dead)throw new Cancel()};return{
+ W:ms=>{chk();if(t.fast)return Promise.resolve();return new Promise((r,j)=>setTimeout(()=>t.dead?j(new Cancel()):r(),ms/speed))},
+ T:(o,ms=1000)=>{chk();if(t.fast){Object.assign(S,o);return Promise.resolve()}const from={};for(const k in o)from[k]=S[k];const t0=performance.now(),dur=ms/speed;
+  return new Promise((r,j)=>{(function f(now){if(t.dead)return j(new Cancel());const p=Math.min(1,(now-t0)/dur),e=p<.5?2*p*p:1-Math.pow(-2*p+2,2)/2;
+   for(const k in o){const a=from[k],b=o[k];S[k]=(typeof b==='string'&&b[0]==='#')?mix(a,b,e):(typeof b==='number'?a+(b-a)*e:b)}p<1?requestAnimationFrame(f):r()})(t0)})},
+ set:o=>{chk();Object.assign(S,o)},
+ fast:()=>t.fast,
+ sfx:(n,...a)=>{if(!t.fast&&!t.dead&&SFX[n])SFX[n](...a)}}}
+
+/* ---------- sinov animatsiyalari ---------- */
+function newSmp(c,si){c.set({smp:si,fi:D.smp[si],jr:[],ob:{},el:0,mx:0,mxOn:0,stamp:0,tgOn:0,fib:0,melt:0,fOn:0,smoke:0,resT:0,resZ:0,lit:0,fan:0,zoom:0,tHL:-1,tel:0,tWin:-1,...TUBE0})}
+async function light(c){c.set({scene:'bench',bub:'Gorelkani yoqamiz'});c.sfx('click');await c.W(300);c.set({burner:1});c.sfx('fire');await c.T({fl:1},900)}
+async function grab(c){c.set({tgOn:1,fib:1,melt:0,fOn:0,resT:0,resZ:0,tx:620,ty:330});c.sfx('clink');await c.T({tx:420,ty:300},900)}
+async function inFlame(c,f){c.set({bub:'Tolani alangaga kiritamiz'});await c.T({tx:224,ty:300},1000);
+ c.sfx(f.fl===1?'crackle':f.grp===2?'sizzle':'fire');c.set({smoke:1,smokeC:f.smk});
+ await c.T({fOn:1,fib:.5,melt:.5},f.fl===0?1300:f.fl===1?2400:1800);c.set({bub:'Alangada: tola '+FL[f.fl]});await c.W(1600)}
+async function outFlame(c,f){await c.T({tx:400,ty:270},900);
+ if(!f.out){c.set({bub:'Alangadan chiqarildi: tola yonishda davom etadi'});await c.T({fib:0,melt:1},2200);await c.T({fOn:0,smoke:0},700)}
+ else{await c.T({fOn:0},450);c.set({bub:'Alangadan chiqarildi: tola o’chadi'});await c.T({melt:1,smoke:.3},700);await c.W(900);await c.T({smoke:0},700)}}
+async function sniff(c,f){c.set({fan:1,bub:'Hidni qo’l bilan yelpib aniqlaymiz'});for(let k=0;k<3;k++){await c.T({fanA:1},280);await c.T({fanA:0},280)}c.set({fan:0,bub:'Hid: '+SM[f.sm]});await c.W(1500)}
+async function residue(c,f){await c.T({tx:452,ty:520},900);c.sfx('clink');c.set({resT:1,fib:0});await c.T({tx:620,ty:330},600);c.set({tgOn:0});await c.T({resZ:1},700);c.set({bub:'Qoldiq: '+RES[f.res]});await c.W(1700)}
+async function burnAll(c,f){c.set({scene:'bench',zoom:0,resT:0,resZ:0});if(!S.burner)await light(c);await grab(c);await inFlame(c,f);await outFlame(c,f);await sniff(c,f);await residue(c,f)}
+async function litTest(c,f,p){c.set({scene:'bench',resZ:0});if(!S.burner)await light(c);
+ if(!S.tgOn)await grab(c);c.set({bub:'Tolaning yangi bo’lagini yondiramiz'});await c.T({tx:224,ty:300},700);
+ c.set({fOn:1,smoke:1,smokeC:f.smk,fib:Math.max(.4,S.fib),melt:.3});await c.T({tx:290,ty:285},600);
+ c.set({lit:1,litC:p==='b'?BLUE:RED,lx:40,ly:150,bub:(p==='b'?'Ko’k':'Qizil')+' lakmusni tutunga tutamiz'});await c.T({lx:262,ly:214},900);await c.W(600);
+ const re=(p==='b'&&f.lit==='a')||(p==='r'&&f.lit==='b');
+ if(re){c.sfx('ding');await c.T({litC:p==='b'?RED:BLUE},1400);c.set({bub:p==='b'?'Ko’k lakmus qizardi — mahsulotlar kislotali':'Qizil lakmus ko’kardi — ammiak ajraldi, muhit ishqoriy'})}
+ else{await c.W(1200);c.set({bub:(p==='b'?'Ko’k':'Qizil')+' lakmus o’zgarmadi'})}
+ await c.W(1300);await c.T({lx:40,ly:150},600);c.set({lit:0});await c.T({fOn:0,smoke:0},500)}
+async function tubeTest(c,fi,k){const f=FIB[fi],i=TBI[k],code=k==='ag'?(f.ag?'p':'o'):f[k];
+ c.set({scene:'tubes',tHL:i,['c'+i]:code,bub:k==='ag'?'Yonish gazlarini AgNO₃ eritmasidan o’tkazamiz':`Tola bo’lagini ${TB[i].n} ${TB[i].s} ga solamiz`.replace('  ',' ')});
+ c.sfx('clink');await c.T({['d'+i]:1},1000);c.sfx(k==='ag'?'water':code==='n'?'drip':'sizzle');await c.T({['q'+i]:1},k==='ag'?2200:1900);
+ c.set({bub:`${TN[k]}: ${oText(fi,k)}`});await c.W(1400)}
+async function rec(c,fi,keys,elim=true){for(const k of keys){c.set({ob:{...S.ob,[k]:fv(fi,k)},jr:[...S.jr,...jl(fi,k)]});c.sfx('scratch');await c.W(350)}
+ if(elim){const keep=cons(S.ob);for(let i=0;i<8;i++)if(!keep.includes(i)&&!(S.el>>i&1)){c.set({el:S.el|1<<i});c.sfx('scratch');await c.W(260)}}}
+async function stampIt(c,t){c.set({stampT:t,stamp:0});c.sfx('ding');await c.T({stamp:1},600);await c.W(900)}
+
+/* ---------- bosqichlar ---------- */
+const EQ=`Sellyuloza (C₆H₁₀O₅)ₙ: qog’oz hidi, kul, <b>kislotali</b> tutun<br>Oqsil, poliamid, nitron: azot → <b>NH₃</b>↑, qizil lakmus ko’karadi<br>Xlorin: HCl↑ + AgNO₃ → <b>AgCl↓</b> (oq)<br>Jun + konts. HNO₃ → sariq (ksantoprotein)<br>Aseton: atsetat, xlorin; fenol: kapron, lavsan`;
+function makeSteps(){const A=D.smp[0],fA=FIB[A];const tubesTxt=ks=>ks.map(k=>`${TN[k]}: <b>${oText(A,k)}</b>`);
+ const st=[
+ {t:'Xavfsizlik va tayyorgarlik',act:async c=>{newSmp(c,0);c.set({scene:'bench',hood:0,gog:0,tile:0,burner:0,fl:0,bub:'Tortish shkafining ventilyatsiyasini yoqamiz'});c.sfx('click');await c.T({hood:1},1200);await c.W(900);
+   c.set({bub:'Himoya ko’zoynagi va qo’lqop — majburiy'});await c.T({gog:1},800);await c.W(1000);c.set({bub:'Keramik plitka — qoldiq uchun'});await c.T({tile:1},700);await c.W(800);
+   c.set({bub:'Gorelkani tekshiramiz'});c.sfx('click');c.set({burner:1});c.sfx('fire');await c.T({fl:1},900);await c.W(900);
+   c.set({bub:'Tigel qisqichi tayyor'});await grab(c);await c.W(500);await c.T({tx:620,ty:330},600);c.set({tgOn:0,fib:0,bub:'Tayyor ✓'});c.sfx('ding');await c.W(500)},
+  say:'Birinchi bosqich. Tolalar bilan ish tortish shkafida bajariladi, chunki yonish mahsulotlari va konsentrlangan kislotalar bug’lari zararli. Ventilyatsiyani yoqamiz, himoya ko’zoynagi va qo’lqop kiyamiz. Gaz gorelkasini tekshiramiz. Tolani faqat tigel qisqichi bilan ushlaymiz, qoldiqni keramik plitkaga qo’yamiz. Hid qo’l bilan yelpib, uzoqdan aniqlanadi.',
+  det:['Ish <b>tortish shkafida</b> bajariladi','Himoya ko’zoynagi, rezina qo’lqop','Jihozlar: gaz gorelkasi, tigel qisqichi, keramik plitka, probirkalar, lupa','!Konts. HNO₃ (ρ = 1,4) va H₂SO₄ (ρ = 1,84) kuydiradi','!Fenol teriga tegsa — darhol ko’p suv bilan yuving','!Hid faqat qo’l bilan yelpib aniqlanadi']},
+ {t:'Namuna A: tashqi ko’rinish',act:async c=>{newSmp(c,0);c.set({scene:'look',bub:'Namuna A — lupa ostida'});await c.W(700);c.sfx('click');await c.T({zoom:1},1800);c.set({bub:'Ko’rinish: '+fA.look});await c.W(2600);c.set({bub:'Sirt: '+oText(A,'look')});await c.W(1400);await rec(c,A,['look'])},
+  say:`Ikkinchi bosqich. Bizga noma’lum namuna A berildi. Uni sakkizta gumondor tola bilan solishtiramiz. Avval tashqi ko’rinishini o’rganamiz: ${fA.look.toLowerCase()}. Lupa ostida sirt ${MI[fA.mi]} ko’rinadi. ${fA.mi===0?'Bu paxtaga xos tuzilish.':fA.mi===1?'Tangachali sirt junga xos.':'Sirti silliq, yo’g’onligi bir xil. Bunday tola filyeradan siqib chiqariladi, demak u kimyoviy tola.'} Mos kelmaydigan tolalarni ro’yxatdan o’chiramiz.`,
+  det:['Namuna A — 8 ta tola ichidan biri','Kuzatiladi: rang, yaltiroqlik, uzunlik, jingalaklik','Lupada: buralgan lenta — paxta; tangachalar — jun; silliq silindr — kimyoviy tola',`Namuna A: <b>${fA.look}</b>`,`Sirt: <b>${oText(A,'look')}</b>`]},
+ {t:'Namuna A: yondirish',act:async c=>{await burnAll(c,fA);c.set({bub:'Xulosa: '+GRP[fA.grp]});await c.W(1300);await rec(c,A,['burn'])},
+  say:`Uchinchi bosqich. Gorelkani yoqamiz. Tolani tigel qisqichi bilan olib, alangaga kiritamiz. Tola ${FL[fA.fl]}. Alangadan chiqarilganda ${OUTs[fA.out]}. Hidni qo’l bilan yelpib aniqlaymiz: ${SM[fA.sm]}. Qoldiq — ${RES[fA.res]}. Demak, bu ${GRPS[fA.grp]}.`,
+  det:['Gorelka alangasi rangsiz — havo kirishi ochiq','Tola qisqich bilan alangaga kiritiladi, so’ng chiqariladi','Kuzatiladi: alangada, tashqarida, hid, qoldiq',`Natija: <b>${FL[fA.fl]}</b>; ${OUT[fA.out]}`,`Hid: <b>${SM[fA.sm]}</b>; qoldiq: <b>${RES[fA.res]}</b>`,`Guruh: <b>${GRPS[fA.grp]}</b>`]},
+ {t:'Namuna A: lakmus sinovi',act:async c=>{await litTest(c,fA,'b');await litTest(c,fA,'r');await rec(c,A,['lit'])},
+  say:`To’rtinchi bosqich. Distillangan suvda namlangan lakmus qog’ozini yonish mahsulotlariga tutamiz. Avval ko’k, so’ng qizil qog’oz. ${fA.lit==='a'?'Ko’k lakmus qizardi, qizil lakmus o’zgarmadi. Yonish mahsulotlari kislotali, demak tolada azot yo’q.':'Qizil lakmus ko’kardi, ko’k lakmus o’zgarmadi. Yonish mahsulotlari ishqoriy — ammiak ajraldi. Demak, tola tarkibida azot bor.'}`,
+  det:['Lakmus qog’ozi distillangan suvda namlanadi','Ko’k qizarsa — kislotali mahsulot (sellyuloza, atsetat, xlorin, lavsan)','Qizil ko’karsa — NH₃: tolada azot bor (jun, kapron, nitron)',`Namuna A: <b>${oText(A,'lit')}</b>`]},
+ {t:'Namuna A: kislota va ishqor',act:async c=>{for(const k of['HN','HS','NA'])await tubeTest(c,A,k);c.set({tHL:-1});await rec(c,A,['HN','HS','NA'])},
+  say:`Beshinchi bosqich. Tolaning kichik bo’laklarini konsentrlangan nitrat kislota, konsentrlangan sulfat kislota va o’n foizli natriy gidroksid solingan probirkalarga solamiz. Nitrat kislotada tola ${RTS[fA.HN]}. Sulfat kislotada ${RTS[fA.HS]}. Ishqorda ${RTS[fA.NA]}. Konsentrlangan kislotalar bilan faqat tortish shkafida ishlanadi.`,
+  det:['Probirkada 2–3 ml reaktiv + tolaning kichik bo’lagi','!Konsentrlangan kislotalar — faqat tortish shkafida',...tubesTxt(['HN','HS','NA'])]},
+ {t:'Namuna A: erituvchilar va xlor',act:async c=>{for(const k of['AS','FE','ag'])await tubeTest(c,A,k);c.set({tHL:-1});await rec(c,A,['AS','FE','ag'])},
+  say:`Oltinchi bosqich. Endi organik erituvchilarni sinaymiz. Asetonda tola ${RTS[fA.AS]}, fenolda ${RTS[fA.FE]}. So’ng yonish gazlarini kumush nitrat eritmasidan o’tkazamiz: ${fA.ag?'oq cho’kma tushdi, demak tolada xlor bor':'cho’kma tushmadi, demak tolada xlor yo’q'}. Fenol teriga tegsa kuydiradi, u bilan qo’lqopda ishlanadi.`,
+  det:['Aseton atsetat va xlorinni eritadi','Fenol kapron va lavsanni eritadi','AgNO₃: HCl bo’lsa oq AgCl cho’kmasi — xlorin','!Fenol bilan faqat qo’lqopda ishlang',...tubesTxt(['AS','FE','ag'])]},
+ {t:'Namuna A: hukm',act:async c=>{c.set({scene:'table',tel:0,tWin:-1,stamp:0,ob:obOf(A,['look','burn','lit','HN','HS','NA','AS','FE','ag'])});await c.W(1200);
+   for(let i=0;i<8;i++)if(i!==A){c.set({tel:S.tel|1<<i});c.sfx('scratch');await c.W(700)}c.set({tWin:A});await stampIt(c,`Namuna A — ${fA.n}`)},
+  say:`Yettinchi bosqich. Kuzatuvlarimizni aniqlash jadvali bilan solishtiramiz. Kuzatuvga zid keladigan tolalarni birma-bir o’chiramiz. Faqat bitta tola qoladi: namuna A — ${fA.n.toLowerCase()}. Bu ${CLS[fA.cls]} tola.`,
+  det:['Kuzatuvlar aniqlash jadvali bilan solishtiriladi','Birorta ustuni zid kelgan tola chiqarib tashlanadi',`Namuna A — <b>${fA.n}</b> (${CLS[fA.cls]} tola)`,`Formula: ${fA.f}`]}];
+ for(let si=1;si<4;si++){const fi=D.smp[si],f=FIB[fi],ch=D.chain[si];
+  st.push({t:`Namuna ${LET[si]}: mustaqil tergov`,act:stDet(si),say:detSay(si),
+   det:['Sinovlarni o’zingiz tanlaysiz — kam sinov bilan, lekin aniq dalil bilan','Yondirish va lakmus eng ko’p tolani ajratadi','Farqlovchi sinov: paxta ↔ viskoza — NaOH; kapron ↔ lavsan — lakmus yoki HNO₃',`Sinovlar zanjiri: ${['Lupa',...ch.ks.map(k=>TN[k])].join(' → ')}`,`Javob: <b>${f.n}</b> (${CLS[f.cls]})`]})}
+ st.push({t:'Tolalarni sinflash',act:async c=>{c.set({scene:'class',cl:0});await c.W(800);for(let k=1;k<=8;k++){c.sfx('pop');await c.T({cl:k},750)}c.sfx('ding')},
+  say:'O’n birinchi bosqich. Tolalarni kelib chiqishiga ko’ra sinflaymiz. Paxta va jun — tabiiy tolalar: paxta o’simlikdan, jun hayvondan olinadi. Viskoza va atsetat — sun’iy tolalar: ular tabiiy sellyulozani kimyoviy qayta ishlab olinadi. Nitron, xlorin, lavsan va kapron — sintetik tolalar: ular kichik molekulali moddalardan, ya’ni monomerlardan sintez qilinadi.',
+  det:['Tabiiy: paxta (o’simlik), jun, tabiiy ipak (hayvon)','Sun’iy: viskoza, atsetat — sellyulozani kimyoviy qayta ishlab','Sintetik: nitron, xlorin, lavsan, kapron — monomerlardan sintez']});
+ st.push({t:'Paketlar masalasi',act:async c=>{c.set({scene:'pack',pk:0});await c.W(2500);c.sfx('ding');await c.T({pk:1},1500);await c.W(3200);c.sfx('water');await c.T({pk:2},1800);await c.W(2800);c.sfx('ding');await c.T({pk:3},800);await c.W(2400);await c.T({pk:4},800)},
+  say:'O’n ikkinchi bosqich. Masala. Uchta paketda lavsan, nitron va kapron tolalari bor, yorliqlari tushib qolgan. Avval har biridan yonish mahsulotlarini lakmus bilan sinaymiz. Lavsan mahsulotlari kislotali, nitron va kapronniki esa ishqoriy, chunki ularda azot bor. Qolgan ikkitasini fenolda yoki konsentrlangan nitrat kislotada sinaymiz: kapron eriydi, nitron erimaydi. Paxta bilan viskozani esa natriy gidroksid ajratadi: paxta faqat bo’kadi, viskoza eriydi.',
+  det:['1) Lakmus: lavsan — kislotali; nitron, kapron — ishqoriy','2) Fenol yoki konts. HNO₃: kapron eriydi, nitron erimaydi','Paxta ↔ viskoza: 10 % NaOH — paxta bo’kadi, viskoza eriydi']});
+ return st}
+function detSay(si){const fi=D.smp[si],f=FIB[fi],ch=D.chain[si];
+ let s=`${ORD[6+si]} bosqich. Namuna ${LET[si]}. Endi tergovni mustaqil olib boramiz. Lupada sirt ${MI[f.mi]}. Yondiramiz: tola ${FL[f.fl]}, alangadan chiqarilganda ${OUTs[f.out]}. ${SM[f.sm][0].toUpperCase()+SM[f.sm].slice(1)} seziladi, qoldiq — ${RES[f.res]}. Lakmus sinovi: yonish mahsulotlari ${f.lit==='a'?'kislotali':'ishqoriy, demak tolada azot bor'}.`;
+ const left=cons(obOf(fi,['look','burn','lit']));
+ if(left.length>1)s+=` Bu kuzatuvlarga ${left.map(i=>FIB[i].n.toLowerCase()).join(' va ')} mos keladi. Ularni farqlash uchun qo’shimcha sinov o’tkazamiz.`;
+ else s+=' Natijani yana bitta sinov bilan tasdiqlaymiz.';
+ for(const k of ch.ks.slice(2))s+=k==='ag'?` Kumush nitrat bilan ${f.ag?'oq cho’kma tushdi, demak tolada xlor bor':'cho’kma tushmadi'}.`:` ${TSAY[k]} tola ${RTS[f[k]]}.`;
+ return s+` Barcha kuzatuvlarga faqat ${f.n.toLowerCase()} mos keladi. Namuna ${LET[si]} — ${f.n.toLowerCase()}, ${CLS[f.cls]} tola.`}
+const stDet=si=>async c=>{newSmp(c,si);const fi=D.smp[si],f=FIB[fi],ch=D.chain[si];
+ c.set({scene:'look',bub:`Namuna ${LET[si]} — lupa ostida`});await c.W(500);await c.T({zoom:1},1300);c.set({bub:'Ko’rinish: '+f.look});await c.W(1800);await rec(c,fi,['look']);
+ await burnAll(c,f);await rec(c,fi,['burn']);
+ await litTest(c,f,f.lit==='a'?'b':'r');await rec(c,fi,['lit']);
+ for(const k of ch.ks.slice(2)){await tubeTest(c,fi,k);await rec(c,fi,[k])}
+ c.set({tHL:-1});await stampIt(c,`Namuna ${LET[si]} — ${f.n}`)};
+
+/* ---------- chizish ---------- */
+const SMK=[];let last=performance.now(),fanRot=0,labelsOn=true;
+const SCN=['bench','tubes','look','table','class','pack'];
+function A(e,k,v){e.setAttribute(k,v)}
+const r1=v=>v.toFixed(1);
+function wrap(t,n){const w=t.split(' '),L=[];let cur='';for(const x of w){if((cur+' '+x).trim().length>n&&cur){L.push(cur);cur=x}else cur=(cur+' '+x).trim()}if(cur)L.push(cur);return L}
+function bead(x,y,r,f){const t=f.res;if(t===0)return[[0,0],[-.8,-.4],[.7,-.5],[-.3,.6],[.5,.5]].map(([a,b],k)=>`<circle cx="${r1(x+a*r)}" cy="${r1(y+b*r)}" r="${r1(r*.55)}" fill="${k%2?'#C4C4C4':'#9E9E9E'}"/>`).join('');
+ const col=t===1?'#2D2724':f.n==='Atsetat'?'#4A3020':t===2?'#18181E':'#3A3A3A';let s=`<circle cx="${r1(x)}" cy="${r1(y)}" r="${r1(r)}" fill="${col}" stroke="#1F3A93" stroke-width="1"/>`;
+ if(t===2)s+=`<ellipse cx="${r1(x-r*.35)}" cy="${r1(y-r*.35)}" rx="${r1(r*.3)}" ry="${r1(r*.2)}" fill="#fff" opacity=".8"/>`;
+ if(t===3)s+=[[-.4,-.2],[.3,.1],[-.1,.45],[.35,-.4]].map(([a,b])=>`<circle cx="${r1(x+a*r)}" cy="${r1(y+b*r)}" r="${r1(r*.17)}" fill="#8A8A8A"/>`).join('');
+ if(t===1)s+=`<path d="M${r1(x-r*.5)} ${r1(y-r*.2)} l${r1(r*.4)} ${r1(r*.3)} l${r1(r*.3)} ${r1(-r*.4)}" stroke="#888" stroke-width="1" fill="none"/>`;return s}
+function flamePath(x,y,k,fill,stroke){return`<path d="M${r1(x-6*k)} ${r1(y)} C${r1(x-8*k)} ${r1(y-10*k)} ${r1(x-1*k)} ${r1(y-15*k)} ${r1(x)} ${r1(y-24*k)} C${r1(x+3*k)} ${r1(y-13*k)} ${r1(x+9*k)} ${r1(y-8*k)} ${r1(x+6*k)} ${r1(y)} Z" fill="${fill}" stroke="${stroke}" stroke-width="1.2"/>`}
+function renderBench(now,dt){const f=FIB[S.fi];
+ fanRot+=dt*S.hood*9;A(E.hFan,'transform',`rotate(${(fanRot*57.3%360).toFixed(1)} 556 30)`);A(E.hLamp,'fill',S.hood>.5?'#7BD389':'#ccc');
+ A(E.gogG,'opacity',S.gog);A(E.tileG,'opacity',S.tile);A(E.valve,'fill',S.burner?'#2E7D32':'#ccc');E.labels.style.display=labelsOn?'':'none';
+ if(S.fl>.01){const h=130*S.fl*(1+.05*Math.sin(now/60)+.03*Math.sin(now/23)),x=210,y=380;
+  E.flm.innerHTML=`<path d="M${x-12} ${y} C${x-20} ${r1(y-h*.4)} ${x-6} ${r1(y-h*.75)} ${x} ${r1(y-h)} C${x+6} ${r1(y-h*.75)} ${x+20} ${r1(y-h*.4)} ${x+12} ${y} Z" fill="#A9C1F7" fill-opacity=".55" stroke="#3D56A8" stroke-width="1.5"/><path d="M${x-8} ${y} C${x-9} ${r1(y-h*.2)} ${x-3} ${r1(y-h*.35)} ${x} ${r1(y-h*.42)} C${x+3} ${r1(y-h*.35)} ${x+9} ${r1(y-h*.2)} ${x+8} ${y} Z" fill="#3D6FE0" fill-opacity=".75"/>`}else E.flm.innerHTML='';
+ const L=34*S.fib;
+ if(S.smoke>0&&S.tgOn&&Math.random()<dt*34*S.smoke)SMK.push({x:S.tx-L*.5+(Math.random()-.5)*8,y:S.ty-8,vx:6+Math.random()*10,vy:-(45+Math.random()*35),r:3+Math.random()*3,a:1,c:S.smokeC});
+ let s='';for(let i=SMK.length-1;i>=0;i--){const p=SMK[i];p.x+=p.vx*dt+Math.sin(p.y/22)*.4;p.y+=p.vy*dt;p.r+=dt*9;p.a-=dt*.42;if(p.a<=0||p.y<56){SMK.splice(i,1);continue}s+=`<circle cx="${r1(p.x)}" cy="${r1(p.y)}" r="${r1(p.r)}" fill="${p.c}" opacity="${(p.a*.42).toFixed(2)}"/>`}E.smk.innerHTML=s;
+ if(S.tgOn){let t=`<path d="M0 -2 L172 -66 M0 2 L176 -52" stroke="#1F3A93" stroke-width="6" stroke-linecap="round" fill="none"/><path d="M0 -2 L172 -66 M0 2 L176 -52" stroke="#BAC1CE" stroke-width="3" stroke-linecap="round" fill="none"/><circle cx="180" cy="-71" r="8" fill="none" class="ink" stroke-width="3"/><circle cx="185" cy="-48" r="8" fill="none" class="ink" stroke-width="3"/>`;
+  if(L>.6)for(const o of[-3,0,3]){const d=`M-2 ${o} q${r1(-L/4)} -4 ${r1(-L/2)} 0 t${r1(-L/2)} 0`;t+=`<path d="${d}" fill="none" stroke="#1F3A93" stroke-width="4.4" stroke-linecap="round"/><path d="${d}" fill="none" stroke="${f.col}" stroke-width="2.3" stroke-linecap="round"/>`}
+  if(S.melt>.05&&!S.resT)t+=bead(-3,0,2+4*S.melt,f);
+  if(S.fOn>.02){const k=S.fOn*(1+.15*Math.sin(now/50));t+=flamePath(-L*.5-3,-3,k,'#FFA62B','#E0611A')}
+  if(labelsOn)t+=`<text x="70" y="-74" class="lbs" style="font-size:15px">tigel qisqichi</text>`;
+  E.tng.innerHTML=t;A(E.tng,'transform',`translate(${r1(S.tx)} ${r1(S.ty)})`)}else E.tng.innerHTML='';
+ E.resG.innerHTML=S.resT?bead(452,520,6,f):'';
+ E.resZ.innerHTML=S.resZ>.01&&S.resT?`<g opacity="${S.resZ.toFixed(2)}"><line x1="452" y1="512" x2="${452+10}" y2="${470}" class="lead"/><circle cx="476" cy="436" r="${r1(52*S.resZ)}" fill="#FFFDF5" class="ink" stroke-width="3"/>${bead(476,436,26*S.resZ,f)}${labelsOn?`<text x="476" y="${r1(436-56*S.resZ-6)}" text-anchor="middle" class="lbs" style="font-size:15px">qoldiq (kattalashtirilgan)</text>`:''}</g>`:'';
+ E.litG.innerHTML=S.lit?`<g transform="translate(${r1(S.lx)} ${r1(S.ly)})"><path d="M-160 -42 L0 -4 M-160 -34 L0 4" stroke="#1F3A93" stroke-width="5" stroke-linecap="round"/><path d="M-160 -42 L0 -4 M-160 -34 L0 4" stroke="#BAC1CE" stroke-width="2.5" stroke-linecap="round"/><rect x="-2" y="-7" width="52" height="14" rx="2" fill="${S.litC}" class="ink" stroke-width="1.5"/>${labelsOn?'<text x="0" y="-14" class="lbs" style="font-size:15px">lakmus qog’ozi</text>':''}</g>`:'';
+ E.handG.innerHTML=S.fan?`<g transform="translate(330 196) rotate(${r1(-25+50*S.fanA)})"><text x="-23" y="16" style="font-size:46px">🖐</text></g>`:''}
+function renderTubes(now){const f=FIB[S.fi];let s='';
+ for(let i=0;i<6;i++){const cx=78+i*89,d=S['d'+i],q=S['q'+i],code=S['c'+i],T=TB[i];
+  let liq=T.c,op=1,fc=f.col,w=2.6,dash='';
+  if(code==='r')liq=mix(T.c,'#B5651D',q*.7);if(code==='g')liq=mix(T.c,'#F0D77A',q*.85);
+  if(code==='e'||code==='r')op=1-q;if(code==='g')op=1-.5*q;if(code==='b')w=2.6+3*q;if(code==='s'){w=2.6+2.5*q;fc=mix(f.col,'#E3B505',q)}if(code==='y'){fc=mix(f.col,'#3A2A1A',q);dash=q>.5?' stroke-dasharray="4 3"':''}
+  if(S.tHL===i)s+=`<rect x="${cx-30}" y="168" width="60" height="320" rx="12" fill="none" stroke="#C0392B" stroke-width="2.5" stroke-dasharray="7 6"/>`;
+  s+=`<path d="M${cx-17} 190 V440 A17 17 0 0 0 ${cx+17} 440 V190" fill="#EAF3FA" fill-opacity=".7" class="ink"/><ellipse cx="${cx}" cy="190" rx="19" ry="4" fill="#EAF3FA" class="ink"/>`;
+  s+=`<path d="M${cx-15} 330 V440 A15 15 0 0 0 ${cx+15} 440 V330 Z" fill="${liq}"/><line x1="${cx-15}" y1="330" x2="${cx+15}" y2="330" stroke="#3D56A8" stroke-width="1.4"/>`;
+  if(i<5&&d>0&&op>.01){const y=150+d*262,dd=`M${cx-12} ${r1(y)} q3 -5 6 0 t6 0 t6 0 t6 0`;s+=`<g opacity="${op.toFixed(2)}"><path d="${dd}" fill="none" stroke="#1F3A93" stroke-width="${r1(w+2)}" stroke-linecap="round"${dash}/><path d="${dd}" fill="none" stroke="${fc}" stroke-width="${r1(w)}" stroke-linecap="round"${dash}/></g>`}
+  if(i===5&&d>0){const y2=70+d*360;s+=`<line x1="${cx+5}" y1="60" x2="${cx+5}" y2="${r1(y2)}" stroke="#1F3A93" stroke-width="6" stroke-linecap="round"/><line x1="${cx+5}" y1="60" x2="${cx+5}" y2="${r1(y2)}" stroke="#EAF3FA" stroke-width="3" stroke-linecap="round"/>`;
+   if(q>0&&q<1)for(let b=0;b<5;b++){const by=430-((now/6+b*23)%95);s+=`<circle cx="${r1(cx+2+Math.sin(now/120+b)*6)}" cy="${r1(by)}" r="2.6" fill="#fff" stroke="#3D56A8" stroke-width="1"/>`}
+   if(code==='p'&&q>0)s+=`<ellipse cx="${cx}" cy="440" rx="13" ry="${r1(4+10*q)}" fill="#FFFFFF" opacity="${(.95*q).toFixed(2)}" stroke="#AAA" stroke-width="1"/>`}
+  if(q>.95)s+=`<text x="${cx}" y="482" text-anchor="middle" class="lbs" style="font-size:14px;fill:#C0392B">${code==='p'?'oq cho’kma':code==='o'?'o’zgarmadi':SH2[code]}</text>`}
+ E.tubes.innerHTML=s}
+function band(x1,y1,x2,y2,wf,n=48){const dx=x2-x1,dy=y2-y1,L=Math.hypot(dx,dy),nx=-dy/L,ny=dx/L,a=[],b=[],c=[];for(let k=0;k<=n;k++){const t=k/n,x=x1+dx*t,y=y1+dy*t,w=wf(t);a.push([x+nx*w,y+ny*w]);b.push([x-nx*w,y-ny*w]);c.push([x,y])}return{a,b,c,nx,ny,ux:dx/L,uy:dy/L}}
+const pts=a=>a.map(p=>r1(p[0])+','+r1(p[1])).join(' ');
+function micro(f){let s='';[[110,200,500,470],[90,440,520,240]].forEach(([x1,y1,x2,y2],j)=>{
+ if(f.mi===0){const B=band(x1,y1,x2,y2,t=>3+16*Math.abs(Math.cos(t*Math.PI*3.5+j)));s+=`<polygon points="${pts(B.a)} ${pts(B.b.slice().reverse())}" fill="#FFFFFF" stroke="#1F3A93" stroke-width="2"/><polyline points="${pts(B.c)}" fill="none" stroke="#9AA6CF" stroke-width="1.2" stroke-dasharray="5 6"/>`}
+ else if(f.mi===1){const B=band(x1,y1,x2,y2,t=>20+2*Math.sin(t*20));s+=`<polygon points="${pts(B.a)} ${pts(B.b.slice().reverse())}" fill="${f.col}" stroke="#1F3A93" stroke-width="2"/>`;
+  for(let k=2;k<B.a.length-1;k+=3){const a=B.a[k],b=B.b[k];s+=`<path d="M${r1(a[0])} ${r1(a[1])} Q${r1((a[0]+b[0])/2+B.ux*11)} ${r1((a[1]+b[1])/2+B.uy*11)} ${r1(b[0])} ${r1(b[1])}" fill="none" stroke="#7A6A45" stroke-width="1.6"/>`}}
+ else{const B=band(x1,y1,x2,y2,()=>18);s+=`<polygon points="${pts(B.a)} ${pts(B.b.slice().reverse())}" fill="${f.col}" stroke="#1F3A93" stroke-width="2"/>`;
+  const off=o=>pts(B.c.map(p=>[p[0]+B.nx*o,p[1]+B.ny*o]));s+=`<polyline points="${off(-9)}" fill="none" stroke="#fff" stroke-width="4" opacity=".9"/>`;
+  if(f.gr)for(const o of[-6,0,7])s+=`<polyline points="${off(o)}" fill="none" stroke="#8A97C9" stroke-width="1.2"/>`}});return s}
+let lookKey='';
+function renderLook(){const key=S.zoom.toFixed(3)+'|'+S.fi+'|'+labelsOn;if(key===lookKey)return;lookKey=key;const z=S.zoom,f=FIB[S.fi],r=70+130*z,sc=.35+.65*z;
+ A(E.lensC,'r',r1(r));A(E.lensR,'r',r1(r));A(E.lensR2,'r',r1(r+5));A(E.lensH,'x1',r1(300+r*.72));A(E.lensH,'y1',r1(330+r*.72));A(E.lensH,'x2',r1(300+r*.72+90));A(E.lensH,'y2',r1(330+r*.72+90));
+ E.lensIn.innerHTML=`<g transform="translate(300 330) scale(${sc.toFixed(3)}) translate(-300 -330)">${micro(f)}</g>`;A(E.lensX,'opacity',z>.6?1:0);
+ let t='';for(const o of[-3,0,3])t+=`<path d="M70 ${557+o} q20 -5 40 0 t40 0 t40 0" fill="none" stroke="#1F3A93" stroke-width="3.2"/><path d="M70 ${557+o} q20 -5 40 0 t40 0 t40 0" fill="none" stroke="${f.col}" stroke-width="1.6"/>`;E.slideF.innerHTML=t}
+let susKey='';
+function renderSus(){const key=[S.smp,S.el,S.mx,S.mxOn,S.jr.length,S.fi].join('|');if(key===susKey)return;susKey=key;
+ let s=`<rect x="598" y="16" width="288" height="262" rx="10" fill="#FFFDF5" class="ink"/><text x="612" y="46" class="ttl" style="font-size:25px">Gumondorlar</text>
+ <g transform="rotate(4 836 36)"><rect x="790" y="21" width="88" height="30" rx="4" fill="#FFF0A0" stroke="#C0392B" stroke-width="2"/><text x="834" y="43" text-anchor="middle" style="font-family:var(--title);font-size:22px;fill:#C0392B;font-weight:700">Namuna ${LET[S.smp]}</text></g>`;
+ FIB.forEach((f,i)=>{const y=82+i*24,ea=S.el>>i&1,em=S.mx>>i&1;
+  s+=`<g data-i="${i}" style="cursor:${S.mxOn?'pointer':'default'}"><rect x="604" y="${y-17}" width="276" height="23" fill="transparent"/><text x="618" y="${y}" class="lbl" style="opacity:${ea||em?.42:1}">${i+1}. ${f.n}</text>`;
+  if(ea)s+=`<path d="M612 ${y-6} L712 ${y-8}" stroke="#C0392B" stroke-width="2.6" stroke-linecap="round"/><text x="862" y="${y}" class="lbl" style="fill:#C0392B">✗</text>`;
+  else if(em)s+=`<path d="M612 ${y-6} L712 ${y-8}" stroke="#5B5B6E" stroke-width="2" stroke-dasharray="5 3" stroke-linecap="round"/><text x="862" y="${y}" class="lbl" style="fill:#5B5B6E">✗</text>`;
+  s+='</g>'});
+ if(S.mxOn)s+=`<text x="742" y="270" text-anchor="middle" class="lbs">bosing — o’chirish / qaytarish</text>`;
+ s+=`<rect x="598" y="288" width="288" height="296" rx="10" fill="#FFFDF5" class="ink"/><text x="612" y="318" class="ttl" style="font-size:25px">Kuzatuv jurnali</text>`;
+ const lines=[];S.jr.forEach(l=>{const ind=/^\s/.test(l);wrap(l.trim(),ind?29:31).forEach((x,k)=>lines.push([ind||k?634:612,x]))});
+ const sh=lines.slice(-11);if(!sh.length)sh.push([612,'— hali yozuv yo’q —']);
+ sh.forEach(([x,l],k)=>s+=`<text x="${x}" y="${346+k*21}" class="lbl" style="font-size:15.5px;fill:#22305e">${l}</text>`);
+ E.susG.innerHTML=s}
+let bubKey=null;
+function renderBub(){if(S.bub===bubKey)return;bubKey=S.bub;if(!S.bub){E.bubG.innerHTML='';return}
+ const L=wrap(S.bub,58).slice(0,3),h=16+L.length*22;
+ E.bubG.innerHTML=`<rect x="28" y="54" width="544" height="${h}" rx="12" fill="#FFFDF5" stroke="#1F3A93" stroke-width="2"/><path d="M60 ${54+h} l-8 14 l22 -14" fill="#FFFDF5" stroke="#1F3A93" stroke-width="2"/><rect x="54" y="${52+h}" width="22" height="4" fill="#FFFDF5"/>`+L.map((l,k)=>`<text x="44" y="${78+k*22}" class="lbl" style="font-size:18px;fill:#22305e">${l}</text>`).join('')}
+let stampKey='';
+function renderStamp(){const key=S.stamp.toFixed(2)+S.stampT+S.scene;if(key===stampKey)return;stampKey=key;if(S.stamp<.01){E.stampG.innerHTML='';return}
+ const tr=S.scene==='table'?'translate(300 40)':'';const k=1.6-.6*S.stamp;
+ E.stampG.innerHTML=`<g transform="${tr} translate(300 300) scale(${k.toFixed(3)}) rotate(-10) translate(-300 -300)" opacity="${S.stamp.toFixed(2)}"><rect x="80" y="252" width="440" height="92" rx="8" fill="#FFFDF5" fill-opacity=".9" stroke="#C0392B" stroke-width="5"/><rect x="88" y="260" width="424" height="76" rx="5" fill="none" stroke="#C0392B" stroke-width="1.6"/><text x="300" y="284" text-anchor="middle" style="font-family:var(--hand);font-size:17px;fill:#C0392B;letter-spacing:3px">ANIQLANDI</text><text x="300" y="326" text-anchor="middle" style="font-family:var(--title);font-size:40px;font-weight:700;fill:#C0392B">${S.stampT}</text></g>`}
+const TCOL=[['Tola',112],['Yondirish',178],['Lakmus',104],['HNO₃',92],['H₂SO₄',104],['NaOH',96],['Aseton',84],['Fenol',82]];
+const TK8=[null,'burn','lit','HN','HS','NA','AS','FE'];
+function cellT(i,k){const f=FIB[i];if(k==='burn')return f.bs;if(k==='lit')return f.lit==='a'?'ko’k → qizil':'qizil → ko’k';return SH[f[k]]}
+let tblKey='';
+function renderTable(){const key=[S.tel,S.tWin,S.fi,S.smp,Object.keys(S.ob).join(',')].join('|');if(key===tblKey)return;tblKey=key;
+ const xs=[];let x=24;TCOL.forEach(([n,w])=>{xs.push(x);x+=w});const X1=x;
+ let s=`<rect x="14" y="14" width="872" height="572" rx="14" fill="#FFFDF5" class="ink"/><text x="450" y="44" text-anchor="middle" class="ttl">Aniqlash jadvali</text>
+ <rect x="24" y="56" width="${X1-24}" height="30" fill="#E6ECFA"/>`;
+ TCOL.forEach(([n],c)=>s+=`<text x="${xs[c]+8}" y="77" class="lbl" style="font-size:16px;fill:#1F3A93">${n}</text>`);
+ FIB.forEach((f,i)=>{const y=86+i*50,out=S.tel>>i&1,win=S.tWin===i;
+  if(win)s+=`<rect x="24" y="${y}" width="${X1-24}" height="50" fill="#FFF0A0"/>`;
+  s+=`<g opacity="${out?.4:1}"><text x="${xs[0]+8}" y="${y+31}" class="lbl" style="font-size:17px;fill:#1F3A93">${i+1}. ${f.n}</text>`;
+  TK8.forEach((k,c)=>{if(!k)return;const bad=out&&S.ob[k]!==undefined&&fv(i,k)!==S.ob[k];s+=`<text x="${xs[c]+7}" y="${y+31}" class="lbl" style="font-size:14.5px;fill:${bad?'#C0392B':'#22305e'}">${cellT(i,k)}</text>`});
+  s+='</g>';if(out)s+=`<path d="M30 ${y+26} L${X1-8} ${y+23}" stroke="#C0392B" stroke-width="2" opacity=".7"/>`;
+  if(win)s+=`<text x="${X1-14}" y="${y+33}" text-anchor="end" class="ttl" style="fill:#2E7D32">✓</text>`});
+ const yo=494;s+=`<rect x="24" y="${yo}" width="${X1-24}" height="50" fill="#FBE5E2"/><text x="${xs[0]+8}" y="${yo+31}" class="lbl" style="font-size:17px;fill:#C0392B">Namuna ${LET[S.smp]}</text>`;
+ TK8.forEach((k,c)=>{if(!k)return;s+=`<text x="${xs[c]+7}" y="${yo+31}" class="lbl" style="font-size:14.5px;fill:#C0392B">${S.ob[k]!==undefined?cellT(S.fi,k):'?'}</text>`});
+ for(let c=0;c<=TCOL.length;c++){const lx=c<TCOL.length?xs[c]:X1;s+=`<line x1="${lx}" y1="56" x2="${lx}" y2="544" stroke="#3D56A8" stroke-width="1.3"/>`}
+ for(let r=0;r<=10;r++){const ly=r===0?56:r===10?544:86+(r-1)*50;if(r===9)continue;s+=`<line x1="24" y1="${ly}" x2="${X1}" y2="${ly}" stroke="#3D56A8" stroke-width="${r===1||r===10?2:1}"/>`}
+ s+=`<line x1="24" y1="486" x2="${X1}" y2="486" stroke="#3D56A8" stroke-width="1.3"/><line x1="24" y1="494" x2="${X1}" y2="494" stroke="#3D56A8" stroke-width="1.3"/>`;
+ s+=`<text x="30" y="572" class="lbs" style="font-size:15px">— : erimaydi · ko’k → qizil: kislotali mahsulot · qizil → ko’k: ishqoriy (NH₃) · o’quv jadvali</text>`;
+ E.tbl.innerHTML=s}
+let clsKey='';
+function renderClass(){const key=S.cl.toFixed(3);if(key===clsKey)return;clsKey=key;const CX=[30,315,600];
+ let s=`<text x="450" y="40" text-anchor="middle" class="ttl">Tolalarning sinflanishi</text>`;
+ const sub=['o’simlik va hayvondan','tabiiy polimerni qayta ishlab','monomerlardan sintez'];
+ CX.forEach((x,c)=>s+=`<rect x="${x}" y="128" width="270" height="450" rx="12" fill="#FFFDF5" class="ink"/><text x="${x+135}" y="164" text-anchor="middle" class="ttl" style="font-size:30px;fill:${['#2E7D32','#3D56A8','#C0392B'][c]}">${CLSN[c]}</text><text x="${x+135}" y="188" text-anchor="middle" class="lbs" style="font-size:15px">${sub[c]}</text>`);
+ const cnt=[0,0,0],dest=FIB.map(f=>{const k=cnt[f.cls]++;return[CX[f.cls]+15,204+k*86]});
+ const chip=i=>[24+i*108,58];const n=Math.floor(S.cl),fr=S.cl-n;
+ FIB.forEach((f,i)=>{let p,big;if(i<n){p=dest[i];big=1}else if(i===n&&fr>0){const a=chip(i),b=dest[i];p=[a[0]+(b[0]-a[0])*fr,a[1]+(b[1]-a[1])*fr];big=fr}else{p=chip(i);big=0}
+  const w=100+140*big,h=40+30*big;s+=`<g transform="translate(${r1(p[0])} ${r1(p[1])})"><rect width="${r1(w)}" height="${r1(h)}" rx="8" fill="#FFFFFF" class="ink"/><text x="10" y="${r1(26+8*big)}" class="lbl" style="font-size:${r1(17+5*big)}px;fill:#1F3A93">${f.n}</text>${big>.6?`<text x="10" y="58" class="lbs" style="font-size:13px">${f.f}</text>`:''}</g>`});
+ E.clsG.innerHTML=s}
+let pkKey='';
+function renderPack(){const key=S.pk.toFixed(3);if(key===pkKey)return;pkKey=key;const P=S.pk,CX=[150,450,750];
+ let s=`<text x="450" y="44" text-anchor="middle" class="ttl">Paketlar masalasi: lavsan, nitron, kapron</text>`;
+ D.pk.forEach((fi,j)=>{const f=FIB[fi],cx=CX[j],ac=f.lit==='a';
+  s+=`<path d="M${cx-70} 104 L${cx+70} 104 L${cx+82} 270 Q${cx} 292 ${cx-82} 270 Z" fill="#F4E7C8" class="ink"/><path d="M${cx-70} 104 L${cx-50} 86 L${cx+50} 86 L${cx+70} 104" fill="#E9D9B0" class="ink"/>`;
+  s+=`<circle cx="${cx-48}" cy="128" r="15" fill="#FFF0A0" class="ink"/><text x="${cx-48}" y="135" text-anchor="middle" class="ttl" style="font-size:22px">${j+1}</text>`;
+  s+=P>=3?`<text x="${cx}" y="${206}" text-anchor="middle" class="ttl" style="font-size:${r1(26+8*Math.min(1,P-2))}px;fill:#2E7D32">${f.n}</text>`:`<text x="${cx}" y="215" text-anchor="middle" class="ttl" style="font-size:58px;fill:#C0392B">?</text>`;
+  if(P>0){const t=Math.min(1,P),c0=ac?BLUE:RED,c1=ac?RED:BLUE;s+=`<rect x="${cx-34}" y="314" width="68" height="16" rx="2" fill="${mix(c0,c1,t)}" class="ink" stroke-width="1.5"/><text x="${cx}" y="352" text-anchor="middle" class="lbl" style="opacity:${t.toFixed(2)}">${ac?'kislotali':'ishqoriy (NH₃)'}</text>`}
+  if(P>1&&!ac){const t=Math.min(1,P-1),dis=FIB[fi].FE==='e';s+=`<path d="M${cx-15} 380 V500 A15 15 0 0 0 ${cx+15} 500 V380" fill="#EAF3FA" class="ink"/><path d="M${cx-13} 440 V500 A13 13 0 0 0 ${cx+13} 500 V440 Z" fill="#FBE6EC"/>`;
+   const op=dis?1-t:1;if(op>.02)s+=`<path d="M${cx-10} 470 q3 -5 5 0 t5 0 t5 0 t5 0" fill="none" stroke="#1F3A93" stroke-width="3" opacity="${op.toFixed(2)}"/>`;
+   s+=`<text x="${cx}" y="548" text-anchor="middle" class="lbl" style="opacity:${t.toFixed(2)}">fenolda ${dis?'eriydi':'erimaydi'}</text>`}});
+ if(P>=4)s+=`<rect x="60" y="560" width="780" height="32" rx="8" fill="#FFF0A0" class="ink"/><text x="450" y="582" text-anchor="middle" class="lbl">Paxta ↔ viskoza: 10 % NaOH — paxta bo’kadi, viskoza eriydi</text>`;
+ E.pkG.innerHTML=s}
+function frame(now){const dt=Math.min(.05,(now-last)/1000);last=now;
+ for(const k of SCN){const g=E['sc-'+k],on=S.scene===k;if(g._on!==on){g._on=on;g.style.opacity=on?1:0;g.style.pointerEvents=on?'auto':'none'}}
+ const ws=['bench','tubes','look'].includes(S.scene);E.susG.style.display=ws?'':'none';E.bubG.style.display=ws?'':'none';E.stampG.style.display=S.scene==='class'||S.scene==='pack'?'none':'';
+ if(S.scene==='bench')renderBench(now,dt);else if(S.scene==='tubes')renderTubes(now);else if(S.scene==='look')renderLook();
+ else if(S.scene==='table')renderTable();else if(S.scene==='class')renderClass();else if(S.scene==='pack')renderPack();
+ if(ws){renderSus();renderBub()}renderStamp();
+ loops();requestAnimationFrame(frame)}
+(function(){let s='',l='';for(let i=0;i<6;i++){const cx=78+i*89;s+=`<ellipse cx="${cx}" cy="300" rx="20" ry="4" fill="#B8925F"/>`;l+=`<text x="${cx}" y="506" text-anchor="middle" class="lbl" style="font-size:17px;fill:#1F3A93">${TB[i].n}</text><text x="${cx}" y="526" text-anchor="middle" class="lbs" style="font-size:14px">${TB[i].s}</text>`}E.holes.innerHTML=s;E.tubeLbl.innerHTML=l})();
+requestAnimationFrame(frame);
+E.susG.addEventListener('click',e=>{const g=e.target.closest('[data-i]');if(!g||!S.mxOn)return;S.mx^=1<<+g.dataset.i;SFX.click()});
+
+/* ---------- mustaqil topshiriqlar ---------- */
+const pick=(id,label,opts)=>`<div class="f">${label}<div class="pick" data-id="${id}">${opts.map((o,i)=>`<button type="button" class="btn opt" data-v="${i}">${o}</button>`).join('')}</div></div>`;
+const chk=(id,label)=>`<label class="f ck"><input id="${id}" type="checkbox"> ${label}</label>`;
+const P=id=>{const b=document.querySelector(`.pick[data-id="${id}"] .opt.on`);return b?+b.dataset.v:-1};
+const CK=id=>document.getElementById(id).checked;
+const actBtns=list=>`<div class="f"><div class="pick">${list.map(([a,t])=>`<button type="button" class="btn" data-act="${a}">${t}</button>`).join('')}</div></div>`;
+const RECO=['Eriydi','Bo’kadi, erimaydi','Erimaydi, o’zgarmaydi','Rangi o’zgaradi / yemiriladi'];
+const rcI=c=>({e:0,r:0,b:1,n:2,s:3,y:3,g:3})[c];
+const DRY='Quruq lakmus gazlar bilan deyarli reaksiyaga kirishmaydi: ammiak yoki kislotali gazlar suvda erib, ionlar hosil qilgandagina rang o’zgaradi. Avval qog’ozni distillangan suvda namlang.';
+
+function makeTasks(){const A=D.smp[0],fA=FIB[A];
+const tPrep={say:'Topshiriq. Ishni boshlashdan oldin xavfsizlik choralarini ko’ring: tortish shkafi ventilyatsiyasini yoqing, himoya vositalarini belgilang va tolalar bilan qanday ishlashni tanlang.',
+ guide:['Ventilyatsiyani yoqing — belgilang','Himoya vositalarini belgilang','Tolani alangaga qanday kiritishni tanlang','Hidni qanday aniqlashni tanlang','Fenol teriga tegsa nima qilishni tanlang'],
+ hint:'Ventilyatsiya va himoya vositalari shart; tola — qisqich bilan; hid — yelpib; fenol — darhol ko’p oqar suv bilan yuviladi.',
+ ok:'Xavfsizlik qoidalari to’g’ri tanlandi.',
+ init(c){newSmp(c,0);c.set({scene:'bench',hood:0,gog:0,tile:1,burner:0,fl:0,bub:'Xavfsizlikni tekshiring'})},
+ html:()=>chk('pH','Tortish shkafining ventilyatsiyasi yoqildi')+chk('pG','Himoya ko’zoynagi va rezina qo’lqop kiyildi')+pick('pT','Tolani alangaga qanday kiritasiz?',['Barmoq bilan ushlab','Tigel qisqichi bilan'])+pick('pS','Yonish hidini qanday aniqlaysiz?',['Burunni tutunga yaqin tutib','Qo’l bilan yelpib, uzoqdan'])+pick('pF','Fenol teriga tegsa:',['Quruq latta bilan artaman','Darhol ko’p oqar suv bilan yuvaman','Hech narsa qilmayman — tez quriydi']),
+ live:{pH:v=>{S.hood=v;if(v)SFX.click()},pG:v=>{S.gog=v}},
+ check(){if(!CK('pH'))return{err:'Ventilyatsiya yoqilmagan. Tolalar yonganda zaharli gazlar (xlorindan vodorod xlorid, nitrondan sianidli birikmalar) ajraladi, konsentrlangan kislotalar ham bug’lanadi — ular tortish shkafi orqali chiqarib yuborilishi kerak.'};
+  if(!CK('pG'))return{err:'Himoya vositalari belgilanmagan. Konsentrlangan kislota, ishqor yoki fenol tomchisi ko’zga yoki teriga tushsa, kuydiradi — ko’zoynak va qo’lqop shart.'};
+  const t=P('pT');if(t<0)return{err:'Tolani qanday ushlashni tanlang.'};if(t===0)return{err:'Barmoq bilan ushlansa, yonayotgan va suyuqlanayotgan tola (kapron, lavsan) barmoqqa yopishib kuydiradi. Tola tigel qisqichi bilan ushlanadi.'};
+  const s=P('pS');if(s<0)return{err:'Hidni aniqlash usulini tanlang.'};if(s===0)return{err:'Tutunni to’g’ridan-to’g’ri hidlash xavfli — yonish mahsulotlari nafas yo’llarini kuydiradi va zaharlaydi. Hid qo’l bilan yelpib, uzoqdan aniqlanadi.'};
+  const fe=P('pF');if(fe<0)return{err:'Fenol bo’yicha javobni tanlang.'};if(fe!==1)return{err:fe===0?'Quruq latta fenolni teriga surtib, kuyishni kengaytiradi. Darhol ko’p oqar suv bilan yuvish kerak.':'Fenol teriga tez so’riladi va chuqur kuyish, zaharlanish keltiradi — kutib bo’lmaydi. Darhol ko’p oqar suv bilan yuvish kerak.'};
+  return{ok:1,vals:{'Ventilyatsiya':'yoqildi','Himoya':'ko’zoynak, qo’lqop','Tola':'qisqich bilan','Hid':'yelpib','Fenol':'suv bilan yuvish'}}},
+ after:async c=>{c.set({hood:1,gog:1});c.sfx('click');c.set({burner:1});c.sfx('fire');await c.T({fl:1},800);c.set({bub:'Tayyor ✓'});c.sfx('ding')}};
+
+const tLook=(()=>{const st={l:0};return{
+ say:'Topshiriq. Noma’lum namuna A ni lupa ostida ko’zdan kechiring. Tola sirti qanday ekanini aniqlang va dastlabki xulosa chiqaring: bu tabiiy tolami yoki kimyoviy tola.',
+ guide:['🔍 Lupa bilan qarang','Sirt tuzilishini tanlang','Dastlabki xulosani tanlang'],
+ hint:'Paxta — yassi buralgan lenta; jun — tangachali; kimyoviy tolalar filyeradan chiqqani uchun silliq va bir xil yo’g’onlikda.',
+ ok:'Sirt tuzilishi tolaning kelib chiqishini ko’rsatadi.',
+ init(c){st.l=0;newSmp(c,0);c.set({scene:'look',zoom:0,bub:'Namuna A — lupa bilan qarang'})},
+ html:()=>actBtns([['lupa','🔍 Lupa bilan qarash']])+pick('lM','Tola sirti qanday?',['Yassi, buralgan lenta','Tangachali, jingalak','Silliq, bir xil yo’g’onlikda'])+pick('lC','Dastlabki xulosa',['Tabiiy tola bo’lishi mumkin','Kimyoviy (sun’iy yoki sintetik) tola']),
+ acts:{lupa:async c=>{if(st.l)return;c.sfx('click');await c.T({zoom:1},1500);c.set({bub:'Ko’rinish: '+fA.look});st.l=1}},
+ check(){if(!st.l)return{err:'Avval tolani lupa bilan ko’ring.'};const m=P('lM');if(m<0)return{err:'Sirt tuzilishini tanlang.'};
+  if(m!==fA.mi)return{err:`Lupaga yana qarang: sirt ${MI[fA.mi]}${fA.gr?' (bo’ylama chiziqlar bilan)':''} ko’rinadi, «${['yassi, buralgan lenta','tangachali','silliq'][m]}» emas.`};
+  const cc=P('lC'),nat=fA.mi<2?0:1;if(cc<0)return{err:'Dastlabki xulosani tanlang.'};
+  if(cc!==nat)return{err:nat?'Silliq, bir xil yo’g’onlikdagi silindr — filyera teshigidan siqib chiqarilgan kimyoviy tolaga xos. Tabiiy tolalarda buralish (paxta) yoki tangachalar (jun) bo’ladi.':(fA.mi===0?'Buralgan yassi lenta — paxta tolasiga xos tabiiy tuzilish.':'Tangachali sirt — junga xos tabiiy tuzilish.')+' Kimyoviy tolalar silliq bo’ladi.'};
+  return{ok:1,vals:{'Sirt':MI[fA.mi],'Xulosa':nat?'kimyoviy tola':'tabiiy tola'}}},
+ after:async c=>{await rec(c,A,['look'])}}})();
+
+const tBurn=(()=>{const st={};return{
+ say:'Topshiriq. Namuna A ni yondiring. Gorelkani yoqing, tolani qisqich bilan olib alangaga kiriting, so’ng alangadan chiqaring. Hidni xavfsiz usulda aniqlang va qoldiqni ko’ring. Kuzatuvlarni yozib, tola qaysi guruhga kirishini aniqlang.',
+ guide:['🔥 Gorelkani yoqing','🗜 Tolani qisqich bilan oling → ➡ alangaga kiriting','⬅ Alangadan chiqaring — yonishda davom etadimi?','Hidni xavfsiz usulda aniqlang','🔍 Qoldiqni ko’ring','Hid, qoldiq va guruhni tanlang'],
+ hint:'Qog’oz hidi va kul — sellyuloza; soch hidi va ezilib ketadigan shar — oqsil; suyuqlanib qattiq yoki g’ovak shar hosil qilsa — termoplastik kimyoviy tola.',
+ ok:'Yondirish tolaning kimyoviy tabiatini ko’rsatdi.',
+ init(c){Object.assign(st,{g:0,in:0,out:0,sm:0,res:0});c.set({scene:'bench',burner:0,fl:0,tgOn:0,fib:0,melt:0,resT:0,resZ:0,fOn:0,smoke:0,bub:'Gorelkani yoqing'})},
+ html:()=>actBtns([['light','🔥 Gorelkani yoqish'],['grab','🗜 Qisqich bilan olish'],['in','➡ Alangaga kiritish'],['out','⬅ Alangadan chiqarish'],['sniffN','👃 Yaqindan hidlash'],['sniffF','🖐 Yelpib hidlash'],['res','🔍 Qoldiqni ko’rish']])+pick('bS','Hid',SM)+pick('bR','Qoldiq',RES)+pick('bG','Tola guruhi',GRP),
+ acts:{
+  light:async c=>{if(S.burner)return;await light(c);c.set({bub:'Tolani qisqich bilan oling'})},
+  grab:async c=>{if(st.g)return;st.g=1;await grab(c);c.set({bub:'Alangaga kiriting'})},
+  in:async(c,ER)=>{if(st.in)return;if(!S.burner)return ER('Gorelka yoqilmagan — avval uni yoqing.');if(!st.g)return ER('Tola qo’lda ushlab alangaga kiritilmaydi: yonayotgan yoki suyuqlangan tola barmoqni kuydiradi. Avval tigel qisqichi bilan oling.');st.in=1;await inFlame(c,fA);c.set({bub:'Endi alangadan chiqaring'})},
+  out:async(c,ER)=>{if(st.out)return;if(!st.in)return ER('Avval tolani alangaga kiriting.');st.out=1;await outFlame(c,fA);c.set({bub:'Hidni aniqlang'})},
+  sniffN:async(c,ER)=>ER('Tutunni yaqindan hidlash xavfli: yonish mahsulotlari (vodorod xlorid, ammiak, sianidlar) nafas yo’llarini kuydiradi va zaharlaydi. Hid qo’l bilan yelpib, uzoqdan aniqlanadi.'),
+  sniffF:async(c,ER)=>{if(!st.out)return ER('Avval tolani yondirib, alangadan chiqaring.');st.sm=1;await sniff(c,fA)},
+  res:async(c,ER)=>{if(st.res)return;if(!st.out)return ER('Qoldiq tola yongandan keyin hosil bo’ladi — avval yondiring.');st.res=1;await residue(c,fA)}},
+ check(){if(!st.out)return{err:'Avval tolani yondiring: alangaga kiritib, so’ng chiqaring.'};if(!st.sm)return{err:'Hidni aniqlang — u tolaning tabiatini ko’rsatadigan asosiy belgi.'};if(!st.res)return{err:'Qoldiqni ko’ring — kul yoki shar, mo’rt yoki qattiq ekani muhim.'};
+  const s=P('bS');if(s<0)return{err:'Hidni tanlang.'};if(s!==fA.sm)return{err:`Hid noto’g’ri yozildi. Yelpib hidlaganda «${SM[fA.sm]}» seziladi. Hid tolaning kimyoviy tarkibini ko’rsatadi, uni aniq yozing.`};
+  const r=P('bR');if(r<0)return{err:'Qoldiqni tanlang.'};if(r!==fA.res)return{err:`Qoldiq noto’g’ri yozildi: plitkada ${RES[fA.res]}.`};
+  const g=P('bG');if(g<0)return{err:'Tola guruhini tanlang.'};
+  if(g!==fA.grp)return{err:['Tola kuygan qog’oz hidi bilan yonib, kul qoldirdi — bu sellyuloza tolasi belgisi.','Kuygan soch hidi va ezilib ketadigan qora shar — oqsil (jun, ipak) belgisi: oqsil tarkibida azot va oltingugurt bor.','Tola suyuqlanib, kul o’rniga shar hosil qildi — bu termoplastik kimyoviy tolaga xos. Sellyuloza va oqsil tolalari suyuqlanmaydi.'][fA.grp]};
+  return{ok:1,vals:{'Alangada':FL[fA.fl],'Tashqarida':OUTs[fA.out],'Hid':SM[fA.sm],'Qoldiq':RES[fA.res],'Guruh':GRPS[fA.grp]}}},
+ after:async c=>{await rec(c,A,['burn'])}}})();
+
+const tLit=(()=>{const st={};return{
+ say:'Topshiriq. Yonish mahsulotlarini lakmus qog’ozi bilan sinang. Qog’ozni tayyorlang, so’ng ko’k va qizil lakmusni navbatma-navbat tutunga tuting. Muhitni va tolada azot bor-yo’qligini aniqlang.',
+ guide:['💧 Lakmusni namlang','🟦 Ko’k va 🟥 qizil qog’ozni tutunga tuting','Muhitni tanlang','Azot bor-yo’qligini tanlang'],
+ hint:'Ko’k lakmus qizarsa — kislotali; qizil lakmus ko’karsa — ishqoriy (NH₃), demak tolada azot bor.',
+ ok:'Lakmus yonish mahsulotlarining tabiatini ko’rsatdi.',
+ init(c){st.w=st.b=st.r=0;c.set({scene:'bench',resZ:0,bub:'Lakmusni tayyorlang'})},
+ html:()=>actBtns([['wet','💧 Distillangan suvda namlash'],['b','🟦 Ko’k lakmusni tutish'],['r','🟥 Qizil lakmusni tutish']])+pick('lE','Yonish mahsulotlari muhiti',['Kislotali','Ishqoriy'])+pick('lN','Tolada azot bormi?',['Ha — ammiak ajraldi','Yo’q']),
+ acts:{wet:async c=>{if(st.w)return;st.w=1;c.sfx('drip');c.set({bub:'Lakmus qog’ozlari namlandi'})},
+  b:async(c,ER)=>{if(!st.w)return ER(DRY);st.b=1;await litTest(c,fA,'b')},
+  r:async(c,ER)=>{if(!st.w)return ER(DRY);st.r=1;await litTest(c,fA,'r')}},
+ check(){if(!st.b||!st.r)return{err:'Ikkala qog’oz bilan sinang. Ko’k lakmus faqat kislotani, qizil lakmus faqat ishqorni ko’rsatadi — bittasining o’zgarmasligi ham natija.'};
+  const e=P('lE'),ac=fA.lit==='a'?0:1;if(e<0)return{err:'Muhitni tanlang.'};
+  if(e!==ac)return{err:ac?'Qizil lakmus ko’kardi — bu ishqoriy muhit belgisi (ammiak). Kislotali muhitda ko’k lakmus qizarardi.':'Ko’k lakmus qizardi — bu kislotali muhit belgisi. Ishqoriy muhitda qizil lakmus ko’karardi.'};
+  const n=P('lN');if(n<0)return{err:'Azot bo’yicha javobni tanlang.'};
+  if(n!==(ac?0:1))return{err:ac?'Ishqoriy mahsulot — bu ammiak (NH₃). Ammiak faqat tarkibida azot bo’lgan tolalardan hosil bo’ladi: oqsil, poliamid, poliakrilonitril.':'Ammiak ajralmadi — mahsulotlar kislotali (CO₂, sirka kislota, HCl). Demak, bu tolada azot yo’q.'};
+  return{ok:1,vals:{'Muhit':ac?'ishqoriy':'kislotali','Azot':ac?'bor':'yo’q'}}},
+ after:async c=>{await rec(c,A,['lit'])}}})();
+
+const tAcid=(()=>{const st={};const K=['HN','HS','NA'];return{
+ say:'Topshiriq. Tolaning kichik bo’laklarini konsentrlangan nitrat kislota, konsentrlangan sulfat kislota va o’n foizli natriy gidroksid solingan probirkalarga soling. Natijalarni yozing. So’ng hozirgacha barcha kuzatuvlarga mos keladigan tolalarni belgilang.',
+ guide:['Tolani uchala probirkaga soling','Natijalarni yozing','Barcha kuzatuvlarga mos keladigan tolalarni belgilang','📋 Jadvalni ko’rish — aniqlash jadvali (bepul)'],
+ hint:'Har tola uchun jadvaldagi qiymatlarni namuna A ning barcha kuzatuvlari (ko’rinish, yondirish, lakmus, probirkalar) bilan solishtiring. Bitta ustun mos kelmasa — tola chiqadi.',
+ ok:'Kuzatuvlar to’g’ri yozildi va tahlil qilindi.',
+ init(c){K.forEach(k=>st[k]=0);c.set({scene:'tubes',tHL:-1,bub:'Tolani probirkalarga soling'})},
+ html:()=>actBtns([['HN','🧪 HNO₃ ga solish'],['HS','🧪 H₂SO₄ ga solish'],['NA','🧪 NaOH ga solish'],['tbl','📋 Jadval'],['back','↩ Probirkalar']])+pick('aHN','HNO₃ (konts.)',RECO)+pick('aHS','H₂SO₄ (konts.)',RECO)+pick('aNA','NaOH 10 %',RECO)+'<div class="f">Hozirgacha barcha kuzatuvlarga mos keladigan tolalar:<div class="ck8">'+FIB.map((f,i)=>`<label class="f ck"><input type="checkbox" id="m${i}"> ${f.n}</label>`).join('')+'</div></div>',
+ acts:{...Object.fromEntries(K.map(k=>[k,async c=>{if(st[k]){c.set({scene:'tubes'});return}st[k]=1;await tubeTest(c,A,k)}])),
+  tbl:async c=>{c.set({scene:'table',tel:0,tWin:-1})},back:async c=>{c.set({scene:'tubes'})}},
+ check(){for(const k of K)if(!st[k])return{err:`Tolani ${TN[k]} li probirkaga ham soling — uchala reaktiv bilan sinash kerak.`};
+  for(const k of K){const v=P('a'+k);if(v<0)return{err:`${TN[k]} uchun natijani tanlang.`};if(v!==rcI(fA[k]))return{err:`${TN[k]} dagi natija noto’g’ri yozildi. Probirkada: «${oText(A,k)}». Kuzatuvni aniq yozing — keyingi xulosalar shunga tayanadi.`}}
+  const ob=obOf(A,['look','burn','lit',...K]),keep=cons(ob),chosen=FIB.map((f,i)=>i).filter(i=>CK('m'+i));
+  if(!chosen.length)return{err:'Mos keladigan tolalarni belgilang.'};
+  for(const i of chosen)if(!keep.includes(i))return{err:`${FIB[i].n} mos kelmaydi. ${contra(i,A,ob)}`};
+  for(const i of keep)if(!chosen.includes(i))return{err:`${FIB[i].n} ni ham belgilang — u hozirgacha barcha kuzatuvlarga mos keladi.`};
+  return{ok:1,vals:{'HNO₃':SH2[fA.HN],'H₂SO₄':SH2[fA.HS],'NaOH':SH2[fA.NA],'Mos tolalar':keep.map(i=>FIB[i].n).join(', ')}}},
+ after:async c=>{c.set({scene:'tubes',tHL:-1});await rec(c,A,K)}}})();
+
+const tOrg=(()=>{const st={};const K=['AS','FE','ag'];return{
+ say:'Topshiriq. Tolani aseton va fenolda sinang. So’ng yonish gazlarini kumush nitrat eritmasidan o’tkazib, tolada xlor bor-yo’qligini tekshiring. Natijalarni yozing.',
+ guide:['🧪 Aseton va fenolga soling','⚗ Yonish gazlarini AgNO₃ ga o’tkazing','Natijalarni yozing'],
+ hint:'Probirkadagi o’zgarishga qarang: tola yo’qolsa — eridi; AgNO₃ da oq loyqa — AgCl cho’kmasi.',
+ ok:'Organik erituvchilar va xlorga sinov bajarildi.',
+ init(c){K.forEach(k=>st[k]=0);c.set({scene:'tubes',tHL:-1,bub:'Aseton, fenol va AgNO₃'})},
+ html:()=>actBtns([['AS','🧪 Asetonga solish'],['FE','🧪 Fenolga solish'],['ag','⚗ Gazlarni AgNO₃ ga o’tkazish']])+pick('oAS','Aseton',['Eriydi','Erimaydi'])+pick('oFE','Fenol',['Eriydi','Erimaydi'])+pick('oAG','AgNO₃ eritmasi',['Oq cho’kma tushdi','O’zgarmadi']),
+ acts:Object.fromEntries(K.map(k=>[k,async c=>{if(st[k])return;st[k]=1;await tubeTest(c,A,k)}])),
+ check(){const TO={AS:'asetonga',FE:'fenolga'},IN={AS:'Asetondagi',FE:'Fenoldagi'};
+  for(const k of K)if(!st[k])return{err:k==='ag'?'Yonish gazlarini AgNO₃ eritmasidan ham o’tkazing.':`Tolani ${TO[k]} ham soling.`};
+  for(const k of['AS','FE']){const v=P('o'+k),ok=fA[k]==='e'?0:1;if(v<0)return{err:`${TN[k]} uchun natijani tanlang.`};if(v!==ok)return{err:`${IN[k]} natija noto’g’ri yozildi: probirkada tola ${oText(A,k)}.`}}
+  const g=P('oAG');if(g<0)return{err:'AgNO₃ natijasini tanlang.'};if(g!==(fA.ag?0:1))return{err:fA.ag?'Probirkada oq loyqa paydo bo’ldi — bu AgCl cho’kmasi: yonish gazlarida HCl bor.':'AgNO₃ eritmasi tiniq qoldi — cho’kma yo’q, demak yonish gazlarida HCl yo’q.'};
+  return{ok:1,vals:{'Aseton':SH2[fA.AS],'Fenol':SH2[fA.FE],'AgNO₃':fA.ag?'oq cho’kma':'o’zgarmadi'}}},
+ after:async c=>{c.set({tHL:-1});await rec(c,A,K)}}})();
+
+const tVerdict={
+ say:'Topshiriq. Barcha kuzatuvlarni aniqlash jadvali bilan solishtiring. Namuna A qaysi tola ekanini va u qaysi sinfga kirishini aniqlang.',
+ guide:['Jadvalning pastki qatori — namuna A kuzatuvlari','Har bir tolaning qatorini u bilan solishtiring','Tolani va uning sinfini tanlang'],
+ hint:'Barcha ustunlari namuna A qatori bilan mos keladigan faqat bitta qator bor.',
+ ok:'Namuna A aniqlandi.',
+ init(c){c.set({scene:'table',tel:0,tWin:-1,stamp:0,ob:obOf(A,['look','burn','lit','HN','HS','NA','AS','FE','ag'])})},
+ html:()=>pick('vN','Namuna A — bu',FIB.map(f=>f.n))+pick('vC','Sinfi',CLSN),
+ check(){const p=P('vN');if(p<0)return{err:'Tolani tanlang.'};const ob=obOf(A,['look','burn','lit','HN','HS','NA','AS','FE','ag']);
+  if(p!==A)return{err:`${FIB[p].n} emas. ${contra(p,A,ob)}`};
+  const cl=P('vC');if(cl<0)return{err:'Sinfni tanlang.'};if(cl!==fA.cls)return{err:CLSWHY[A]};
+  return{ok:1,vals:{'Namuna A':fA.n,'Sinfi':CLS[fA.cls]}}},
+ after:async c=>{for(let i=0;i<8;i++)if(i!==A){c.set({tel:S.tel|1<<i});c.sfx('scratch');await c.W(350)}c.set({tWin:A});await stampIt(c,`Namuna A — ${fA.n}`)}};
+
+const tDet=si=>{const fi=D.smp[si],f=FIB[fi],L=LET[si];const st={ob:{},n:0,order:[]};
+ const dj=()=>{const e=$('#dj');if(e)e.innerHTML=st.order.length?'<b>Jurnal:</b><ol>'+st.order.map(k=>`<li>${TN[k]}: ${oText(fi,k)}</li>`).join('')+'</ol>':'Jurnal: —';const n=$('#dn');if(n)n.textContent=`Hisoblangan sinovlar: ${st.n} (4 tagacha — ball kamaymaydi)`};
+ const run=k=>async(c,ER)=>{if(st.ob[k]!==undefined){c.set({scene:k==='look'?'look':k==='burn'||k==='lit'?'bench':'tubes',bub:`${TN[k]} allaqachon o’tkazilgan: ${oText(fi,k)}`});return}
+  if((k==='lit'||k==='ag')&&st.ob.burn===undefined)return ER(k==='lit'?'Lakmus yonish mahsulotlariga tutiladi — avval tolani yondiring.':'Kumush nitrat eritmasidan yonish gazlari o’tkaziladi — avval tolani yondiring.');
+  if(k==='look'){c.set({scene:'look',zoom:0});await c.T({zoom:1},1200);c.set({bub:'Ko’rinish: '+f.look})}
+  else if(k==='burn')await burnAll(c,f);
+  else if(k==='lit'){await litTest(c,f,'b');await litTest(c,f,'r')}
+  else await tubeTest(c,fi,k);
+  st.ob[k]=fv(fi,k);st.order.push(k);if(k!=='look')st.n++;c.set({jr:[...S.jr,...jl(fi,k)],ob:{...st.ob}});c.sfx('scratch');dj()};
+ const KS=['look','burn','lit','ag','HN','HS','NA','AS','FE'];
+ return{say:`Topshiriq. Namuna ${L}. Endi sinovlarni o’zingiz tanlang. Har bir sinov natijasi jurnalga yoziladi. Mos kelmaydigan tolalarni gumondorlar ro’yxatida bosib o’chirib boring. Tolani iloji boricha kam sinov bilan, lekin aniq dalil bilan toping. To’rttadan ortiq sinov ball kamaytiradi.`,
+ guide:['Sinovni tanlang: lupa va jadval bepul, qolganlari hisoblanadi','Lakmus va AgNO₃ uchun avval yondiring','Gumondorlar ro’yxatida mos kelmaganlarni bosib o’chiring','Faqat bitta tola qolganda javob bering','4 tadan ortiq har bir sinov — −1 ball'],
+ hint:'Avval yondiring va lakmusni sinang. Agar ikki tola qolsa, aniqlash jadvalidan ular farq qiladigan ustunni toping va o’sha sinovni o’tkazing.',
+ ok:'Dalil yetarli — tola aniqlandi.',
+ init(c){st.ob={};st.n=0;st.order=[];newSmp(c,si);c.set({scene:'look',mxOn:1,bub:`Namuna ${L} — sinovni tanlang`})},
+ html:()=>actBtns([['look','🔍 Lupa'],['burn','🔥 Yondirish'],['lit','🧻 Lakmus'],['ag','⚗ AgNO₃'],['HN','🧪 HNO₃'],['HS','🧪 H₂SO₄'],['NA','🧪 NaOH'],['AS','🧪 Aseton'],['FE','🧪 Fenol'],['tbl','📋 Jadval']])+'<div class="small" id="dn">Hisoblangan sinovlar: 0 (4 tagacha — ball kamaymaydi)</div><div class="jr" id="dj">Jurnal: —</div>'+pick('dN',`Namuna ${L} — bu`,FIB.map(f=>f.n)),
+ acts:{...Object.fromEntries(KS.map(k=>[k,run(k)])),tbl:async c=>{c.set({scene:'table',tel:0,tWin:-1})}},
+ check(){if(!st.n)return{err:'Hali birorta sinov o’tkazmadingiz — dalilsiz hukm chiqarib bo’lmaydi.'};const p=P('dN');if(p<0)return{err:'Tolani tanlang.'};
+  const keep=cons(st.ob);
+  if(!keep.includes(p))return{err:`${FIB[p].n} bo’la olmaydi. ${contra(p,fi,st.ob)}`};
+  if(keep.length>1)return{err:`Dalil yetarli emas: kuzatuvlaringizga ${keep.map(i=>FIB[i].n).join(' va ')} mos keladi. Ularni farqlaydigan sinov o’tkazing.`};
+  const ex=Math.min(3,Math.max(0,st.n-4));D.pobs[si]={ob:{...st.ob},ks:[...st.order]};
+  return{ok:1,extra:ex,note:ex?`Ortiqcha sinovlar: ${ex} ta (−${ex} ball).`:'',vals:{'Sinovlar':st.order.map(k=>TN[k]).join(' → '),'Javob':f.n,...(ex?{'Ortiqcha sinov':`${ex} ta (−${ex})`}:{})}}},
+ after:async c=>{c.set({mxOn:0,ob:{...st.ob}});if(S.scene==='table')c.set({scene:'bench'});await rec(c,fi,[]);await stampIt(c,`Namuna ${L} — ${f.n}`)}}};
+
+const tClass={say:'Topshiriq. Sakkizta tolaning har birini kelib chiqishiga ko’ra sinflang: tabiiy, sun’iy yoki sintetik.',
+ guide:['Tabiiy — tabiatda tayyor holda: o’simlik yoki hayvon tolasi','Sun’iy — tabiiy polimerni (sellyulozani) kimyoviy qayta ishlab','Sintetik — monomerlardan sintez qilingan polimer'],
+ hint:'Tabiiy: paxta, jun. Sun’iy: viskoza, atsetat. Qolgan to’rttasi — sintetik.',
+ ok:'Tolalar to’g’ri sinflandi.',
+ init(c){c.set({scene:'class',cl:0})},
+ html:()=>FIB.map((f,i)=>pick('k'+i,f.n,CLSN)).join(''),
+ check(){for(let i=0;i<8;i++){const v=P('k'+i);if(v<0)return{err:`${FIB[i].n} uchun sinfni tanlang.`};if(v!==FIB[i].cls)return{err:`${FIB[i].n} — ${CLS[v]} emas. ${CLSWHY[i]}`}}
+  return{ok:1,vals:{'Tabiiy':'paxta, jun','Sun’iy':'viskoza, atsetat','Sintetik':'nitron, xlorin, lavsan, kapron'}}},
+ after:async c=>{for(let k=1;k<=8;k++){c.sfx('pop');await c.T({cl:k},500)}c.sfx('ding')}};
+
+const tPack={say:'Topshiriq. Uchta paketda lavsan, nitron va kapron tolalari bor, yorliqlari tushib qolgan. Ularni eng kam sinov bilan qanday ajratasiz? Shuningdek, paxtani viskozadan qaysi sinov ajratishini tanlang.',
+ guide:['1-sinov: uchtadan bittasini ajratadigan sinov','2-sinov: qolgan ikkitasini ajratadigan sinov','Paxta ↔ viskoza: farqlovchi reaktiv','Nazariya → Aniqlash jadvalidan foydalaning'],
+ hint:'Lavsanda azot yo’q, nitron va kapronda bor. Kapron fenolda va konts. HNO₃ da eriydi, nitron erimaydi. Viskoza 10 % NaOH da eriydi.',
+ ok:'Paketlar eng kam sinov bilan ajratildi.',
+ init(c){c.set({scene:'pack',pk:0})},
+ html:()=>pick('q1','1-sinov',['Asetonda eritish','Yonish mahsulotlarini lakmus bilan sinash','10 % NaOH da sinash'])+pick('q2','2-sinov (qolgan ikkitasi uchun)',['Konts. H₂SO₄','Aseton','Fenol (yoki konts. HNO₃)'])+pick('q3','Paxta ↔ viskoza',['Yondirish','10 % NaOH','Aseton']),
+ check(){const a=P('q1');if(a<0)return{err:'1-sinovni tanlang.'};if(a===0)return{err:'Lavsan, nitron va kapron asetonda erimaydi — hech qaysi paket ajralmaydi.'};if(a===2)return{err:'Uchala tola ham 10 % NaOH da erimaydi — farq ko’rinmaydi.'};
+  const b=P('q2');if(b<0)return{err:'2-sinovni tanlang.'};if(b===0)return{err:'Nitron ham, kapron ham konts. H₂SO₄ da eriydi — ularni ajratib bo’lmaydi.'};if(b===1)return{err:'Nitron ham, kapron ham asetonda erimaydi — farq ko’rinmaydi.'};
+  const d=P('q3');if(d<0)return{err:'Paxta va viskoza uchun sinovni tanlang.'};if(d===0)return{err:'Paxta va viskoza bir xil yonadi: qog’oz hidi, kul — ikkalasi ham sellyuloza.'};if(d===2)return{err:'Ikkalasi ham asetonda erimaydi.'};
+  return{ok:1,vals:{'1-sinov':'lakmus → lavsan kislotali','2-sinov':'fenol / HNO₃ → kapron eriydi','Paxta ↔ viskoza':'NaOH: viskoza eriydi'}}},
+ after:async c=>{c.sfx('ding');await c.T({pk:1},900);await c.W(500);c.sfx('water');await c.T({pk:2},1100);await c.W(400);c.sfx('ding');await c.T({pk:3},600);await c.T({pk:4},500)}};
+return[tPrep,tLook,tBurn,tLit,tAcid,tOrg,tVerdict,tDet(1),tDet(2),tDet(3),tClass,tPack]}
+
+/* ---------- boshqaruv ---------- */
+let mode='demo',cur=0,tok={dead:true},auto=true,doneSet=new Set();
+let REC=[],maxReach=0,curC=null,busy=false,pStart=Date.now(),STU={name:'',group:''},REPTXT='';
+const steps=()=>STEPS,tasks=()=>TK;
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+const strip=h=>h.replace(/<br>/g,'. ').replace(/<[^>]+>/g,'').replace(/•/g,'');
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const score=r=>r.passed?Math.max(0,10-2*r.err.length-r.hint-(r.extra||0)):0;
+function newRec(){REC=steps().map(()=>({att:0,err:[],hint:0,extra:0,passed:false,vals:{}}));maxReach=0;pStart=Date.now();D.pobs={}}
+function say(txt){if(voiceOn)speak(strip(txt),{dead:false},false)}
+function updScore(){const b=E.scoreBadge;b.hidden=mode!=='prac';if(mode!=='prac')return;
+ const tot=REC.reduce((a,r)=>a+score(r),0),errs=REC.reduce((a,r)=>a+r.err.length,0);b.textContent=`Ball: ${tot} / ${steps().length*10} · xato: ${errs}`}
+function renderDots(){const pr=mode==='prac';E.dots.innerHTML='';steps().forEach((s,i)=>{const b=document.createElement('button');const ok=pr?REC[i].passed:doneSet.has(i);
+ b.className='dot'+(i===cur?' cur':ok?' done':'');b.textContent=i+1;b.title=s.t;if(pr&&i>maxReach)b.disabled=true;b.onclick=()=>goTo(i,true);E.dots.appendChild(b)})}
+function renderPanel(){const st=steps()[cur],pr=mode==='prac',tk=pr&&tasks()[cur];
+ E.stepNo.textContent=`${cur+1}-bosqich / ${steps().length}`;E.stepTitle.textContent=st.t;
+ E.lab1.textContent=pr?'🎯 Topshiriq (diktor tushuntiradi):':'🎙 Diktor nima qilinishini aytadi:';
+ E.lab2.textContent=pr?'🧭 Qanday bajariladi:':'📌 Aniq ma’lumotlar:';
+ setSay(pr?tk.say:st.say);
+ E.det.innerHTML=(pr?tk.guide:st.det).map(d=>d[0]==='!'?`<li class="warn">${d.slice(1)}</li>`:`<li>${d}</li>`).join('');
+ E.eqBox.innerHTML=EQ;E.taskCard.hidden=!pr;E.eqCard.hidden=pr;E.cAuto.parentNode.style.display=pr?'none':'';
+ if(pr)E.bPlay.textContent='🎙 Topshiriqni qayta eshitish';renderDots();updScore()}
+function fbSet(cls,html){E.fb.className='fb'+(cls?' '+cls:'');E.fb.innerHTML=html}
+function addErr(msg){REC[cur].err.push(strip(msg));fbSet('bad','✗ '+msg);SFX.buzz();say(msg);updScore()}
+function renderTask(){const tk=tasks()[cur],r=REC[cur];E.taskBody.innerHTML=tk.html();fbSet('','');
+ E.bCheck.style.display=r.passed?'none':'';E.bHint.style.display=r.passed?'none':'';E.bGo.style.display=r.passed?'':'none';
+ E.bGo.textContent=cur===steps().length-1?'📋 Yakuniy natija':'Keyingi bosqich ▶';
+ if(r.passed){E.taskBody.querySelectorAll('input,button').forEach(x=>x.disabled=true);fbSet('ok','✓ Bu bosqich bajarilgan. '+Object.entries(r.vals).map(([k,v])=>`${k}: ${v}`).join('; '))}}
+
+async function goTo(i,play){tok.dead=true;if('speechSynthesis' in window)speechSynthesis.cancel();busy=false;
+ const t={dead:false,fast:true};tok=t;resetState();const list=steps(),pr=mode==='prac';i=clamp(i,0,list.length-1);
+ for(let j=0;j<i;j++){try{await list[j].act(ctx(t))}catch(e){if(!(e instanceof Cancel))console.error(e)}if(t.dead)return}
+ if(pr){const tk=tasks()[i];if(REC[i].passed){try{await list[i].act(ctx(t))}catch(e){}if(t.dead)return}
+  t.fast=false;cur=i;maxReach=Math.max(maxReach,i);curC=ctx(t);
+  if(!REC[i].passed)tk.init(curC);
+  renderPanel();renderTask();if(play&&!REC[i].passed)speak(tk.say,t);return}
+ t.fast=false;cur=i;renderPanel();E.bPlay.textContent=play?'⟲ Qaytadan':'▶ Ijro etish';if(!play)return;
+ try{await Promise.all([list[i].act(ctx(t)),speak(list[i].say,t)])}catch(e){if(!(e instanceof Cancel))console.error(e);return}
+ if(t.dead)return;doneSet.add(i);renderDots();E.bPlay.textContent='⟲ Qaytadan';
+ if(auto&&i<list.length-1){await new Promise(r=>setTimeout(r,1400));if(!t.dead)goTo(i+1,true)}
+ else if(i===list.length-1){E.stepNo.textContent='✓ Tajriba yakunlandi';SFX.ding();setTimeout(()=>{if(!t.dead)openReport()},1500)}}
+
+const PRAISE=['To’g’ri!','Barakalla, to’g’ri!','Ajoyib, hammasi to’g’ri!','To’g’ri bajarildi!'];
+async function doCheck(){const tk=tasks()[cur],r=REC[cur];if(r.passed||busy)return;let res;try{res=tk.check()}catch(e){console.error(e);return}
+ r.att++;if(!res.ok){addErr(res.err);return}
+ r.passed=true;r.vals=res.vals||{};r.extra=res.extra||0;const pz=PRAISE[Math.floor(Math.random()*PRAISE.length)];
+ fbSet('ok','✓ '+pz+' '+(tk.ok||'')+(res.note?' '+res.note:''));SFX.ding();say(pz+' '+(tk.ok||''));
+ E.bCheck.style.display='none';E.bHint.style.display='none';E.taskBody.querySelectorAll('input,button').forEach(x=>x.disabled=true);
+ busy=true;const t=tok;
+ try{await(tk.after?tk.after(curC,res):steps()[cur].act(curC))}catch(e){if(!(e instanceof Cancel))console.error(e);busy=false;return}
+ busy=false;if(t.dead)return;E.bGo.style.display='';renderDots();updScore();
+ if(cur===steps().length-1)setTimeout(()=>{if(!t.dead)openReport()},1500)}
+async function runAct(n){const ac=tasks()[cur].acts;if(busy||!ac||!ac[n])return;busy=true;const t=tok;try{await tasks()[cur].acts[n](curC,addErr)}catch(e){if(!(e instanceof Cancel))console.error(e)}if(tok===t)busy=false}
+
+E.taskBody.addEventListener('click',e=>{const b=e.target.closest('button');if(!b||b.disabled)return;
+ if(b.classList.contains('opt')){b.parentNode.querySelectorAll('.opt').forEach(x=>x.classList.toggle('on',x===b));SFX.click();if(E.fb.classList.contains('bad'))fbSet('','');return}
+ if(b.dataset.act)runAct(b.dataset.act)});
+E.taskBody.addEventListener('input',e=>{const x=e.target,tk=tasks()[cur];
+ if(tk.live&&tk.live[x.id])tk.live[x.id](x.type==='checkbox'?+x.checked:+x.value);
+ if(E.fb.classList.contains('bad'))fbSet('','')});
+E.bCheck.onclick=doCheck;
+E.bHint.onclick=()=>{const tk=tasks()[cur],r=REC[cur];if(r.passed)return;r.hint=1;fbSet('hint','💡 '+tk.hint);say(tk.hint);updScore()};
+E.bGo.onclick=()=>cur===steps().length-1?openReport():goTo(cur+1,true);
+
+/* ---------- jadvallar ---------- */
+function refTable(){return`<div class="tw"><table class="rt"><tr><th>Tola</th><th>Sinf</th><th>Yondirish</th><th>Lakmus</th><th>HNO₃ konts.</th><th>H₂SO₄ konts.</th><th>NaOH 10 %</th><th>Aseton</th><th>Fenol</th></tr>${FIB.map((f,i)=>`<tr><td><b>${f.n}</b><br><span class="small">${f.f}</span></td><td>${CLS[f.cls]}</td><td>${FL[f.fl]}; ${OUT[f.out]}; ${SM[f.sm]}; ${RES[f.res]}</td><td>${f.lit==='a'?'ko’k → qizil':'qizil → ko’k'}${f.litx||''}${f.ag?'; AgNO₃ bilan oq cho’kma':''}</td>${['HN','HS','NA','AS','FE'].map(k=>`<td>${oText(i,k)}</td>`).join('')}</tr>`).join('')}</table></div>`}
+E.refT.innerHTML=refTable();
+E.fibT.innerHTML=`<div class="tw"><table class="rt"><tr><th>Tola</th><th>Sinf</th><th>Polimer</th><th>Formula</th><th>Tashqi ko’rinish</th></tr>${FIB.map(f=>`<tr><td><b>${f.n}</b></td><td>${CLS[f.cls]}</td><td>${f.fs}</td><td>${f.f}</td><td>${f.look}</td></tr>`).join('')}</table></div>`;
+(function(){const KS=['look','burn','lit','ag','HN','HS','NA','AS','FE'];
+ E.idf.innerHTML=KS.map(k=>{const seen=new Map();FIB.forEach((f,i)=>{const v=String(fv(i,k));if(!seen.has(v))seen.set(v,k==='burn'?`${FLs[f.fl]}, ${SMs[f.sm]}, ${RESs[f.res]}`:oText(i,k))});
+  return`<label>${TN[k]}<select data-k="${k}"><option value="">—</option>${[...seen].map(([v,t])=>`<option value="${esc(v)}">${t}</option>`).join('')}</select></label>`}).join('');
+ const upd=()=>{const ob={};$$('#idf select').forEach(s=>{if(s.value!=='')ob[s.dataset.k]=s.dataset.k==='look'||s.dataset.k==='ag'?+s.value:s.value});const k=cons(ob);
+  E.idfRes.innerHTML=!Object.keys(ob).length?'<span class="small">Kuzatuvni tanlang.</span>':!k.length?'<span style="color:var(--red)">Bunday kuzatuvlar to’plamiga mos tola yo’q — tanlovni tekshiring.</span>':k.length===1?`Aniqlandi: <b>${FIB[k[0]].n}</b> (${CLS[FIB[k[0]].cls]} tola)`:`Mos keladi: <b>${k.map(i=>FIB[i].n).join(', ')}</b> — yana sinov kerak`};
+ $$('#idf select').forEach(s=>s.onchange=upd);upd()})();
+
+/* ---------- yakuniy hisobot ---------- */
+function smpObs(si){const pr=mode==='prac',fi=D.smp[si];if(si===0)return obOf(fi,['look','burn','lit','HN','HS','NA','AS','FE','ag']);
+ if(pr)return D.pobs[si]?D.pobs[si].ob:null;return obOf(fi,['look',...D.chain[si].ks])}
+function openReport(){const pr=mode==='prac',list=steps();
+ let h=`<h2>Laboratoriya ishi № 9 — Tolalarni aniqlash</h2><p>`;
+ if(pr)h+=`<b style="color:var(--red)">Talaba:</b> ${esc(STU.name)}${STU.group?` · <b style="color:var(--red)">Guruh:</b> ${esc(STU.group)}`:''}<br>`;
+ h+=`Variant: ${D.seed} · Sana: ${new Date().toLocaleDateString('ru-RU')} · Rejim: ${pr?'mustaqil bajarish':'namoyish'}${pr?` · Sarflangan vaqt: ${Math.max(1,Math.round((Date.now()-pStart)/60000))} min`:''}</p>`;
+ let speech='Tajriba yakunlandi. ';
+ if(pr){const tot=REC.reduce((a,r)=>a+score(r),0),max=list.length*10,pct=Math.round(tot/max*100),errs=REC.reduce((a,r)=>a+r.err.length,0),hints=REC.reduce((a,r)=>a+r.hint,0),extra=REC.reduce((a,r)=>a+(r.extra||0),0),notDone=REC.filter(r=>!r.passed).length;
+  const g=pct>=86?5:pct>=71?4:pct>=55?3:2,gt={5:'a’lo',4:'yaxshi',3:'qoniqarli',2:'qoniqarsiz'}[g];
+  h+=`<div style="display:flex;gap:30px;align-items:flex-end;flex-wrap:wrap;margin:6px 0 4px"><div><div class="small">Baho</div><div class="grade">${g} — ${gt}</div></div><div><div class="small">Ball</div><div class="grade" style="font-size:34px">${tot} / ${max} (${pct} %)</div></div><div><div class="small">Xatolar</div><div class="grade" style="font-size:34px">${errs}</div></div><div><div class="small">Yordamdan foydalanildi</div><div class="grade" style="font-size:34px">${hints}</div></div><div><div class="small">Ortiqcha sinovlar</div><div class="grade" style="font-size:34px">${extra}</div></div></div>`;
+  if(notDone)h+=`<p style="color:var(--red)">⚠ ${notDone} ta bosqich hali bajarilmagan — ular uchun ball berilmadi.</p>`;
+  h+=`<p class="small">Baholash: har bosqich 10 ball; har bir xato −2, yordam −1; B–D namunalarda 4 tadan ortiq har bir sinov −1 ball.</p>`;
+  h+=`<h3>Bosqichlar bo’yicha natijalar</h3><table><tr><th>№</th><th>Bosqich</th><th>Kiritilgan qiymatlar</th><th>Xato</th><th>Yordam</th><th>Ball</th></tr>`+list.map((s,i)=>{const r=REC[i];return`<tr><td>${i+1}</td><td>${s.t}</td><td>${r.passed?Object.entries(r.vals).map(([k,v])=>`${k}: ${v}`).join('<br>'):'<span style="color:var(--red)">bajarilmagan</span>'}</td><td>${r.err.length}</td><td>${r.hint?'ha':'—'}</td><td>${score(r)}/10</td></tr>`}).join('')+`</table>`;
+  const el=REC.map((r,i)=>r.err.length?`<li>${i+1}. ${list[i].t}<ul>${r.err.map(e=>`<li>${esc(e)}</li>`).join('')}</ul></li>`:'').join('');
+  h+=`<h3>Xatolar va izohlar</h3>`+(el?`<ul class="det">${el}</ul>`:'<p>Birorta ham xato qilinmadi. Barakalla!</p>');
+  speech+=`${STU.name}, siz ${max} balldan ${tot} ball to’pladingiz. Bahoingiz: ${g}, ${gt}. Xatolar soni: ${errs}. `}
+ h+=`<h3>Tajriba natijalari — kuzatuv jurnali</h3><p class="note">ℹ Sinov natijalari o’quv aniqlash jadvali asosida modellashtirilgan <b>namunaviy (o’quv) qiymatlar</b>. Erituvchilar bo’yicha ayrim qiymatlarni o’qituvchi bilan tekshiring.</p>`;
+ h+=`<div class="tw"><table><tr><th>Namuna</th><th>Tashqi ko’rinish</th><th>Yondirish</th><th>Lakmus, AgNO₃</th><th>Kislota, ishqor, erituvchilar</th><th>Aniqlangan tola</th></tr>`;
+ const xl=[];
+ D.smp.forEach((fi,si)=>{const f=FIB[fi],ob=smpObs(si),stepI=si?6+si:6,okd=pr?REC[stepI].passed:true;
+  const c=k=>ob&&ob[k]!==undefined?oText(fi,k):'—';
+  const tubes=ob?['HN','HS','NA','AS','FE'].filter(k=>ob[k]!==undefined).map(k=>`${TN[k]}: ${oText(fi,k)}`).join('<br>')||'—':'—';
+  h+=`<tr><td><b>${LET[si]}</b></td><td>${ob?c('look'):'—'}</td><td>${ob?c('burn'):'—'}</td><td>${ob?c('lit')+(ob.ag!==undefined?'<br>AgNO₃: '+oText(fi,'ag'):''):'—'}</td><td>${tubes}</td><td>${okd?`<b>${f.n}</b><br>${CLS[f.cls]} tola, ${f.fs}<br><span class="small">${f.f}</span>`:'<span style="color:var(--red)">aniqlanmagan</span>'}</td></tr>`;
+  if(okd&&ob){const extraK=['HN','HS','NA','AS','FE','ag'].filter(k=>ob[k]!==undefined&&(k==='ag'?f.ag:f[k]!=='n'));const ev=[];
+   if(ob.burn!==undefined)ev.push(`${FLs[f.fl]}, ${SMs[f.sm]}, qoldiq — ${RESs[f.res]}`);if(ob.lit!==undefined)ev.push(`yonish mahsulotlari ${f.lit==='a'?'kislotali':'ishqoriy'}`);
+   extraK.forEach(k=>ev.push(k==='ag'?'AgNO₃ bilan oq cho’kma':`${LOCN[k]} ${SH2[f[k]]}`));
+   xl.push(`namuna ${LET[si]} — ${f.n.toLowerCase()} (${CLS[f.cls]} tola): ${ev.join(', ')}`)}});
+ h+=`</table></div>`;
+ h+=`<h3>Aniqlash jadvali</h3>${refTable()}`;
+ const pk=D.pk.map(fi=>FIB[fi].n);
+ h+=`<h3>Paketlar masalasi</h3><p>Lavsan, nitron, kapron: 1) lakmus — lavsan mahsulotlari kislotali, nitron va kapronniki ishqoriy (azot bor); 2) fenol yoki konts. HNO₃ — kapron eriydi, nitron erimaydi. Paxta va viskoza: 10 % NaOH — paxta bo’kadi, viskoza eriydi. <span class="small">(Paketlar tartibi: ${pk.map((n,j)=>`${j+1} — ${n}`).join(', ')})</span></p>`;
+ h+=`<h3>Asosiy reaksiyalar</h3><div class="formula">Oqsil, poliamid, poliakrilonitril yonganda: … –NH– … ⟶ <b>NH₃</b>↑ (qizil lakmus ko’karadi)<br>Xlorin yonganda: HCl↑; &nbsp; HCl + AgNO₃ ⟶ <b>AgCl</b>↓ + HNO₃<br>Jun + konts. HNO₃ ⟶ sariq rang (ksantoprotein reaksiyasi)<br>Atsetat + NaOH ⟶ sellyuloza + CH₃COONa (sovunlanish)</div>`;
+ const xul=(xl.length?'Aniqlangan tolalar: '+xl.join('; ')+'. ':'')+'Yondirish sinovi tolaning kimyoviy guruhini — sellyuloza, oqsil yoki termoplastik kimyoviy tola ekanini, lakmus sinovi esa tarkibida azot borligini ko’rsatdi. Bir xil yonadigan tolalar kislota, ishqor va organik erituvchilardagi eruvchanligi bo’yicha farqlandi. Kelib chiqishiga ko’ra tolalar tabiiy (paxta, jun), sun’iy (viskoza, atsetat) va sintetik (nitron, xlorin, lavsan, kapron) tolalarga bo’linadi.';
+ h+=`<h3>Xulosa</h3><p>${xul}</p><div class="mini">by Hayitali</div>`;
+ E.repBody.innerHTML=h;E.ovReport.classList.add('show');E.repBody.scrollTop=0;REPTXT=speech+xul}
+
+E.rSpeak.onclick=()=>speak(REPTXT.replace(/%/g,' foiz').replace(/NaOH/g,'natriy gidroksid').replace(/HNO₃/g,'nitrat kislota').replace(/H₂SO₄/g,'sulfat kislota').replace(/AgNO₃/g,'kumush nitrat').replace(/\b10\b/g,'o’n'),{dead:false},false);
+if(E.rPrint)E.rPrint.onclick=()=>window.print();
+E.rClose.onclick=()=>{E.ovReport.classList.remove('show');if('speechSynthesis' in window)speechSynthesis.cancel()};
+E.rAgain.onclick=()=>{E.rClose.click();if(mode==='prac')newRec();doneSet=new Set();goTo(0,true)};
+E.bReport.onclick=openReport;
+
+function setMode(m){if(m==='prac'&&!STU.name){E.ovIntro.classList.add('show');E.introErr.textContent='Mustaqil bajarish uchun ismingizni kiriting.';return}
+ mode=m;$$('#modeSeg .btn').forEach(b=>b.classList.toggle('on',b.dataset.mode===m));newRec();doneSet=new Set();goTo(0,m==='prac')}
+$$('#modeSeg .btn').forEach(b=>b.onclick=()=>setMode(b.dataset.mode));
+$$('[data-start]').forEach(b=>b.onclick=()=>{const md=b.dataset.start;STU.name=E.iName.value.trim();STU.group=E.iGroup.value.trim();
+ if(md==='prac'&&!STU.name){E.introErr.textContent='Ismingizni kiriting — u yakuniy hisobotda ko’rsatiladi.';E.iName.focus();return}
+ const v=parseInt(E.iVar.value,10);if(E.iVar.value.trim()&&!(v>=1&&v<=99)){E.introErr.textContent='Variant raqami 1 dan 99 gacha bo’lishi kerak (yoki bo’sh qoldiring).';E.iVar.focus();return}
+ build(v>=1&&v<=99?v:1+Math.floor(Math.random()*99));
+ E.introErr.textContent='';ac().resume();E.ovIntro.classList.remove('show');setMode(md)});
+E.iName.oninput=()=>E.introErr.textContent='';
+E.bPlay.onclick=()=>{ac().resume();if(mode==='prac'){if(!REC[cur].passed)speak(tasks()[cur].say,tok)}else goTo(cur,true)};
+E.bNext.onclick=()=>{if(mode==='prac'&&!REC[cur].passed){fbSet('bad','Avval ushbu bosqich topshirig’ini bajaring va “Tekshirish” ni bosing.');return}if(cur<steps().length-1)goTo(cur+1,true);else openReport()};
+E.bPrev.onclick=()=>goTo(cur-1,true);
+E.cAuto.onchange=()=>auto=E.cAuto.checked;E.sSpeed.onchange=()=>speed=+E.sSpeed.value;
+E.bLabels.onclick=()=>{E.bLabels.classList.toggle('on');labelsOn=E.bLabels.classList.contains('on');lookKey=''};
+E.bVoice.onclick=()=>{voiceOn=!voiceOn;E.bVoice.classList.toggle('on',voiceOn);if(!voiceOn&&'speechSynthesis' in window)speechSynthesis.cancel()};
+E.bSfx.onclick=()=>{sfxOn=!sfxOn;E.bSfx.classList.toggle('on',sfxOn)};
+E.bFull.onclick=()=>{document.fullscreenElement?document.exitFullscreen():document.documentElement.requestFullscreen().catch(()=>{})};
+E.bTheory.onclick=()=>E.ovTheory.classList.add('show');
+E.thClose.onclick=()=>{E.ovTheory.classList.remove('show');if('speechSynthesis' in window)speechSynthesis.cancel()};
+let thTab='t1';$$('#thTabs .btn').forEach(b=>b.onclick=()=>{thTab=b.dataset.t;$$('#thTabs .btn').forEach(x=>x.classList.toggle('on',x===b));['t1','t2','t3','t4','t5'].forEach(id=>E[id].hidden=id!==thTab);if('speechSynthesis' in window)speechSynthesis.cancel()});
+E.thSpeak.onclick=()=>{const txt=E[thTab].innerText.replace(/[\[\]ₙ⟶↑↓→]/g,' ').replace(/%/g,' foiz').replace(/HNO₃/g,'nitrat kislota').replace(/H₂SO₄/g,'sulfat kislota').replace(/NaOH/g,'natriy gidroksid').replace(/AgNO₃/g,'kumush nitrat');speak(txt,{dead:false},false)};
+document.addEventListener('keydown',e=>{const tg=e.target.tagName;if(tg==='INPUT'||tg==='SELECT'||tg==='BUTTON'&&e.key===' ')return;const k=e.key.toLowerCase();
+ if(E.ovIntro.classList.contains('show'))return;
+ if(k==='escape'){E.thClose.click();E.rClose.click();return}
+ if(E.ovReport.classList.contains('show'))return;
+ if(k===' '){e.preventDefault();E.bPlay.click()}else if(k==='arrowright')E.bNext.click();else if(k==='arrowleft')E.bPrev.click();
+ else if(k==='f')E.bFull.click();else if(k==='n')E.bLabels.click();else if(k==='m')E.bVoice.click();else if(k==='t')E.ovTheory.classList.toggle('show')});
+build(1+Math.floor(Math.random()*99));newRec();goTo(0,false);
+</script>
+</body>
+</html>
